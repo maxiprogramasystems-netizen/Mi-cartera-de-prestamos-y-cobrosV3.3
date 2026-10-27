@@ -9,7 +9,7 @@ Aplicación web para controlar una cartera de préstamos: clientes, intereses, c
 - Préstamos con interés simple o sobre saldo, mora, observaciones y filtros por estado.
 - Cuotas en verde cuando se pagan, estado "Abonó" en pagos parciales y "Finalizado" al saldar la deuda.
 - Capital: aportes, retiros, dinero disponible para prestar, capital en la calle y ganancias.
-- Aviso un día antes del cobro (notificación del navegador) y botón de WhatsApp para avisar al cliente, con mensaje opcional por préstamo.
+- Aviso un día antes del cobro (notificación del navegador) y botón de WhatsApp para avisar al cliente, con mensaje opcional por préstamo. Cada aviso incluye cuotas pagadas y cuotas pendientes.
 - Colores de estado: cuota pagada en verde, cuota atrasada en rojo con alerta en el Panel.
 - Botón de sol/luna en la cabecera para cambiar entre tema claro y oscuro.
 - Recibos imprimibles, reportes, exportar e importar respaldo (.json).
@@ -44,6 +44,8 @@ screenshot-*.png        Capturas para el diálogo de instalación
 ## Historial
 
 - 3.6: corrige que los préstamos nuevos quedaran asignados al primer cliente de la lista (el selector del formulario lo preseleccionaba). Se añade código por préstamo y migración de datos (`VER` 4); los datos existentes se conservan.
+
+- 3.7: los avisos (notificación del navegador, WhatsApp de cobro y recibo) y las listas del Panel ahora muestran cuántas cuotas lleva pagadas el cliente y cuántas le quedan pendientes. No cambia el esquema de datos (`VER` 4).
 
 ## Notas
 
