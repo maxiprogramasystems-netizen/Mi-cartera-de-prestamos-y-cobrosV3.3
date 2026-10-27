@@ -4,7 +4,8 @@ Aplicación web para controlar una cartera de préstamos: clientes, intereses, c
 
 ## Funciones
 
-- Clientes con notas y observaciones, búsqueda y edición.
+- Clientes con notas y observaciones, búsqueda y edición. Al guardar un cliente nuevo la app ofrece crear su préstamo, y cada cliente tiene el atajo «Crear préstamo».
+- Cada préstamo es independiente: se elige el cliente de forma explícita (sin cliente preseleccionado por defecto), lleva su propio código (P-001, P-002…), sus cuotas y sus pagos, y se confirma antes de crearlo.
 - Préstamos con interés simple o sobre saldo, mora, observaciones y filtros por estado.
 - Cuotas en verde cuando se pagan, estado "Abonó" en pagos parciales y "Finalizado" al saldar la deuda.
 - Capital: aportes, retiros, dinero disponible para prestar, capital en la calle y ganancias.
@@ -39,6 +40,10 @@ screenshot-*.png        Capturas para el diálogo de instalación
 - La clave de almacenamiento (`prestamos_v1`) no cambia entre versiones.
 - Al publicar una versión nueva, cambia el valor de `V` en `sw.js` para refrescar la caché.
 - Haz siempre un respaldo desde Reportes antes de reemplazar archivos.
+
+## Historial
+
+- 3.6: corrige que los préstamos nuevos quedaran asignados al primer cliente de la lista (el selector del formulario lo preseleccionaba). Se añade código por préstamo y migración de datos (`VER` 4); los datos existentes se conservan.
 
 ## Notas
 
