@@ -24,10 +24,6 @@ nav button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
 .stat b{display:block;font-size:1.4rem;font-weight:800}
 .stat span{color:var(--mut);font-size:.88rem}
 .stat.bad b{color:var(--bad)}
-.stat.link{cursor:pointer}.stat.link:hover{border-color:var(--acc)}
-.stat small.sub{display:block;margin-top:6px;color:var(--mut);font-size:.78rem;line-height:1.35}
-.cboard h2{margin:0 0 8px}.cboard .link{cursor:pointer}.cb-top{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;padding-bottom:10px;margin-bottom:10px;border-bottom:1px solid var(--line)}.cb-top b{font-size:1.8rem;font-weight:800}.cb-top span{color:var(--mut)}.cb-top small.sub{margin:0 0 0 auto}.cb-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.cb-c{text-align:center;padding:8px 4px;border-radius:10px;border:1px solid var(--line)}.cb-c:hover,.cb-top:hover b{border-color:var(--acc)}.cb-c b{display:block;font-size:1.4rem;font-weight:800}.cb-c.bad b{color:var(--bad)}.cb-c span{display:block;color:var(--mut);font-size:.85rem}.cb-c small.sub{display:block;margin:4px 0 0;color:var(--mut);font-size:.74rem}
-.cnt{color:var(--mut);font-size:.9rem;margin:0 0 8px}
 form{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
 label{display:grid;gap:3px;font-size:.88rem;color:var(--mut)}
 input,select,textarea{font:inherit;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);width:100%}
@@ -60,7 +56,7 @@ dialog::backdrop{background:rgba(0,0,0,.5)}
 :root[data-bg=cuadricula] body{background:radial-gradient(color-mix(in srgb,var(--ink) 16%,transparent) 1px,transparent 1.3px) 0 0/18px 18px,var(--bg)}
 .card.alert{border-color:var(--acc2);background:color-mix(in srgb,var(--acc2) 12%,var(--card))}.card.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 14%,var(--card));color:var(--ok);margin-bottom:10px}
 .sw{display:flex;gap:10px;margin-top:6px}.swb{width:34px;height:34px;border-radius:50%;border:3px solid transparent;cursor:pointer}.swb.on{border-color:var(--ink)}
-#lock{position:fixed;inset:0;z-index:99;background:var(--bg);display:grid;place-items:center;padding:20px}#lock[hidden]{display:none}.lbox{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;max-width:360px;width:100%;text-align:center;display:grid;gap:12px;justify-items:center}.lbox form{grid-template-columns:1fr;width:100%;text-align:left}.lbox h2{margin:0}body.locked main{display:none}.row span{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.empty{color:var(--mut);padding:8px 0}
+#lock{position:fixed;inset:0;z-index:99;background:var(--bg);display:grid;place-items:center;padding:20px}#lock[hidden]{display:none}.lbox{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;max-width:360px;width:100%;text-align:center;display:grid;gap:12px;justify-items:center}.lbox form{grid-template-columns:1fr;width:100%;text-align:left}.lbox h2{margin:0}body.locked main{display:none}.lbox #bb{width:100%;padding:14px;font-size:1.05rem}.row span{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.empty{color:var(--mut);padding:8px 0}
 .note{font-size:.85rem;color:var(--mut)}
 @media print{nav,.btn,form{display:none}body{background:#fff}body.rcp main,body.rcp #dlg{display:none!important}#rc{position:static;border:0;color:#000;background:#fff;max-width:none;width:100%}#rc .noprint{display:none}}
 .rbox{border:2px dashed var(--line);padding:16px;border-radius:8px}.rbox table td{border:0;padding:4px 0}.firma{margin-top:44px;border-top:1px solid currentColor;width:240px;padding-top:4px;font-size:.85rem}
@@ -94,7 +90,7 @@ const fmt=n=>'$'+Math.round(n).toLocaleString('es-CO');
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const today=()=>new Date().toISOString().slice(0,10);
 const DAYS={d:1,s:7,q:15,m:30},FN={d:'Diaria',s:'Semanal',q:'Quincenal',m:'Mensual'};
-const APPV='3.8',VER=4,MIG={3:r=>{let n=0;r.loans.forEach(l=>{if(!l.code)l.code='P-'+String(++n).padStart(3,'0')})}};/* migraciones futuras: MIG[n]=s=>{...} convierte datos de la versión n a n+1 sin perder nada */
+const APPV='3.7',VER=4,MIG={3:r=>{let n=0;r.loans.forEach(l=>{if(!l.code)l.code='P-'+String(++n).padStart(3,'0')})}};/* migraciones futuras: MIG[n]=s=>{...} convierte datos de la versión n a n+1 sin perder nada */
 function migrate(r){r=r||{};r.clients=r.clients||[];r.loans=r.loans||[];r.pays=r.pays||[];r.cap=r.cap||[];r.cfg=Object.assign({theme:'auto',accent:'verde',bg:'liso',notif:false},r.cfg||{});let v=r.v||1;while(v<VER){(MIG[v]||(()=>{}))(r);v++}r.v=VER;return r}
 let S=migrate();
 const newCode=()=>'P-'+String(Math.max(0,...S.loans.map(l=>+String(l.code||'').replace(/\D/g,'')||0))+1).padStart(3,'0');
@@ -108,6 +104,44 @@ matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>{if(S.cf
 const LBL={activo:'Activo',mora:'En mora',pagado:'Finalizado ✓'};
 const SK='prestamos_sec';let SEC=null;try{SEC=JSON.parse(localStorage.getItem(SK)||'null')}catch(e){}
 async function hs(t,salt,alg){const d=salt+'|'+t;if(alg==='sha'){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(d));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}let h=5381;for(const c of d)h=(h*33^c.charCodeAt(0))>>>0;return'f'+h.toString(16)}
+/* Huella / Face ID (WebAuthn). Se añade sobre la contraseña, que siempre queda como respaldo. */
+const BK='prestamos_bio',LKY='prestamos_lm';let BIO=null,BIOOK=false,LM=-1,LSOFT=false,NOAUTO=false;
+try{BIO=JSON.parse(localStorage.getItem(BK)||'null')}catch(e){}
+try{const v=localStorage.getItem(LKY);LM=v===null?-1:+v}catch(e){}
+try{NOAUTO=!!sessionStorage.getItem('noauto');sessionStorage.removeItem('noauto')}catch(e){}
+const bioSupported=()=>!!(window.isSecureContext&&window.PublicKeyCredential&&navigator.credentials&&window.crypto&&crypto.subtle);
+if(bioSupported()&&PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable)PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().then(v=>{BIOOK=!!v}).catch(()=>{});
+const B64={e:b=>btoa(String.fromCharCode(...new Uint8Array(b))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''),d:s=>Uint8Array.from(atob(s.replace(/-/g,'+').replace(/_/g,'/')+'='.repeat((4-s.length%4)%4)),c=>c.charCodeAt(0))};
+function derRaw(s){s=new Uint8Array(s);let o=2;if(s[1]&128)o+=s[1]&127;const rl=s[o+1],r=s.slice(o+2,o+2+rl);o+=2+rl;const ql=s[o+1],q=s.slice(o+2,o+2+ql);
+  const f=x=>{while(x.length>32&&x[0]===0)x=x.slice(1);const z=new Uint8Array(32);z.set(x,32-x.length);return z},out=new Uint8Array(64);out.set(f(r),0);out.set(f(q),32);return out}
+async function bioReg(){
+  const cr=await navigator.credentials.create({publicKey:{challenge:crypto.getRandomValues(new Uint8Array(32)),rp:{name:'Préstamos y Cobros'},user:{id:crypto.getRandomValues(new Uint8Array(16)),name:'propietario',displayName:'Propietario'},
+    pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],authenticatorSelection:{authenticatorAttachment:'platform',userVerification:'required',residentKey:'discouraged'},attestation:'none',timeout:60000}});
+  const r=cr.response;let pk=null,alg=-7;
+  if(r.getPublicKey){const k=r.getPublicKey();if(k){pk=B64.e(k);alg=r.getPublicKeyAlgorithm?r.getPublicKeyAlgorithm():-7}}
+  BIO={id:B64.e(cr.rawId),pk,alg};localStorage.setItem(BK,JSON.stringify(BIO))}
+async function bioAuth(){
+  const ch=crypto.getRandomValues(new Uint8Array(32));
+  const a=await navigator.credentials.get({publicKey:{challenge:ch,allowCredentials:[{type:'public-key',id:B64.d(BIO.id),transports:['internal']}],userVerification:'required',timeout:60000}});
+  const r=a.response,cd=JSON.parse(new TextDecoder().decode(r.clientDataJSON));
+  if(cd.type!=='webauthn.get'||cd.challenge!==B64.e(ch)||cd.origin!==location.origin)return false;
+  const ad=new Uint8Array(r.authenticatorData);if(!(ad[32]&4))return false;
+  const rp=new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(location.hostname)));for(let i=0;i<32;i++)if(ad[i]!==rp[i])return false;
+  if(BIO.pk){const rsa=BIO.alg===-257,key=await crypto.subtle.importKey('spki',B64.d(BIO.pk),rsa?{name:'RSASSA-PKCS1-v1_5',hash:'SHA-256'}:{name:'ECDSA',namedCurve:'P-256'},false,['verify']),
+    hc=new Uint8Array(await crypto.subtle.digest('SHA-256',r.clientDataJSON)),data=new Uint8Array(ad.length+32);data.set(ad);data.set(hc,ad.length);
+    if(!await crypto.subtle.verify(rsa?{name:'RSASSA-PKCS1-v1_5'}:{name:'ECDSA',hash:'SHA-256'},key,rsa?r.signature:derRaw(r.signature),data))return false}
+  return true}
+const bioMsg=e=>{const n=e&&e.name;return n==='NotAllowedError'?'Se canceló o no se pudo verificar la huella / Face ID.':n==='InvalidStateError'?'Este dispositivo ya tiene una huella / Face ID registrada para la app.':'No se pudo usar la huella / Face ID en este dispositivo.'};
+function bioCard(){
+  const op=(v,l)=>`<option value="${v}" ${LM===v?'selected':''}>${l}</option>`;let t='<div class="card"><h2>Huella / Face ID</h2>';
+  if(!SEC)t+='<p class="note">Primero activa una contraseña (en Seguridad). La huella o Face ID se añade encima de ella y la contraseña queda como respaldo.</p>';
+  else{
+    if(!bioSupported())t+='<p class="note">Para usar huella o Face ID abre la app desde su dirección https (la publicada en GitHub Pages) o instálala; desde un archivo local no está disponible.</p>';
+    else if(BIO)t+='<p><b>✓ Huella / Face ID activada.</b></p><p class="note">Al abrir la app se pedirá tu huella, rostro o el bloqueo del teléfono. Si falla, entras con tu contraseña.</p><p><button class="btn" id="bt" type="button">Probar ahora</button> <button class="btn ghost" id="bo" type="button">Desactivar</button></p>';
+    else if(!BIOOK)t+='<p class="note">Este dispositivo no tiene huella, rostro o bloqueo de pantalla configurado, o el navegador no lo permite. Actívalo en los ajustes del teléfono y vuelve aquí.</p>';
+    else t+='<p class="note">Entra a la app con tu huella, rostro o el bloqueo del teléfono, sin escribir la contraseña. La contraseña sigue funcionando como respaldo.</p><p><button class="btn" id="bn" type="button">Activar huella / Face ID</button></p>';
+    t+=`<form id="fl2"><label>Bloquear la app al volver a ella<select>${op(-1,'Nunca (solo al abrirla)')}${op(0,'Al instante')}${op(60,'Tras 1 minuto fuera')}${op(300,'Tras 5 minutos fuera')}${op(900,'Tras 15 minutos fuera')}</select></label></form>`}
+  return t+'</div>'}
 async function setSec(p,c){const alg=window.crypto&&crypto.subtle?'sha':'f',salt=uid()+uid();SEC={salt,alg,h:await hs(p,salt,alg),r:await hs(c,salt,alg)};localStorage.setItem(SK,JSON.stringify(SEC))}
 const save=()=>{try{localStorage.setItem('prestamos_v1',JSON.stringify(S))}catch(e){}};
 const uid=()=>Math.random().toString(36).slice(2,9);
@@ -175,19 +209,11 @@ function panel(){
   const L=S.loans.map(l=>({l,s:sched(l)}));
   const prest=S.loans.reduce((a,l)=>a+ +l.monto,0),rec=L.reduce((a,x)=>a+x.s.paid,0),saldo=L.reduce((a,x)=>a+x.s.saldo,0),gan=L.reduce((a,x)=>a+x.s.intPaid,0);
   const m=L.filter(x=>x.s.st==='mora');
-  const CS=S.clients.map(c=>{const ls=S.loans.filter(l=>l.client===c.id).map(sched);return{n:ls.length,mora:ls.some(s=>s.st==='mora'),act:ls.some(s=>s.st!=='pagado')}}),cMora=CS.filter(x=>x.mora).length,cDia=CS.filter(x=>x.act&&!x.mora).length,cFin=CS.filter(x=>x.n&&!x.act).length,cSin=CS.filter(x=>!x.n).length,cCon=CS.filter(x=>x.n).length,cPor=CS.filter(x=>x.act).length;
   const lim=addDate(today(),7,'d'),up=L.map(x=>{const r=x.s.rows.find(r=>r.paid<r.tot-.5&&r.date>=today()&&r.date<=lim);return r?{l:x.l,r}:null}).filter(Boolean).sort((a,b)=>a.r.date.localeCompare(b.r.date));
   const oldBk=S.loans.length&&(!S.lastBackup||(new Date(today())-new Date(S.lastBackup))/864e5>7);
   const tom=dueTom(),lateHtml=m.length?`<div class="card late"><h2>⚠ ${m.length} préstamo(s) con pagos vencidos</h2>${m.map(x=>`<div class="row"><div><b>${esc(cname(x.l.client))}</b><small>Vencido: ${fmt(x.s.overdue)}</small></div><span>${waA(x.l.client,'Hola '+cname(x.l.client)+', le recordamos que tiene un pago vencido de '+fmt(x.s.overdue)+'. Por favor comuníquese para ponerse al día.',x.l)} <a class="lk" data-open="${x.l.id}">Ver</a></span></div>`).join('')}</div>`:'',tomHtml=tom.length?`<div class="card alert"><h2>Mañana vencen ${tom.length} cobro(s)</h2>${tom.map(x=>`<div class="row"><div>${esc(cname(x.l.client))}<small>Cuota ${x.r.k}: ${fmt(x.v)}</small></div><span>${waA(x.l.client,'Hola '+cname(x.l.client)+', le recordamos que mañana vence su cuota de '+fmt(x.v)+'. ¡Gracias!',x.l)} <a class="lk" data-open="${x.l.id}">Ver</a></span></div>`).join('')}</div>`:'';
   const ntBtn=('Notification'in window&&!S.cfg.notif)?'<div class="card"><button class="btn" id="nt">Activar aviso un día antes del cobro</button> <span class="note">El aviso aparece cuando la app está abierta o instalada.</span></div>':'';
   $('#v').innerHTML=`<div class="grid">
-  <div class="card cboard" style="grid-column:1/-1"><h2>Clientes</h2>
-   <div class="cb-top link" data-go="clientes" data-cf="" title="Ver todos los clientes"><b>${S.clients.length}</b><span>Clientes en cartera</span><small class="sub">${S.clients.length?`${cSin} sin préstamo`:'Aún no hay clientes'}</small></div>
-   <div class="cb-grid">
-    <div class="cb-c link" data-go="clientes" data-cf="con" title="Ver clientes con préstamos"><b>${cCon}</b><span>Con préstamos</span><small class="sub">${cFin} ya finalizaron</small></div>
-    <div class="cb-c link" data-go="clientes" data-cf="cobrar" title="Ver clientes por cobrar"><b>${cPor}</b><span>Por cobrar</span><small class="sub">${cDia} al día</small></div>
-    <div class="cb-c bad link" data-go="clientes" data-cf="mora" title="Ver clientes en mora"><b>${cMora}</b><span>En mora</span><small class="sub">con cuota vencida</small></div>
-   </div></div>
   <div class="card stat"><b>${fmt(prest)}</b><span>Total prestado</span></div>
   <div class="card stat"><b>${fmt(rec)}</b><span>Total recuperado</span></div>
   <div class="card stat"><b>${fmt(saldo)}</b><span>Saldo pendiente</span></div>
@@ -199,11 +225,11 @@ function panel(){
   <div class="card"><h2>Cobros vencidos</h2>${m.length?m.map(x=>`<div class="row"><div>${esc(cname(x.l.client))}<small>Vencido: ${fmt(x.s.overdue)} · Mora estimada: ${fmt(x.s.mora)}</small></div><span>${waA(x.l.client,'Hola '+cname(x.l.client)+', le recordamos que tiene un pago vencido de '+fmt(x.s.overdue)+'. Por favor comuníquese para ponerse al día.',x.l)} <a class="lk" data-open="${x.l.id}">Ver préstamo</a></span></div>`).join(''):'<p class="empty">No tienes cuotas vencidas.</p>'}</div>
   <div class="card"><h2>Próximos cobros (7 días)</h2>${up.length?up.map(x=>{const v=x.r.tot-x.r.paid;return`<div class="row"><div>${esc(cname(x.l.client))}<small>${x.r.date===today()?'Hoy':x.r.date} · Cuota ${x.r.k}: ${fmt(v)}</small></div><span>${waA(x.l.client,'Hola '+cname(x.l.client)+', le recordamos que su cuota de '+fmt(v)+' vence el '+x.r.date+'. ¡Gracias!',x.l)} <a class="lk" data-open="${x.l.id}">Ver</a></span></div>`}).join(''):'<p class="empty">No hay cobros en los próximos 7 días.</p>'}</div>
   ${S.clients.length?'':'<div class="card"><p class="empty">Empieza creando tu primer cliente en la pestaña Clientes.</p></div>'}`;
-  bindOpen();document.querySelectorAll('[data-go]').forEach(a=>a.onclick=()=>{tab=a.dataset.go;if(a.dataset.cf!==undefined)q.cf=a.dataset.cf;render();window.scrollTo(0,0)});
+  bindOpen();
   const nt=$('#nt');if(nt)nt.onclick=enableNotif;bindInstall();
 }
 
-let q={c:'',l:'',st:'',cf:''},editC=null,selC='';
+let q={c:'',l:'',st:''},editC=null,selC='';
 function clientes(){
   const e=S.clients.find(c=>c.id===editC)||{};
   $('#v').innerHTML=`<div class="card"><h2>${e.id?'Editar cliente':'Nuevo cliente'}</h2><form id="fc">
@@ -211,16 +237,14 @@ function clientes(){
   <label>Documento<input name="doc" value="${esc(e.doc)}"></label><label>Dirección<input name="dir" value="${esc(e.dir)}"></label>
   <label class="full">Notas u observaciones<textarea name="nota" rows="2">${esc(e.nota)}</textarea></label>
   <div class="full"><button class="btn">${e.id?'Guardar cambios':'Guardar cliente'}</button>${e.id?' <button type="button" class="btn ghost" id="ce">Cancelar</button>':''}</div></form></div>
-  <div class="card"><h2>Tus clientes</h2><p class="cnt" id="cc"></p><div class="grid" style="margin-bottom:8px"><input id="qc" type="search" placeholder="Buscar por nombre, teléfono o documento" value="${esc(q.c)}"><select id="fcf"><option value="">Todos los clientes</option><option value="con" ${q.cf==="con"?"selected":""}>Con préstamos</option><option value="cobrar" ${q.cf==="cobrar"?"selected":""}>Por cobrar (con saldo pendiente)</option><option value="mora" ${q.cf==="mora"?"selected":""}>En mora</option></select></div><div id="lc"></div></div>`;
+  <div class="card"><h2>Tus clientes</h2><input id="qc" type="search" placeholder="Buscar por nombre, teléfono o documento" value="${esc(q.c)}" style="margin-bottom:8px"><div id="lc"></div></div>`;
   $('#fc').onsubmit=ev=>{ev.preventDefault();const f=Object.fromEntries(new FormData(ev.target));f.nombre=String(f.nombre||'').trim();if(!f.nombre)return;const dup=f.doc&&S.clients.find(c=>c.id!==e.id&&String(c.doc||'').trim()===String(f.doc).trim());if(dup&&!confirm('Ya existe un cliente con ese documento ('+dup.nombre+'). ¿Crear otro de todas formas?'))return;if(e.id){Object.assign(e,f);editC=null;save();render();return}const nc={id:uid(),...f};S.clients.push(nc);editC=null;save();if(confirm('Cliente «'+nc.nombre+'» guardado. ¿Crear su préstamo ahora?')){selC=nc.id;tab='prestamos';render();window.scrollTo(0,0)}else render()};
   if(e.id)$('#ce').onclick=()=>{editC=null;render()};
   $('#qc').oninput=ev=>{q.c=ev.target.value;drawC()};
-  $('#fcf').onchange=ev=>{q.cf=ev.target.value;drawC()};
   drawC();
 }
 function drawC(){
-  const t=q.c.toLowerCase(),cfn=c=>{if(!q.cf)return true;const ls=S.loans.filter(l=>l.client===c.id).map(sched);return q.cf==='con'?ls.length>0:q.cf==='cobrar'?ls.some(s=>s.st!=='pagado'):ls.some(s=>s.st==='mora')},L=S.clients.filter(c=>[c.nombre,c.tel,c.doc].join(' ').toLowerCase().includes(t)&&cfn(c));
-  $('#cc').textContent=S.clients.length?((t||q.cf)?'Mostrando '+L.length+' de '+S.clients.length+' clientes':'Total: '+S.clients.length+(S.clients.length===1?' cliente':' clientes')):'';
+  const t=q.c.toLowerCase(),L=S.clients.filter(c=>[c.nombre,c.tel,c.doc].join(' ').toLowerCase().includes(t));
   $('#lc').innerHTML=L.length?L.map(c=>{
     const ls=S.loans.filter(l=>l.client===c.id).map(sched),mo=ls.filter(s=>s.st==='mora').length;
     const cal=!ls.length?'Sin historial':mo?'Con mora':ls.every(s=>s.st==='pagado')?'Al día · sin deudas':'Al día';
@@ -334,6 +358,7 @@ function ajustes(){
   $('#v').innerHTML=`<div class="card"><h2>Apariencia</h2><form id="fa"><label>Tema<select name="theme">${op([['auto','Automático (el del dispositivo)'],['light','Claro'],['dark','Oscuro']],c.theme)}</select></label><label>Fondo<select name="bg">${op([['liso','Liso'],['degradado','Degradado'],['cuadricula','Cuadrícula']],c.bg)}</select></label><div class="full"><span class="note">Color principal</span><div class="sw">${Object.entries(AC).map(([k,v])=>`<button type="button" class="swb ${c.accent===k?'on':''}" data-ac="${k}" style="background:${v}" title="${k}" aria-label="${k}"></button>`).join('')}</div></div></form></div>
   <div class="card"><h2>Avisos</h2><p class="note">Recibe una notificación un día antes de cada cobro. Funciona mientras la app esté abierta o instalada en el dispositivo.</p>${'Notification'in window?(c.notif&&Notification.permission==='granted'?'<p><b>Avisos activados.</b></p><button class="btn ghost" id="nf">Desactivar avisos</button>':'<button class="btn" id="nf">Activar avisos</button>'):'<p class="note">Tu navegador no admite notificaciones.</p>'}</div>
   <div class="card"><h2>Seguridad</h2><p class="note">Protege el acceso a la app en este dispositivo. El código de 4 a 6 dígitos sirve para recuperar la contraseña. Los respaldos .json no van cifrados.</p>${SEC?`<form id="fs"><label>Contraseña actual<input type="password" name="o" required></label><label>Nueva contraseña (mín. 4)<input type="password" name="p" minlength="4" required></label><label>Nuevo código de recuperación (4 a 6 dígitos)<input name="c" inputmode="numeric" pattern="[0-9]{4,6}" required></label><div class="full"><button class="btn">Guardar cambios</button> <button type="button" class="btn ghost" id="lk">Bloquear ahora</button> <button type="button" class="btn ghost" id="rm">Quitar contraseña</button></div></form>`:`<form id="fs"><label>Contraseña (mín. 4)<input type="password" name="p" minlength="4" required></label><label>Código de recuperación (4 a 6 dígitos)<input name="c" inputmode="numeric" pattern="[0-9]{4,6}" required></label><div class="full"><button class="btn">Activar contraseña</button></div></form>`}</div>
+  ${bioCard()}
   ${installHtml(true)}
   <div class="card"><h2>Diagnóstico de instalación</h2><div id="dg" class="note dg">Comprobando…</div></div>
   <div class="card"><h2>Acerca de</h2><p class="note">Préstamos y Cobros · versión ${APPV}. Tus datos se conservan cuando reemplazas el archivo por una versión nueva. Antes de actualizar, exporta un respaldo desde Reportes.</p></div>`;
@@ -344,18 +369,28 @@ function ajustes(){
     if(!/^\d{4,6}$/.test(f.c)){alert('El código debe tener de 4 a 6 dígitos.');return}
     if(SEC&&await hs(f.o,SEC.salt,SEC.alg)!==SEC.h){alert('La contraseña actual no es correcta.');return}
     await setSec(f.p,f.c);sessionStorage.setItem('unl','1');alert('Seguridad guardada.');ajustes()};
-  const lk=$('#lk');if(lk)lk.onclick=()=>{sessionStorage.removeItem('unl');location.reload()};
-  const rm=$('#rm');if(rm)rm.onclick=async()=>{const o=prompt('Escribe tu contraseña actual para quitarla:');if(o===null)return;if(await hs(o,SEC.salt,SEC.alg)===SEC.h){localStorage.removeItem(SK);SEC=null;sessionStorage.removeItem('unl');ajustes()}else alert('Contraseña incorrecta.')};
+  const lk=$('#lk');if(lk)lk.onclick=()=>{try{sessionStorage.setItem('noauto','1')}catch(e){}sessionStorage.removeItem('unl');location.reload()};
+  const rm=$('#rm');if(rm)rm.onclick=async()=>{const o=prompt('Escribe tu contraseña actual para quitarla:');if(o===null)return;if(await hs(o,SEC.salt,SEC.alg)===SEC.h){localStorage.removeItem(SK);localStorage.removeItem(BK);BIO=null;SEC=null;sessionStorage.removeItem('unl');ajustes()}else alert('Contraseña incorrecta.')};
+  const bn=$('#bn');if(bn)bn.onclick=async()=>{try{await bioReg();if(LM<0){LM=60;localStorage.setItem(LKY,'60')}alert('Huella / Face ID activada. Por seguridad la app se bloqueará tras 1 minuto fuera de ella; puedes cambiarlo en esta misma tarjeta.');ajustes()}catch(e){alert(bioMsg(e))}};
+  const bt=$('#bt');if(bt)bt.onclick=async()=>{try{alert(await bioAuth()?'Funciona correctamente ✓':'No se pudo verificar.')}catch(e){alert(bioMsg(e))}};
+  const bo=$('#bo');if(bo)bo.onclick=()=>{if(confirm('¿Desactivar la huella / Face ID? Seguirás entrando con tu contraseña.')){localStorage.removeItem(BK);BIO=null;ajustes()}};
+  const l2=$('#fl2');if(l2)l2.onchange=e=>{LM=+e.target.value;try{localStorage.setItem(LKY,String(LM))}catch(x){}};
 }
-function lock(mode){
-  const L=$('#lock');L.hidden=false;document.body.classList.add('locked');
-  L.innerHTML=`<div class="lbox"><img src="${IC[curMode()==='dark'?'d':'l']}" width="84" height="84" alt=""><h2>Mi cartera de préstamos</h2>${mode==='in'?`<form id="lf"><label>Contraseña<input type="password" name="p" autocomplete="current-password" required></label><button class="btn">Entrar</button><a class="lk" id="fg">Olvidé mi contraseña</a><p class="note" id="lm"></p></form>`:`<form id="lf"><label>Código de recuperación (4 a 6 dígitos)<input name="c" inputmode="numeric" pattern="[0-9]{4,6}" required></label><label>Nueva contraseña (mín. 4)<input type="password" name="p" minlength="4" required></label><button class="btn">Restablecer</button><a class="lk" id="fg">Volver</a><p class="note" id="lm"></p></form>`}</div>`;
+function lock(mode,soft){
+  const L=$('#lock'),first=L.hidden;if(soft!==undefined)LSOFT=soft;L.hidden=false;document.body.classList.add('locked');
+  L.innerHTML=`<div class="lbox"><img src="${IC[curMode()==='dark'?'d':'l']}" width="84" height="84" alt=""><h2>Mi cartera de préstamos</h2>${mode==='in'&&BIO&&bioSupported()?'<button class="btn" id="bb" type="button">👆 Entrar con huella / Face ID</button><p class="note">o escribe tu contraseña</p>':''}${mode==='in'?`<form id="lf"><label>Contraseña<input type="password" name="p" autocomplete="current-password" required></label><button class="btn">Entrar</button><a class="lk" id="fg">Olvidé mi contraseña</a><p class="note" id="lm"></p></form>`:`<form id="lf"><label>Código de recuperación (4 a 6 dígitos)<input name="c" inputmode="numeric" pattern="[0-9]{4,6}" required></label><label>Nueva contraseña (mín. 4)<input type="password" name="p" minlength="4" required></label><button class="btn">Restablecer</button><a class="lk" id="fg">Volver</a><p class="note" id="lm"></p></form>`}</div>`;
   $('#fg').onclick=()=>lock(mode==='in'?'rec':'in');
+  const bb=$('#bb'),tryBio=async()=>{const m=$('#lm');try{if(await bioAuth()){sessionStorage.setItem('unl','1');unlock()}else if(m)m.textContent='No se pudo verificar. Usa tu contraseña.'}catch(e){if(m&&e.name!=='NotAllowedError')m.textContent=bioMsg(e)}};
+  if(bb){bb.onclick=tryBio;if(first&&mode==='in'&&!NOAUTO)tryBio();NOAUTO=false}
   $('#lf').onsubmit=async ev=>{ev.preventDefault();const f=Object.fromEntries(new FormData(ev.target)),m=$('#lm');
     if(mode==='in'){if(await hs(f.p,SEC.salt,SEC.alg)===SEC.h){sessionStorage.setItem('unl','1');unlock()}else m.textContent='Contraseña incorrecta.'}
     else if(await hs(f.c,SEC.salt,SEC.alg)===SEC.r){await setSec(f.p,f.c);sessionStorage.setItem('unl','1');unlock()}else m.textContent='Código incorrecto.'};
 }
-function unlock(){$('#lock').hidden=true;document.body.classList.remove('locked');render();startAlerts()}
+function unlock(){$('#lock').hidden=true;document.body.classList.remove('locked');if(LSOFT){LSOFT=false;return}render();startAlerts()}
+/* Bloqueo al volver a la app (según Ajustes > Huella / Face ID) */
+let HID=0;document.addEventListener('visibilitychange',()=>{if(document.hidden){HID=Date.now();return}
+  if(!SEC||LM<0||!HID||!$('#lock').hidden||Date.now()-HID<LM*1000)return;
+  try{sessionStorage.removeItem('unl')}catch(e){}['#dlg','#rc'].forEach(s=>{const d=$(s);if(d&&d.open)d.close()});document.body.classList.remove('rcp');lock('in',true)});
 function boot(){applyTheme();let nb=0;const bt=setInterval(()=>{const l=$('#lock');if(++nb>40||isApp())return clearInterval(bt);if(l&&l.hidden){showBanner();if($('#ib')||(!DIP&&!/iphone|ipad|ipod/i.test(navigator.userAgent)&&nb>5))clearInterval(bt)}},1500);$('#tg').onclick=toggleTheme;if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});let u=false;try{u=sessionStorage.getItem('unl')}catch(e){}if(SEC&&!u)lock('in');else unlock()}
 document.addEventListener('input',e=>{if(e.target.id==='biz'){S.biz=e.target.value;save()}});
 boot();

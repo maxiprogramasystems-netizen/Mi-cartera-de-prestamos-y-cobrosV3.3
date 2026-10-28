@@ -8,13 +8,14 @@ Aplicación web para controlar una cartera de préstamos: clientes, intereses, c
 - Cada préstamo es independiente: se elige el cliente de forma explícita (sin cliente preseleccionado por defecto), lleva su propio código (P-001, P-002…), sus cuotas y sus pagos, y se confirma antes de crearlo.
 - Préstamos con interés simple o sobre saldo, mora, observaciones y filtros por estado.
 - Cuotas en verde cuando se pagan, estado "Abonó" en pagos parciales y "Finalizado" al saldar la deuda.
-- Panel con un solo tablero «Clientes»: total en cartera, con préstamos, por cobrar (con saldo pendiente) y en mora. Al tocar cada dato se abre la lista de clientes ya filtrada; también hay un filtro en la pestaña Clientes.
 - Capital: aportes, retiros, dinero disponible para prestar, capital en la calle y ganancias.
 - Aviso un día antes del cobro (notificación del navegador) y botón de WhatsApp para avisar al cliente, con mensaje opcional por préstamo.
 - Colores de estado: cuota pagada en verde, cuota atrasada en rojo con alerta en el Panel.
 - Botón de sol/luna en la cabecera para cambiar entre tema claro y oscuro.
 - Recibos imprimibles, reportes, exportar e importar respaldo (.json).
 - Contraseña con código de recuperación de 4 a 6 dígitos.
+- Entrada con huella, rostro (Face ID) o el bloqueo del teléfono, además de la contraseña (que queda como respaldo). Requiere abrir la app desde https y tener la biometría configurada en el dispositivo; se activa en Ajustes > Huella / Face ID.
+- Bloqueo automático al volver a la app (al instante, 1, 5 o 15 minutos, o nunca), configurable en Ajustes.
 - Temas claro, oscuro o automático, con varios colores y fondos.
 
 ## Cómo usarla
@@ -44,13 +45,12 @@ screenshot-*.png        Capturas para el diálogo de instalación
 
 ## Historial
 
-- 3.8: el Panel reúne en un solo tablero los datos de clientes (en cartera, con préstamos, por cobrar, en mora) y la pestaña Clientes agrega un filtro con esas mismas categorías. Solo es visualización: no cambia el esquema de datos (`VER` sigue en 4) ni la clave `prestamos_v1`, así que todos los datos existentes se conservan.
-- 3.7: el Panel muestra la cantidad de clientes en cartera con su desglose, y la pestaña de clientes muestra el total (o «Mostrando X de Y» al buscar). Solo se agrega visualización: no cambia el esquema de datos (`VER` sigue en 4) ni la clave de almacenamiento, así que todos los datos existentes se conservan.
+- 3.7: apertura con huella / Face ID (WebAuthn, verificada en el dispositivo) y bloqueo automático al volver a la app. No cambia el formato de los datos (`VER` sigue en 4); los ajustes de biometría se guardan aparte (`prestamos_bio`, `prestamos_lm`) y no entran en los respaldos.
 - 3.6: corrige que los préstamos nuevos quedaran asignados al primer cliente de la lista (el selector del formulario lo preseleccionaba). Se añade código por préstamo y migración de datos (`VER` 4); los datos existentes se conservan.
 
 ## Notas
 
-- La contraseña protege el acceso en el dispositivo; no cifra los datos ni los respaldos.
+- La contraseña y la huella / Face ID protegen el acceso a la app en el dispositivo; no cifran los datos ni los respaldos. La huella no se guarda en la app: la verifica el sistema del teléfono.
 - Los avisos de cobro se muestran mientras la app está abierta o instalada; no hay servidor que envíe mensajes con la app cerrada.
 - Verifica que la tasa de interés no supere el límite legal (usura) vigente en tu país.
 
