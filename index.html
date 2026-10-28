@@ -90,7 +90,7 @@ const fmt=n=>'$'+Math.round(n).toLocaleString('es-CO');
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const today=()=>new Date().toISOString().slice(0,10);
 const DAYS={d:1,s:7,q:15,m:30},FN={d:'Diaria',s:'Semanal',q:'Quincenal',m:'Mensual'};
-const APPV='3.7',VER=4,MIG={3:r=>{let n=0;r.loans.forEach(l=>{if(!l.code)l.code='P-'+String(++n).padStart(3,'0')})}};/* migraciones futuras: MIG[n]=s=>{...} convierte datos de la versión n a n+1 sin perder nada */
+const APPV='3.7',VER=5,MIG={3:r=>{let n=0;r.loans.forEach(l=>{if(!l.code)l.code='P-'+String(++n).padStart(3,'0')})},4:r=>{r.loans.forEach(l=>{if(!Array.isArray(l.hist))l.hist=[]})}};/* migraciones futuras: MIG[n]=s=>{...} convierte datos de la versión n a n+1 sin perder nada */
 function migrate(r){r=r||{};r.clients=r.clients||[];r.loans=r.loans||[];r.pays=r.pays||[];r.cap=r.cap||[];r.cfg=Object.assign({theme:'auto',accent:'verde',bg:'liso',notif:false},r.cfg||{});let v=r.v||1;while(v<VER){(MIG[v]||(()=>{}))(r);v++}r.v=VER;return r}
 let S=migrate();
 const newCode=()=>'P-'+String(Math.max(0,...S.loans.map(l=>+String(l.code||'').replace(/\D/g,'')||0))+1).padStart(3,'0');
@@ -136,11 +136,8 @@ function sched(l){
   const st=done?'pagado':rows.some(r=>r.late)?'mora':'activo';
   return{rows,paid,total,saldo:Math.max(0,total-paid),intTot,intPaid,mora,st,overdue:rows.filter(r=>r.late).reduce((a,r)=>a+r.tot-r.paid,0)};
 }
-const cuotasInfo=s=>{const n=s.rows.length,p=s.rows.filter(r=>r.paid>=r.tot-.5).length;return{n,p,q:n-p}};
-const cuT=l=>{const c=cuotasInfo(sched(l));return 'Pagadas '+c.p+' de '+c.n+' · Pendientes '+c.q};
-const cuWA=s=>{const c=cuotasInfo(s);return '\nCuotas pagadas: '+c.p+' de '+c.n+'\nCuotas pendientes: '+c.q};
 const WAI='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>';
-function waLink(cid,t,l){const c=S.clients.find(x=>x.id===cid)||{},tel=String(c.tel||'').replace(/\D/g,''),cu=l&&l.n?cuWA(sched(l)):'',extra=l&&l.msg&&String(l.msg).trim()?'\n'+String(l.msg).trim():'';return tel?'https://wa.me/'+(tel.length===10?'57'+tel:tel)+'?text='+encodeURIComponent((S.biz?S.biz+'\n':'')+t+cu+extra):''}
+function waLink(cid,t,l){const c=S.clients.find(x=>x.id===cid)||{},tel=String(c.tel||'').replace(/\D/g,''),extra=l&&l.msg&&String(l.msg).trim()?'\n'+String(l.msg).trim():'';return tel?'https://wa.me/'+(tel.length===10?'57'+tel:tel)+'?text='+encodeURIComponent((S.biz?S.biz+'\n':'')+t+extra):''}
 const waA=(cid,t,l)=>{const h=waLink(cid,t,l);return h?`<a class="wa" target="_blank" rel="noopener" href="${h}" title="Avisar por WhatsApp" aria-label="Avisar por WhatsApp">${WAI}</a>`:'<span class="wa off" title="Sin teléfono">'+WAI+'</span>'};
 let DIP=null;const isApp=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();DIP=e;const l=$('#lock');if(l&&l.hidden){if(tab==='panel'||tab==='ajustes')render();showBanner()}});
@@ -161,7 +158,7 @@ L.push('<li>'+(isApp()?'✅ App instalada en este dispositivo':'ℹ️ Aún no i
 el.innerHTML='<ul>'+L.join('')+'</ul>'}
 function overdueList(){const o=[];S.loans.forEach(l=>{const s=sched(l);if(s.st==='mora')o.push({l,s,v:s.overdue})});return o}
 function dueTom(){const t=addDate(today(),1,'d'),o=[];S.loans.forEach(l=>sched(l).rows.forEach(r=>{if(r.date===t&&r.paid<r.tot-.5)o.push({l,r,v:r.tot-r.paid})}));return o}
-function notify(){if(!S.cfg.notif||!('Notification'in window)||Notification.permission!=='granted')return;const t=dueTom(),m=overdueList();if(!t.length&&!m.length||S.cfg.lastN===today())return;S.cfg.lastN=today();save();const b=[];if(t.length)b.push('Mañana vencen: '+t.map(x=>cname(x.l.client)+' '+fmt(x.v)+' ('+cuT(x.l)+')').join('\n'));if(m.length)b.push('Pagos vencidos: '+m.map(x=>cname(x.l.client)+' '+fmt(x.v)+' ('+cuT(x.l)+')').join('\n'));const ti=m.length?'Cobros: hay pagos vencidos':'Cobros de mañana',o={body:b.join('\n'),icon:IC.l},n=()=>new Notification(ti,o);navigator.serviceWorker&&navigator.serviceWorker.getRegistration?navigator.serviceWorker.getRegistration().then(g=>g?g.showNotification(ti,o):n()).catch(n):n()}
+function notify(){if(!S.cfg.notif||!('Notification'in window)||Notification.permission!=='granted')return;const t=dueTom(),m=overdueList();if(!t.length&&!m.length||S.cfg.lastN===today())return;S.cfg.lastN=today();save();const b=[];if(t.length)b.push('Mañana vencen: '+t.map(x=>cname(x.l.client)+' '+fmt(x.v)).join(', '));if(m.length)b.push('Pagos vencidos: '+m.map(x=>cname(x.l.client)+' '+fmt(x.v)).join(', '));const ti=m.length?'Cobros: hay pagos vencidos':'Cobros de mañana',o={body:b.join('\n'),icon:IC.l},n=()=>new Notification(ti,o);navigator.serviceWorker&&navigator.serviceWorker.getRegistration?navigator.serviceWorker.getRegistration().then(g=>g?g.showNotification(ti,o):n()).catch(n):n()}
 function enableNotif(){if(!('Notification'in window)){alert('Tu navegador no admite notificaciones.');return}Notification.requestPermission().then(p=>{S.cfg.notif=p==='granted';save();if(p==='granted'){alert('Listo. Te avisaré un día antes de cada cobro mientras la app esté abierta o instalada.');notify()}else alert('No diste permiso. Puedes activarlo desde los ajustes del navegador.');render()})}
 const startAlerts=()=>{notify();setInterval(notify,18e5)};
 const cname=id=>(S.clients.find(c=>c.id===id)||{nombre:'(eliminado)'}).nombre;
@@ -176,7 +173,7 @@ function panel(){
   const m=L.filter(x=>x.s.st==='mora');
   const lim=addDate(today(),7,'d'),up=L.map(x=>{const r=x.s.rows.find(r=>r.paid<r.tot-.5&&r.date>=today()&&r.date<=lim);return r?{l:x.l,r}:null}).filter(Boolean).sort((a,b)=>a.r.date.localeCompare(b.r.date));
   const oldBk=S.loans.length&&(!S.lastBackup||(new Date(today())-new Date(S.lastBackup))/864e5>7);
-  const tom=dueTom(),lateHtml=m.length?`<div class="card late"><h2>⚠ ${m.length} préstamo(s) con pagos vencidos</h2>${m.map(x=>`<div class="row"><div><b>${esc(cname(x.l.client))}</b><small>Vencido: ${fmt(x.s.overdue)} · ${cuT(x.l)}</small></div><span>${waA(x.l.client,'Hola '+cname(x.l.client)+', le recordamos que tiene un pago vencido de '+fmt(x.s.overdue)+'. Por favor comuníquese para ponerse al día.',x.l)} <a class="lk" data-open="${x.l.id}">Ver</a></span></div>`).join('')}</div>`:'',tomHtml=tom.length?`<div class="card alert"><h2>Mañana vencen ${tom.length} cobro(s)</h2>${tom.map(x=>`<div class="row"><div>${esc(cname(x.l.client))}<small>Cuota ${x.r.k}: ${fmt(x.v)} · ${cuT(x.l)}</small></div><span>${waA(x.l.client,'Hola '+cname(x.l.client)+', le recordamos que mañana vence su cuota de '+fmt(x.v)+'. ¡Gracias!',x.l)} <a class="lk" data-open="${x.l.id}">Ver</a></span></div>`).join('')}</div>`:'';
+  const tom=dueTom(),lateHtml=m.length?`<div class="card late"><h2>⚠ ${m.length} préstamo(s) con pagos vencidos</h2>${m.map(x=>`<div class="row"><div><b>${esc(cname(x.l.client))}</b><small>Vencido: ${fmt(x.s.overdue)}</small></div><span>${waA(x.l.client,'Hola '+cname(x.l.client)+', le recordamos que tiene un pago vencido de '+fmt(x.s.overdue)+'. Por favor comuníquese para ponerse al día.',x.l)} <a class="lk" data-open="${x.l.id}">Ver</a></span></div>`).join('')}</div>`:'',tomHtml=tom.length?`<div class="card alert"><h2>Mañana vencen ${tom.length} cobro(s)</h2>${tom.map(x=>`<div class="row"><div>${esc(cname(x.l.client))}<small>Cuota ${x.r.k}: ${fmt(x.v)}</small></div><span>${waA(x.l.client,'Hola '+cname(x.l.client)+', le recordamos que mañana vence su cuota de '+fmt(x.v)+'. ¡Gracias!',x.l)} <a class="lk" data-open="${x.l.id}">Ver</a></span></div>`).join('')}</div>`:'';
   const ntBtn=('Notification'in window&&!S.cfg.notif)?'<div class="card"><button class="btn" id="nt">Activar aviso un día antes del cobro</button> <span class="note">El aviso aparece cuando la app está abierta o instalada.</span></div>':'';
   $('#v').innerHTML=`<div class="grid">
   <div class="card stat"><b>${fmt(prest)}</b><span>Total prestado</span></div>
@@ -187,8 +184,8 @@ function panel(){
   ${lateHtml}${tomHtml}${ntBtn}${installHtml(false)}
   ${oldBk?'<div class="card note">Hace más de 7 días que no haces un respaldo. Ve a Reportes y pulsa Exportar respaldo.</div>':''}
   <div class="card"><label>Nombre de tu negocio o tu nombre (aparece en los recibos)<input id="biz" value="${esc(S.biz||'')}" placeholder="Ej: Préstamos Don Carlos"></label></div>
-  <div class="card"><h2>Cobros vencidos</h2>${m.length?m.map(x=>`<div class="row"><div>${esc(cname(x.l.client))}<small>Vencido: ${fmt(x.s.overdue)} · Mora estimada: ${fmt(x.s.mora)} · ${cuT(x.l)}</small></div><span>${waA(x.l.client,'Hola '+cname(x.l.client)+', le recordamos que tiene un pago vencido de '+fmt(x.s.overdue)+'. Por favor comuníquese para ponerse al día.',x.l)} <a class="lk" data-open="${x.l.id}">Ver préstamo</a></span></div>`).join(''):'<p class="empty">No tienes cuotas vencidas.</p>'}</div>
-  <div class="card"><h2>Próximos cobros (7 días)</h2>${up.length?up.map(x=>{const v=x.r.tot-x.r.paid;return`<div class="row"><div>${esc(cname(x.l.client))}<small>${x.r.date===today()?'Hoy':x.r.date} · Cuota ${x.r.k}: ${fmt(v)} · ${cuT(x.l)}</small></div><span>${waA(x.l.client,'Hola '+cname(x.l.client)+', le recordamos que su cuota de '+fmt(v)+' vence el '+x.r.date+'. ¡Gracias!',x.l)} <a class="lk" data-open="${x.l.id}">Ver</a></span></div>`}).join(''):'<p class="empty">No hay cobros en los próximos 7 días.</p>'}</div>
+  <div class="card"><h2>Cobros vencidos</h2>${m.length?m.map(x=>`<div class="row"><div>${esc(cname(x.l.client))}<small>Vencido: ${fmt(x.s.overdue)} · Mora estimada: ${fmt(x.s.mora)}</small></div><span>${waA(x.l.client,'Hola '+cname(x.l.client)+', le recordamos que tiene un pago vencido de '+fmt(x.s.overdue)+'. Por favor comuníquese para ponerse al día.',x.l)} <a class="lk" data-open="${x.l.id}">Ver préstamo</a></span></div>`).join(''):'<p class="empty">No tienes cuotas vencidas.</p>'}</div>
+  <div class="card"><h2>Próximos cobros (7 días)</h2>${up.length?up.map(x=>{const v=x.r.tot-x.r.paid;return`<div class="row"><div>${esc(cname(x.l.client))}<small>${x.r.date===today()?'Hoy':x.r.date} · Cuota ${x.r.k}: ${fmt(v)}</small></div><span>${waA(x.l.client,'Hola '+cname(x.l.client)+', le recordamos que su cuota de '+fmt(v)+' vence el '+x.r.date+'. ¡Gracias!',x.l)} <a class="lk" data-open="${x.l.id}">Ver</a></span></div>`}).join(''):'<p class="empty">No hay cobros en los próximos 7 días.</p>'}</div>
   ${S.clients.length?'':'<div class="card"><p class="empty">Empieza creando tu primer cliente en la pestaña Clientes.</p></div>'}`;
   bindOpen();
   const nt=$('#nt');if(nt)nt.onclick=enableNotif;bindInstall();
@@ -261,8 +258,8 @@ function openLoan(id){
   <div class="grid" style="margin-bottom:12px"><div class="stat"><b>${fmt(s.total)}</b><span>Total a pagar</span></div><div class="stat"><b>${fmt(s.paid)}</b><span>Pagado</span></div><div class="stat"><b>${fmt(s.saldo)}</b><span>Saldo</span></div><div class="stat"><b>${fmt(s.mora)}</b><span>Mora estimada</span></div></div>
   <div class="wrap"><table><tr><th>#</th><th>Fecha</th><th class="n">Capital</th><th class="n">Interés</th><th class="n">Cuota</th><th class="n">Pagado</th><th>Estado</th><th></th></tr>${s.rows.map(r=>{const ok=r.paid>=r.tot-.5,ab=r.paid>0&&!ok;return`<tr class="${ok?'okr':r.late?'later':''}"><td>${r.k}</td><td>${r.date}</td><td class="n">${fmt(r.cap)}</td><td class="n">${fmt(r.int)}</td><td class="n">${fmt(r.tot)}</td><td class="n" style="${r.paid>0?'color:var(--ok);font-weight:700':''}">${fmt(r.paid)}</td><td><span class="tag ${ok?'pagado':ab?'activo':r.late?'mora':''}">${ok?'✓ Pagada':ab?'Abonó':r.late?'Atrasada':'Pendiente'}</span></td><td>${ok?'':waA(l.client,r.late?'Hola '+cname(l.client)+', su cuota '+r.k+' de '+fmt(r.tot-r.paid)+' venció el '+r.date+'. Por favor comuníquese para ponerse al día.':'Hola '+cname(l.client)+', le recordamos que su cuota '+r.k+' de '+fmt(r.tot-r.paid)+' vence el '+r.date+'. ¡Gracias!',l)}</td></tr>`}).join('')}</table></div>
   <h2 style="margin-top:14px">Registrar pago o abono</h2>
-  <form id="fp"><label>Valor ($)<input name="amt" type="number" min="1" step="any" required></label><label>Fecha<input name="date" type="date" value="${today()}" required></label><label class="full">Nota (opcional)<input name="nota"></label><div class="full"><button class="btn">Guardar pago</button> <button type="button" class="btn ghost" id="cl">Cerrar</button> <button type="button" class="btn ghost" id="dl">Eliminar préstamo</button></div></form>
-  <h2 style="margin-top:14px">Pagos registrados</h2>${S.pays.filter(p=>p.loan===id).map(p=>`<div class="row"><div><span class="tag pagado">✓ Pagó</span> ${p.date} · <b style="color:var(--ok)">${fmt(p.amt)}</b>${p.nota?'<small>'+esc(p.nota)+'</small>':''}</div><span><a class="lk" data-rc="${p.id}">Recibo</a> · <a class="lk" data-pe="${p.id}">Editar</a> · <a class="lk" data-pd="${p.id}">Eliminar</a></span></div>`).join('')||'<p class="empty">Ninguno todavía.</p>'}`;
+  <form id="fp"><label>Valor ($)<input name="amt" type="number" min="1" step="any" required></label><label>Fecha<input name="date" type="date" value="${today()}" required></label><label class="full">Nota (opcional)<input name="nota"></label><div class="full"><button class="btn">Guardar pago</button> <button type="button" class="btn ghost" id="ed">✏️ Editar préstamo</button> <button type="button" class="btn ghost" id="cl">Cerrar</button> <button type="button" class="btn ghost" id="dl">Eliminar préstamo</button></div></form>
+  <h2 style="margin-top:14px">Pagos registrados</h2>${S.pays.filter(p=>p.loan===id).map(p=>`<div class="row"><div><span class="tag pagado">✓ Pagó</span> ${p.date} · <b style="color:var(--ok)">${fmt(p.amt)}</b>${p.nota?'<small>'+esc(p.nota)+'</small>':''}</div><span><a class="lk" data-rc="${p.id}">Recibo</a> · <a class="lk" data-pe="${p.id}">Editar</a> · <a class="lk" data-pd="${p.id}">Eliminar</a></span></div>`).join('')||'<p class="empty">Ninguno todavía.</p>'}${l.hist&&l.hist.length?'<h2 style="margin-top:14px">Historial de cambios</h2>'+l.hist.slice().reverse().map(h=>'<div class="row"><div><b>'+esc(h.date)+'</b><small>'+h.cambios.map(c=>esc(c.campo)+': '+esc(c.antes)+' → '+esc(c.despues)).join('<br>')+'</small></div></div>').join(''):''}`;
   d.showModal();
   d.querySelectorAll('[data-rc]').forEach(a=>a.onclick=()=>receipt(a.dataset.rc));
   d.querySelectorAll('[data-pe]').forEach(a=>a.onclick=()=>{const p=S.pays.find(x=>x.id===a.dataset.pe),v=prompt('Valor del pago ($):',p.amt);if(v===null)return;const n=+v;if(!(n>0)){alert('Valor inválido.');return}const dt=prompt('Fecha (AAAA-MM-DD):',p.date);if(dt&&/^\d{4}-\d{2}-\d{2}$/.test(dt))p.date=dt;p.amt=n;save();openLoan(id);render()});
@@ -270,18 +267,56 @@ function openLoan(id){
   $('#lob').onchange=e=>{l.obs=e.target.value;save()};
   $('#lmsg').onchange=e=>{l.msg=e.target.value;save();openLoan(id)};
   $('#cl').onclick=()=>{d.close();render()};
+  $('#ed').onclick=()=>editLoan(id);
   $('#dl').onclick=()=>{if(confirm('¿Eliminar este préstamo y sus pagos?')){S.loans=S.loans.filter(x=>x.id!==id);S.pays=S.pays.filter(p=>p.loan!==id);save();d.close();render()}};
   $('#fp').onsubmit=e=>{e.preventDefault();const f=Object.fromEntries(new FormData(e.target));S.nextNo=Math.max(S.nextNo||0,S.pays.length)+1;S.pays.push({id:uid(),loan:id,amt:+f.amt,date:f.date,nota:f.nota||'',no:S.nextNo});save();openLoan(id);render()};
 }
 
+function editLoan(id){
+  const l=S.loans.find(x=>x.id===id);if(!l)return;const d=$('#dlg');
+  const paid=S.pays.filter(p=>p.loan===id).reduce((a,x)=>a+x.amt,0);
+  const cl=S.clients.map(c=>`<option value="${c.id}" ${c.id===l.client?'selected':''}>${esc(c.nombre)}${c.doc?' · '+esc(c.doc):''}</option>`).join('');
+  d.innerHTML=`<h2>Editar ${l.code?esc(l.code)+' · ':''}préstamo</h2>
+  <p class="note">${paid>0?'Este préstamo ya tiene pagos por <b>'+fmt(paid)+'</b>. Se conservan y se reparten automáticamente sobre las cuotas recalculadas.':'Este préstamo aún no tiene pagos registrados.'}</p>
+  <form id="fe">
+  <label>Cliente<select name="client" required>${cl}</select></label>
+  <label>Monto prestado ($)<input name="monto" type="number" min="1" step="any" value="${esc(l.monto)}" required></label>
+  <label class="pct"><span>Porcentaje de interés (% por mes)</span><input name="tasa" type="number" min="0" step="0.01" value="${esc(l.tasa)}" required></label>
+  <label>Tipo de interés<select name="metodo"><option value="simple" ${l.metodo==='simple'?'selected':''}>Simple sobre el capital</option><option value="saldo" ${l.metodo!=='simple'?'selected':''}>Sobre saldo (cuota fija)</option></select></label>
+  <label>Número de cuotas<input name="n" type="number" min="1" step="1" value="${esc(l.n)}" required></label>
+  <label>Frecuencia de pago<select name="freq">${Object.entries(FN).map(([k,v])=>`<option value="${k}" ${k===l.freq?'selected':''}>${v}</option>`).join('')}</select></label>
+  <label>Fecha del préstamo<input name="fecha" type="date" value="${esc(l.fecha)}" required></label>
+  <label>Interés por mora (% por mes)<input name="mora" type="number" min="0" step="0.01" value="${esc(l.mora||0)}"></label>
+  <div class="full prev" id="pe"></div>
+  <div class="full"><button class="btn">Guardar cambios</button> <button type="button" class="btn ghost" id="ec">Cancelar</button></div></form>`;
+  const f=$('#fe'),old=sched(l);
+  const pv=()=>{const p=Object.fromEntries(new FormData(f)),r=calc(p),tot=r.reduce((a,x)=>a+x.tot,0);
+    $('#pe').innerHTML=r.length?`Antes: cuota <b>${fmt(old.rows[0]?old.rows[0].tot:0)}</b> · total <b>${fmt(old.total)}</b> · saldo <b>${fmt(old.saldo)}</b><br>Después: cuota <b>${fmt(r[0].tot)}</b> · total <b>${fmt(tot)}</b> · saldo <b>${fmt(Math.max(0,tot-paid))}</b> · último pago ${r[r.length-1].date}`:'Completa monto y cuotas para ver el cálculo.'};
+  f.oninput=pv;pv();
+  $('#ec').onclick=()=>openLoan(id);
+  f.onsubmit=e=>{e.preventDefault();const p=Object.fromEntries(new FormData(f)),r=calc(p);
+    if(!r.length){alert('Revisa el monto y el número de cuotas.');return}
+    const tot=r.reduce((a,x)=>a+x.tot,0);
+    if(paid>tot+.5){alert('El nuevo total a pagar ('+fmt(tot)+') es menor que lo ya pagado ('+fmt(paid)+'). Ajusta los valores o corrige primero los pagos.');return}
+    const lab={client:'Cliente',monto:'Monto',tasa:'Tasa mensual (%)',metodo:'Tipo de interés',n:'Cuotas',freq:'Frecuencia',fecha:'Fecha del préstamo',mora:'Mora (% mensual)'};
+    const show=(k,v)=>k==='client'?cname(v):k==='monto'?fmt(v):k==='metodo'?(v==='simple'?'Simple':'Sobre saldo'):k==='freq'?FN[v]:String(v);
+    const same=k=>['client','metodo','freq','fecha'].includes(k)?l[k]===p[k]:+l[k]===+p[k];
+    const ch=Object.keys(lab).filter(k=>!same(k)).map(k=>({campo:lab[k],antes:show(k,l[k]),despues:show(k,p[k])}));
+    if(!ch.length){alert('No hiciste ningún cambio.');return}
+    if(!confirm('Vas a cambiar este préstamo:\n\n'+ch.map(c=>'• '+c.campo+': '+c.antes+' → '+c.despues).join('\n')+'\n\nSe recalcularán las cuotas y el capital. ¿Guardar?'))return;
+    if(S.cap.length&&+p.monto>+l.monto){const cs=capStats();if(+p.monto - +l.monto>cs.caja&&!confirm('El aumento supera tu capital disponible ('+fmt(cs.caja)+'). ¿Guardar de todas formas?'))return}
+    Object.assign(l,{client:p.client,monto:p.monto,tasa:p.tasa,metodo:p.metodo,n:p.n,freq:p.freq,fecha:p.fecha,mora:p.mora});
+    (l.hist=l.hist||[]).push({date:new Date().toISOString().slice(0,16).replace('T',' '),cambios:ch});
+    save();openLoan(id);render()};
+}
 function receipt(pid){
   const p=S.pays.find(x=>x.id===pid),l=S.loans.find(x=>x.id===p.loan),c=S.clients.find(x=>x.id===l.client)||{},s=sched(l);
   const ant=S.pays.filter(x=>x.loan===l.id);const upto=ant.slice(0,ant.indexOf(p)+1).reduce((a,x)=>a+x.amt,0);
   const num=String(p.no||S.pays.indexOf(p)+1).padStart(5,'0'),r=$('#rc');
-  const tel=String(c.tel||'').replace(/\D/g,''),saldoP=Math.max(0,s.total-upto);let acc=0,pc=0;s.rows.forEach(r=>{acc+=r.tot;if(upto>=acc-.5)pc++});
-  const wt=(S.biz?S.biz+'\n':'')+'Recibo de pago N.º '+num+'\nFecha: '+p.date+'\nCliente: '+(c.nombre||'')+'\nValor recibido: '+fmt(p.amt)+'\nSaldo pendiente: '+fmt(saldoP)+'\nCuotas pagadas: '+pc+' de '+s.rows.length+'\nCuotas pendientes: '+(s.rows.length-pc)+'\nGracias por su pago.';
+  const tel=String(c.tel||'').replace(/\D/g,''),saldoP=Math.max(0,s.total-upto);
+  const wt=(S.biz?S.biz+'\n':'')+'Recibo de pago N.º '+num+'\nFecha: '+p.date+'\nCliente: '+(c.nombre||'')+'\nValor recibido: '+fmt(p.amt)+'\nSaldo pendiente: '+fmt(saldoP)+'\nGracias por su pago.';
   const wa='https://wa.me/'+(tel.length===10?'57'+tel:tel)+'?text='+encodeURIComponent(wt);
-  r.innerHTML=`<div class="rbox"><img src="${IC[curMode()==='dark'?'d':'l']}" width="52" height="52" alt="" style="float:right">${S.biz?`<h2 style="margin:0 0 4px">${esc(S.biz)}</h2>`:''}<h2>Recibo de pago N.º ${num}</h2><table><tr><td>Fecha del pago</td><td><b>${p.date}</b></td></tr><tr><td>Recibido de</td><td><b>${esc(c.nombre)}</b></td></tr><tr><td>Documento</td><td>${esc(c.doc)||'—'}</td></tr><tr><td>Préstamo</td><td>${fmt(l.monto)} al ${l.tasa}% mensual, ${l.n} cuotas ${FN[l.freq].toLowerCase()}s</td></tr><tr><td>Valor recibido</td><td><b style="font-size:1.3rem">${fmt(p.amt)}</b></td></tr><tr><td>Total pagado a la fecha</td><td>${fmt(upto)}</td></tr><tr><td>Saldo pendiente</td><td><b>${fmt(Math.max(0,s.total-upto))}</b></td></tr><tr><td>Cuotas pagadas</td><td><b>${pc} de ${s.rows.length}</b></td></tr><tr><td>Cuotas pendientes</td><td><b>${s.rows.length-pc}</b></td></tr></table><div class="firma">Firma del prestamista</div></div><p class="noprint"><button class="btn" id="rp">Imprimir</button> <a class="btn ghost" style="text-decoration:none;display:inline-block" target="_blank" rel="noopener" href="${wa}">Enviar por WhatsApp</a> <button class="btn ghost" id="rx">Cerrar</button></p>`;
+  r.innerHTML=`<div class="rbox"><img src="${IC[curMode()==='dark'?'d':'l']}" width="52" height="52" alt="" style="float:right">${S.biz?`<h2 style="margin:0 0 4px">${esc(S.biz)}</h2>`:''}<h2>Recibo de pago N.º ${num}</h2><table><tr><td>Fecha del pago</td><td><b>${p.date}</b></td></tr><tr><td>Recibido de</td><td><b>${esc(c.nombre)}</b></td></tr><tr><td>Documento</td><td>${esc(c.doc)||'—'}</td></tr><tr><td>Préstamo</td><td>${fmt(l.monto)} al ${l.tasa}% mensual, ${l.n} cuotas ${FN[l.freq].toLowerCase()}s</td></tr><tr><td>Valor recibido</td><td><b style="font-size:1.3rem">${fmt(p.amt)}</b></td></tr><tr><td>Total pagado a la fecha</td><td>${fmt(upto)}</td></tr><tr><td>Saldo pendiente</td><td><b>${fmt(Math.max(0,s.total-upto))}</b></td></tr></table><div class="firma">Firma del prestamista</div></div><p class="noprint"><button class="btn" id="rp">Imprimir</button> <a class="btn ghost" style="text-decoration:none;display:inline-block" target="_blank" rel="noopener" href="${wa}">Enviar por WhatsApp</a> <button class="btn ghost" id="rx">Cerrar</button></p>`;
   document.body.classList.add('rcp');r.showModal();
   const end=()=>{document.body.classList.remove('rcp');r.close()};
   $('#rx').onclick=end;r.onclose=()=>document.body.classList.remove('rcp');
