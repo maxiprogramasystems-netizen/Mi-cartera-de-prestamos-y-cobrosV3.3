@@ -93,7 +93,7 @@ const fmt=n=>'$'+Math.round(n).toLocaleString('es-CO');
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const today=()=>new Date().toISOString().slice(0,10);
 const DAYS={d:1,s:7,q:15,m:30},FN={d:'Diaria',s:'Semanal',q:'Quincenal',m:'Mensual'};
-const APPV='3.7',VER=4,MIG={3:r=>{let n=0;r.loans.forEach(l=>{if(!l.code)l.code='P-'+String(++n).padStart(3,'0')})}};/* migraciones futuras: MIG[n]=s=>{...} convierte datos de la versión n a n+1 sin perder nada */
+const APPV='3.8',VER=4,MIG={3:r=>{let n=0;r.loans.forEach(l=>{if(!l.code)l.code='P-'+String(++n).padStart(3,'0')})}};/* migraciones futuras: MIG[n]=s=>{...} convierte datos de la versión n a n+1 sin perder nada */
 function migrate(r){r=r||{};r.clients=r.clients||[];r.loans=r.loans||[];r.pays=r.pays||[];r.cap=r.cap||[];r.cfg=Object.assign({theme:'auto',accent:'verde',bg:'liso',notif:false},r.cfg||{});let v=r.v||1;while(v<VER){(MIG[v]||(()=>{}))(r);v++}r.v=VER;return r}
 let S=migrate();
 const newCode=()=>'P-'+String(Math.max(0,...S.loans.map(l=>+String(l.code||'').replace(/\D/g,'')||0))+1).padStart(3,'0');
@@ -174,13 +174,16 @@ function panel(){
   const L=S.loans.map(l=>({l,s:sched(l)}));
   const prest=S.loans.reduce((a,l)=>a+ +l.monto,0),rec=L.reduce((a,x)=>a+x.s.paid,0),saldo=L.reduce((a,x)=>a+x.s.saldo,0),gan=L.reduce((a,x)=>a+x.s.intPaid,0);
   const m=L.filter(x=>x.s.st==='mora');
-  const CS=S.clients.map(c=>{const ls=S.loans.filter(l=>l.client===c.id).map(sched);return{n:ls.length,mora:ls.some(s=>s.st==='mora'),act:ls.some(s=>s.st!=='pagado')}}),cMora=CS.filter(x=>x.mora).length,cDia=CS.filter(x=>x.act&&!x.mora).length,cFin=CS.filter(x=>x.n&&!x.act).length,cSin=CS.filter(x=>!x.n).length;
+  const CS=S.clients.map(c=>{const ls=S.loans.filter(l=>l.client===c.id).map(sched);return{n:ls.length,mora:ls.some(s=>s.st==='mora'),act:ls.some(s=>s.st!=='pagado')}}),cMora=CS.filter(x=>x.mora).length,cDia=CS.filter(x=>x.act&&!x.mora).length,cFin=CS.filter(x=>x.n&&!x.act).length,cSin=CS.filter(x=>!x.n).length,cCon=CS.filter(x=>x.n).length,cPor=CS.filter(x=>x.act).length;
   const lim=addDate(today(),7,'d'),up=L.map(x=>{const r=x.s.rows.find(r=>r.paid<r.tot-.5&&r.date>=today()&&r.date<=lim);return r?{l:x.l,r}:null}).filter(Boolean).sort((a,b)=>a.r.date.localeCompare(b.r.date));
   const oldBk=S.loans.length&&(!S.lastBackup||(new Date(today())-new Date(S.lastBackup))/864e5>7);
   const tom=dueTom(),lateHtml=m.length?`<div class="card late"><h2>⚠ ${m.length} préstamo(s) con pagos vencidos</h2>${m.map(x=>`<div class="row"><div><b>${esc(cname(x.l.client))}</b><small>Vencido: ${fmt(x.s.overdue)}</small></div><span>${waA(x.l.client,'Hola '+cname(x.l.client)+', le recordamos que tiene un pago vencido de '+fmt(x.s.overdue)+'. Por favor comuníquese para ponerse al día.',x.l)} <a class="lk" data-open="${x.l.id}">Ver</a></span></div>`).join('')}</div>`:'',tomHtml=tom.length?`<div class="card alert"><h2>Mañana vencen ${tom.length} cobro(s)</h2>${tom.map(x=>`<div class="row"><div>${esc(cname(x.l.client))}<small>Cuota ${x.r.k}: ${fmt(x.v)}</small></div><span>${waA(x.l.client,'Hola '+cname(x.l.client)+', le recordamos que mañana vence su cuota de '+fmt(x.v)+'. ¡Gracias!',x.l)} <a class="lk" data-open="${x.l.id}">Ver</a></span></div>`).join('')}</div>`:'';
   const ntBtn=('Notification'in window&&!S.cfg.notif)?'<div class="card"><button class="btn" id="nt">Activar aviso un día antes del cobro</button> <span class="note">El aviso aparece cuando la app está abierta o instalada.</span></div>':'';
   $('#v').innerHTML=`<div class="grid">
-  <div class="card stat link" data-go="clientes" title="Ver clientes"><b>${S.clients.length}</b><span>Clientes en cartera</span><small class="sub">${S.clients.length?`${cDia} al día · ${cMora} en mora · ${cFin} finalizados · ${cSin} sin préstamo`:'Aún no hay clientes'}</small></div>
+  <div class="card stat link" data-go="clientes" data-cf="" title="Ver todos los clientes"><b>${S.clients.length}</b><span>Clientes en cartera</span><small class="sub">${S.clients.length?`${cSin} sin préstamo`:'Aún no hay clientes'}</small></div>
+  <div class="card stat link" data-go="clientes" data-cf="con" title="Ver clientes con préstamos"><b>${cCon}</b><span>Clientes con préstamos</span><small class="sub">${cFin} ya finalizaron</small></div>
+  <div class="card stat link" data-go="clientes" data-cf="cobrar" title="Ver clientes por cobrar"><b>${cPor}</b><span>Clientes por cobrar</span><small class="sub">${cDia} al día · ${cMora} en mora</small></div>
+  <div class="card stat bad link" data-go="clientes" data-cf="mora" title="Ver clientes en mora"><b>${cMora}</b><span>Clientes en mora</span></div>
   <div class="card stat"><b>${fmt(prest)}</b><span>Total prestado</span></div>
   <div class="card stat"><b>${fmt(rec)}</b><span>Total recuperado</span></div>
   <div class="card stat"><b>${fmt(saldo)}</b><span>Saldo pendiente</span></div>
@@ -192,11 +195,11 @@ function panel(){
   <div class="card"><h2>Cobros vencidos</h2>${m.length?m.map(x=>`<div class="row"><div>${esc(cname(x.l.client))}<small>Vencido: ${fmt(x.s.overdue)} · Mora estimada: ${fmt(x.s.mora)}</small></div><span>${waA(x.l.client,'Hola '+cname(x.l.client)+', le recordamos que tiene un pago vencido de '+fmt(x.s.overdue)+'. Por favor comuníquese para ponerse al día.',x.l)} <a class="lk" data-open="${x.l.id}">Ver préstamo</a></span></div>`).join(''):'<p class="empty">No tienes cuotas vencidas.</p>'}</div>
   <div class="card"><h2>Próximos cobros (7 días)</h2>${up.length?up.map(x=>{const v=x.r.tot-x.r.paid;return`<div class="row"><div>${esc(cname(x.l.client))}<small>${x.r.date===today()?'Hoy':x.r.date} · Cuota ${x.r.k}: ${fmt(v)}</small></div><span>${waA(x.l.client,'Hola '+cname(x.l.client)+', le recordamos que su cuota de '+fmt(v)+' vence el '+x.r.date+'. ¡Gracias!',x.l)} <a class="lk" data-open="${x.l.id}">Ver</a></span></div>`}).join(''):'<p class="empty">No hay cobros en los próximos 7 días.</p>'}</div>
   ${S.clients.length?'':'<div class="card"><p class="empty">Empieza creando tu primer cliente en la pestaña Clientes.</p></div>'}`;
-  bindOpen();document.querySelectorAll('[data-go]').forEach(a=>a.onclick=()=>{tab=a.dataset.go;render();window.scrollTo(0,0)});
+  bindOpen();document.querySelectorAll('[data-go]').forEach(a=>a.onclick=()=>{tab=a.dataset.go;if(a.dataset.cf!==undefined)q.cf=a.dataset.cf;render();window.scrollTo(0,0)});
   const nt=$('#nt');if(nt)nt.onclick=enableNotif;bindInstall();
 }
 
-let q={c:'',l:'',st:''},editC=null,selC='';
+let q={c:'',l:'',st:'',cf:''},editC=null,selC='';
 function clientes(){
   const e=S.clients.find(c=>c.id===editC)||{};
   $('#v').innerHTML=`<div class="card"><h2>${e.id?'Editar cliente':'Nuevo cliente'}</h2><form id="fc">
@@ -204,15 +207,16 @@ function clientes(){
   <label>Documento<input name="doc" value="${esc(e.doc)}"></label><label>Dirección<input name="dir" value="${esc(e.dir)}"></label>
   <label class="full">Notas u observaciones<textarea name="nota" rows="2">${esc(e.nota)}</textarea></label>
   <div class="full"><button class="btn">${e.id?'Guardar cambios':'Guardar cliente'}</button>${e.id?' <button type="button" class="btn ghost" id="ce">Cancelar</button>':''}</div></form></div>
-  <div class="card"><h2>Tus clientes</h2><p class="cnt" id="cc"></p><input id="qc" type="search" placeholder="Buscar por nombre, teléfono o documento" value="${esc(q.c)}" style="margin-bottom:8px"><div id="lc"></div></div>`;
+  <div class="card"><h2>Tus clientes</h2><p class="cnt" id="cc"></p><div class="grid" style="margin-bottom:8px"><input id="qc" type="search" placeholder="Buscar por nombre, teléfono o documento" value="${esc(q.c)}"><select id="fcf"><option value="">Todos los clientes</option><option value="con" ${q.cf==="con"?"selected":""}>Con préstamos</option><option value="cobrar" ${q.cf==="cobrar"?"selected":""}>Por cobrar (con saldo pendiente)</option><option value="mora" ${q.cf==="mora"?"selected":""}>En mora</option></select></div><div id="lc"></div></div>`;
   $('#fc').onsubmit=ev=>{ev.preventDefault();const f=Object.fromEntries(new FormData(ev.target));f.nombre=String(f.nombre||'').trim();if(!f.nombre)return;const dup=f.doc&&S.clients.find(c=>c.id!==e.id&&String(c.doc||'').trim()===String(f.doc).trim());if(dup&&!confirm('Ya existe un cliente con ese documento ('+dup.nombre+'). ¿Crear otro de todas formas?'))return;if(e.id){Object.assign(e,f);editC=null;save();render();return}const nc={id:uid(),...f};S.clients.push(nc);editC=null;save();if(confirm('Cliente «'+nc.nombre+'» guardado. ¿Crear su préstamo ahora?')){selC=nc.id;tab='prestamos';render();window.scrollTo(0,0)}else render()};
   if(e.id)$('#ce').onclick=()=>{editC=null;render()};
   $('#qc').oninput=ev=>{q.c=ev.target.value;drawC()};
+  $('#fcf').onchange=ev=>{q.cf=ev.target.value;drawC()};
   drawC();
 }
 function drawC(){
-  const t=q.c.toLowerCase(),L=S.clients.filter(c=>[c.nombre,c.tel,c.doc].join(' ').toLowerCase().includes(t));
-  $('#cc').textContent=S.clients.length?(t?'Mostrando '+L.length+' de '+S.clients.length+' clientes':'Total: '+S.clients.length+(S.clients.length===1?' cliente':' clientes')):'';
+  const t=q.c.toLowerCase(),cfn=c=>{if(!q.cf)return true;const ls=S.loans.filter(l=>l.client===c.id).map(sched);return q.cf==='con'?ls.length>0:q.cf==='cobrar'?ls.some(s=>s.st!=='pagado'):ls.some(s=>s.st==='mora')},L=S.clients.filter(c=>[c.nombre,c.tel,c.doc].join(' ').toLowerCase().includes(t)&&cfn(c));
+  $('#cc').textContent=S.clients.length?((t||q.cf)?'Mostrando '+L.length+' de '+S.clients.length+' clientes':'Total: '+S.clients.length+(S.clients.length===1?' cliente':' clientes')):'';
   $('#lc').innerHTML=L.length?L.map(c=>{
     const ls=S.loans.filter(l=>l.client===c.id).map(sched),mo=ls.filter(s=>s.st==='mora').length;
     const cal=!ls.length?'Sin historial':mo?'Con mora':ls.every(s=>s.st==='pagado')?'Al día · sin deudas':'Al día';
