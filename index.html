@@ -24,8 +24,9 @@ nav button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
 .stat b{display:block;font-size:1.4rem;font-weight:800}
 .stat span{color:var(--mut);font-size:.88rem}
 .stat.bad b{color:var(--bad)}
-.stat.link{cursor:pointer}.stat.link:hover{border-color:var(--ac,currentColor)}
+.stat.link{cursor:pointer}.stat.link:hover{border-color:var(--acc)}
 .stat small.sub{display:block;margin-top:6px;color:var(--mut);font-size:.78rem;line-height:1.35}
+.cboard h2{margin:0 0 8px}.cboard .link{cursor:pointer}.cb-top{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;padding-bottom:10px;margin-bottom:10px;border-bottom:1px solid var(--line)}.cb-top b{font-size:1.8rem;font-weight:800}.cb-top span{color:var(--mut)}.cb-top small.sub{margin:0 0 0 auto}.cb-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.cb-c{text-align:center;padding:8px 4px;border-radius:10px;border:1px solid var(--line)}.cb-c:hover,.cb-top:hover b{border-color:var(--acc)}.cb-c b{display:block;font-size:1.4rem;font-weight:800}.cb-c.bad b{color:var(--bad)}.cb-c span{display:block;color:var(--mut);font-size:.85rem}.cb-c small.sub{display:block;margin:4px 0 0;color:var(--mut);font-size:.74rem}
 .cnt{color:var(--mut);font-size:.9rem;margin:0 0 8px}
 form{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
 label{display:grid;gap:3px;font-size:.88rem;color:var(--mut)}
@@ -180,10 +181,13 @@ function panel(){
   const tom=dueTom(),lateHtml=m.length?`<div class="card late"><h2>⚠ ${m.length} préstamo(s) con pagos vencidos</h2>${m.map(x=>`<div class="row"><div><b>${esc(cname(x.l.client))}</b><small>Vencido: ${fmt(x.s.overdue)}</small></div><span>${waA(x.l.client,'Hola '+cname(x.l.client)+', le recordamos que tiene un pago vencido de '+fmt(x.s.overdue)+'. Por favor comuníquese para ponerse al día.',x.l)} <a class="lk" data-open="${x.l.id}">Ver</a></span></div>`).join('')}</div>`:'',tomHtml=tom.length?`<div class="card alert"><h2>Mañana vencen ${tom.length} cobro(s)</h2>${tom.map(x=>`<div class="row"><div>${esc(cname(x.l.client))}<small>Cuota ${x.r.k}: ${fmt(x.v)}</small></div><span>${waA(x.l.client,'Hola '+cname(x.l.client)+', le recordamos que mañana vence su cuota de '+fmt(x.v)+'. ¡Gracias!',x.l)} <a class="lk" data-open="${x.l.id}">Ver</a></span></div>`).join('')}</div>`:'';
   const ntBtn=('Notification'in window&&!S.cfg.notif)?'<div class="card"><button class="btn" id="nt">Activar aviso un día antes del cobro</button> <span class="note">El aviso aparece cuando la app está abierta o instalada.</span></div>':'';
   $('#v').innerHTML=`<div class="grid">
-  <div class="card stat link" data-go="clientes" data-cf="" title="Ver todos los clientes"><b>${S.clients.length}</b><span>Clientes en cartera</span><small class="sub">${S.clients.length?`${cSin} sin préstamo`:'Aún no hay clientes'}</small></div>
-  <div class="card stat link" data-go="clientes" data-cf="con" title="Ver clientes con préstamos"><b>${cCon}</b><span>Clientes con préstamos</span><small class="sub">${cFin} ya finalizaron</small></div>
-  <div class="card stat link" data-go="clientes" data-cf="cobrar" title="Ver clientes por cobrar"><b>${cPor}</b><span>Clientes por cobrar</span><small class="sub">${cDia} al día · ${cMora} en mora</small></div>
-  <div class="card stat bad link" data-go="clientes" data-cf="mora" title="Ver clientes en mora"><b>${cMora}</b><span>Clientes en mora</span></div>
+  <div class="card cboard" style="grid-column:1/-1"><h2>Clientes</h2>
+   <div class="cb-top link" data-go="clientes" data-cf="" title="Ver todos los clientes"><b>${S.clients.length}</b><span>Clientes en cartera</span><small class="sub">${S.clients.length?`${cSin} sin préstamo`:'Aún no hay clientes'}</small></div>
+   <div class="cb-grid">
+    <div class="cb-c link" data-go="clientes" data-cf="con" title="Ver clientes con préstamos"><b>${cCon}</b><span>Con préstamos</span><small class="sub">${cFin} ya finalizaron</small></div>
+    <div class="cb-c link" data-go="clientes" data-cf="cobrar" title="Ver clientes por cobrar"><b>${cPor}</b><span>Por cobrar</span><small class="sub">${cDia} al día</small></div>
+    <div class="cb-c bad link" data-go="clientes" data-cf="mora" title="Ver clientes en mora"><b>${cMora}</b><span>En mora</span><small class="sub">con cuota vencida</small></div>
+   </div></div>
   <div class="card stat"><b>${fmt(prest)}</b><span>Total prestado</span></div>
   <div class="card stat"><b>${fmt(rec)}</b><span>Total recuperado</span></div>
   <div class="card stat"><b>${fmt(saldo)}</b><span>Saldo pendiente</span></div>
