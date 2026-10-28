@@ -7,8 +7,8 @@ Aplicación web para controlar una cartera de préstamos: clientes, intereses, c
 - Clientes con notas y observaciones, búsqueda y edición. Al guardar un cliente nuevo la app ofrece crear su préstamo, y cada cliente tiene el atajo «Crear préstamo».
 - Cada préstamo es independiente: se elige el cliente de forma explícita (sin cliente preseleccionado por defecto), lleva su propio código (P-001, P-002…), sus cuotas y sus pagos, y se confirma antes de crearlo.
 - Préstamos con interés simple o sobre saldo, mora, observaciones y filtros por estado.
-- Editar un préstamo ya creado (botón «Editar préstamo»): monto, tasa, tipo de interés, cuotas, frecuencia, fecha, mora y cliente. Muestra una vista previa antes/después, conserva los pagos ya registrados, pide confirmación y guarda un historial de cambios.
 - Cuotas en verde cuando se pagan, estado "Abonó" en pagos parciales y "Finalizado" al saldar la deuda.
+- Panel con tarjeta «Clientes en cartera»: total de clientes y desglose (al día, en mora, finalizados, sin préstamo); al tocarla abre la lista de clientes, que también muestra su total.
 - Capital: aportes, retiros, dinero disponible para prestar, capital en la calle y ganancias.
 - Aviso un día antes del cobro (notificación del navegador) y botón de WhatsApp para avisar al cliente, con mensaje opcional por préstamo.
 - Colores de estado: cuota pagada en verde, cuota atrasada en rojo con alerta en el Panel.
@@ -44,8 +44,7 @@ screenshot-*.png        Capturas para el diálogo de instalación
 
 ## Historial
 
-- 3.7: nueva opción «Editar préstamo» con recálculo de cuotas, validaciones (no permite un total menor a lo ya pagado, avisa si el aumento supera el capital disponible) e historial de cambios por préstamo (`VER` 5, migración 4→5; los datos existentes se conservan).
-
+- 3.7: el Panel muestra la cantidad de clientes en cartera con su desglose, y la pestaña de clientes muestra el total (o «Mostrando X de Y» al buscar). Solo se agrega visualización: no cambia el esquema de datos (`VER` sigue en 4) ni la clave de almacenamiento, así que todos los datos existentes se conservan.
 - 3.6: corrige que los préstamos nuevos quedaran asignados al primer cliente de la lista (el selector del formulario lo preseleccionaba). Se añade código por préstamo y migración de datos (`VER` 4); los datos existentes se conservan.
 
 ## Notas
