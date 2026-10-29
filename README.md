@@ -14,20 +14,9 @@ Aplicación web para controlar una cartera de préstamos: clientes, intereses, c
 - Botón de sol/luna en la cabecera para cambiar entre tema claro y oscuro.
 - Recibos imprimibles, reportes, exportar e importar respaldo (.json).
 - Contraseña con código de recuperación de 4 a 6 dígitos.
-- Avisos y mensajes de WhatsApp con las cuotas pagadas y las pendientes de cada préstamo, y columna «Cuotas» en la lista.
-- Editar un préstamo ya creado (monto, interés, cuotas, frecuencia, fecha, mora o cliente): se conservan su código, sus pagos y sus observaciones, y las cuotas se recalculan.
-- Migración a otro dispositivo con verificación automática de los datos (ver más abajo).
+- Acceso biométrico opcional (huella, rostro o bloqueo del dispositivo): se activa en Ajustes > Seguridad y se guarda aparte de la contraseña.
+- El botón de compartir el enlace de la app está deshabilitado para evitar su difusión indiscriminada.
 - Temas claro, oscuro o automático, con varios colores y fondos.
-
-## Migrar los datos a otro dispositivo
-
-1. En el dispositivo de origen: Ajustes > Migrar a otro dispositivo > Exportar paquete de migración.
-2. Envía el archivo `.json` al otro dispositivo (WhatsApp, Drive, correo).
-3. En el dispositivo nuevo abre la app: Ajustes > Importar paquete (también sirve Reportes > Importar respaldo).
-4. La app compara cantidades, total prestado, pagado, saldo, caja y ganancia contra el archivo, y revisa que no queden datos sueltos (préstamos sin cliente, pagos sin préstamo, repetidos, inválidos o con códigos repetidos). Si algo falla, ofrece repararlo.
-5. Si el dispositivo ya tiene datos puedes combinar (no duplica nada; si dos préstamos comparten código, el que llega recibe uno nuevo) o reemplazar.
-6. Antes de importar guarda una copia de lo que había; «Deshacer última importación» la restaura.
-7. «Verificar integridad» repite la revisión cuando quieras. Los respaldos de versiones anteriores siguen funcionando.
 
 ## Cómo usarla
 
@@ -56,9 +45,8 @@ screenshot-*.png        Capturas para el diálogo de instalación
 
 ## Historial
 
+- 3.7: se restablece el acceso biométrico (WebAuthn, clave propia `prestamos_bio`; no afecta la contraseña ni los datos) y se deshabilita el botón de compartir el enlace. `VER` y `prestamos_v1` no cambian: los datos existentes se conservan.
 - 3.6: corrige que los préstamos nuevos quedaran asignados al primer cliente de la lista (el selector del formulario lo preseleccionaba). Se añade código por préstamo y migración de datos (`VER` 4); los datos existentes se conservan.
-
-- 3.7: migración a otro dispositivo con paquete verificable, informe de integridad, combinar o reemplazar y deshacer; cuotas pagadas y pendientes en avisos y mensajes de WhatsApp; edición de préstamos. No cambia la estructura de datos (`VER` sigue en 4). Sube `V` en `sw.js` a `cartera-v13`.
 
 ## Notas
 
