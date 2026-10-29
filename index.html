@@ -56,7 +56,7 @@ dialog::backdrop{background:rgba(0,0,0,.5)}
 :root[data-bg=cuadricula] body{background:radial-gradient(color-mix(in srgb,var(--ink) 16%,transparent) 1px,transparent 1.3px) 0 0/18px 18px,var(--bg)}
 .card.alert{border-color:var(--acc2);background:color-mix(in srgb,var(--acc2) 12%,var(--card))}.card.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 14%,var(--card));color:var(--ok);margin-bottom:10px}
 .sw{display:flex;gap:10px;margin-top:6px}.swb{width:34px;height:34px;border-radius:50%;border:3px solid transparent;cursor:pointer}.swb.on{border-color:var(--ink)}
-#lock{position:fixed;inset:0;z-index:99;background:var(--bg);display:grid;place-items:center;padding:20px}#lock[hidden]{display:none}.lbox{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;max-width:360px;width:100%;text-align:center;display:grid;gap:12px;justify-items:center}.lbox form{grid-template-columns:1fr;width:100%;text-align:left}.lbox h2{margin:0}body.locked main{display:none}.lbox #bb{width:100%;padding:14px;font-size:1.05rem}.row span{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.empty{color:var(--mut);padding:8px 0}
+#lock{position:fixed;inset:0;z-index:99;background:var(--bg);display:grid;place-items:center;padding:20px}#lock[hidden]{display:none}.lbox{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;max-width:360px;width:100%;text-align:center;display:grid;gap:12px;justify-items:center}.lbox form{grid-template-columns:1fr;width:100%;text-align:left}.lbox h2{margin:0}body.locked main{display:none}#off{position:fixed;inset:0;z-index:300;background:var(--bg);display:grid;place-items:center;padding:20px}#off[hidden]{display:none}body.off main,body.off #lock{display:none}#off p{margin:0}.lbox #bb{width:100%;padding:14px;font-size:1.05rem}.row span{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.empty{color:var(--mut);padding:8px 0}
 .note{font-size:.85rem;color:var(--mut)}
 @media print{nav,.btn,form{display:none}body{background:#fff}body.rcp main,body.rcp #dlg{display:none!important}#rc{position:static;border:0;color:#000;background:#fff;max-width:none;width:100%}#rc .noprint{display:none}}
 .rbox{border:2px dashed var(--line);padding:16px;border-radius:8px}.rbox table td{border:0;padding:4px 0}.firma{margin-top:44px;border-top:1px solid currentColor;width:240px;padding-top:4px;font-size:.85rem}
@@ -82,6 +82,7 @@ tr.okr{background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok);f
 <div id="v"></div>
 </main>
 <div id="lock" hidden></div>
+<div id="off" hidden></div>
 <dialog id="dlg"></dialog>
 <dialog id="rc"></dialog>
 <script>
@@ -90,7 +91,7 @@ const fmt=n=>'$'+Math.round(n).toLocaleString('es-CO');
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const today=()=>new Date().toISOString().slice(0,10);
 const DAYS={d:1,s:7,q:15,m:30},FN={d:'Diaria',s:'Semanal',q:'Quincenal',m:'Mensual'};
-const APPV='3.7',VER=4,MIG={3:r=>{let n=0;r.loans.forEach(l=>{if(!l.code)l.code='P-'+String(++n).padStart(3,'0')})}};/* migraciones futuras: MIG[n]=s=>{...} convierte datos de la versión n a n+1 sin perder nada */
+const APPV='3.8',VER=4,MIG={3:r=>{let n=0;r.loans.forEach(l=>{if(!l.code)l.code='P-'+String(++n).padStart(3,'0')})}};/* migraciones futuras: MIG[n]=s=>{...} convierte datos de la versión n a n+1 sin perder nada */
 function migrate(r){r=r||{};r.clients=r.clients||[];r.loans=r.loans||[];r.pays=r.pays||[];r.cap=r.cap||[];r.cfg=Object.assign({theme:'auto',accent:'verde',bg:'liso',notif:false},r.cfg||{});let v=r.v||1;while(v<VER){(MIG[v]||(()=>{}))(r);v++}r.v=VER;return r}
 let S=migrate();
 const newCode=()=>'P-'+String(Math.max(0,...S.loans.map(l=>+String(l.code||'').replace(/\D/g,'')||0))+1).padStart(3,'0');
@@ -196,7 +197,7 @@ L.push('<li>'+(isApp()?'✅ App instalada en este dispositivo':'ℹ️ Aún no i
 el.innerHTML='<ul>'+L.join('')+'</ul>'}
 function overdueList(){const o=[];S.loans.forEach(l=>{const s=sched(l);if(s.st==='mora')o.push({l,s,v:s.overdue})});return o}
 function dueTom(){const t=addDate(today(),1,'d'),o=[];S.loans.forEach(l=>sched(l).rows.forEach(r=>{if(r.date===t&&r.paid<r.tot-.5)o.push({l,r,v:r.tot-r.paid})}));return o}
-function notify(){if(!S.cfg.notif||!('Notification'in window)||Notification.permission!=='granted')return;const t=dueTom(),m=overdueList();if(!t.length&&!m.length||S.cfg.lastN===today())return;S.cfg.lastN=today();save();const b=[];if(t.length)b.push('Mañana vencen: '+t.map(x=>cname(x.l.client)+' '+fmt(x.v)).join(', '));if(m.length)b.push('Pagos vencidos: '+m.map(x=>cname(x.l.client)+' '+fmt(x.v)).join(', '));const ti=m.length?'Cobros: hay pagos vencidos':'Cobros de mañana',o={body:b.join('\n'),icon:IC.l},n=()=>new Notification(ti,o);navigator.serviceWorker&&navigator.serviceWorker.getRegistration?navigator.serviceWorker.getRegistration().then(g=>g?g.showNotification(ti,o):n()).catch(n):n()}
+function notify(){if(OFFB||!S.cfg.notif||!('Notification'in window)||Notification.permission!=='granted')return;const t=dueTom(),m=overdueList();if(!t.length&&!m.length||S.cfg.lastN===today())return;S.cfg.lastN=today();save();const b=[];if(t.length)b.push('Mañana vencen: '+t.map(x=>cname(x.l.client)+' '+fmt(x.v)).join(', '));if(m.length)b.push('Pagos vencidos: '+m.map(x=>cname(x.l.client)+' '+fmt(x.v)).join(', '));const ti=m.length?'Cobros: hay pagos vencidos':'Cobros de mañana',o={body:b.join('\n'),icon:IC.l},n=()=>new Notification(ti,o);navigator.serviceWorker&&navigator.serviceWorker.getRegistration?navigator.serviceWorker.getRegistration().then(g=>g?g.showNotification(ti,o):n()).catch(n):n()}
 function enableNotif(){if(!('Notification'in window)){alert('Tu navegador no admite notificaciones.');return}Notification.requestPermission().then(p=>{S.cfg.notif=p==='granted';save();if(p==='granted'){alert('Listo. Te avisaré un día antes de cada cobro mientras la app esté abierta o instalada.');notify()}else alert('No diste permiso. Puedes activarlo desde los ajustes del navegador.');render()})}
 const startAlerts=()=>{notify();setInterval(notify,18e5)};
 const cname=id=>(S.clients.find(c=>c.id===id)||{nombre:'(eliminado)'}).nombre;
@@ -391,7 +392,21 @@ function unlock(){$('#lock').hidden=true;document.body.classList.remove('locked'
 let HID=0;document.addEventListener('visibilitychange',()=>{if(document.hidden){HID=Date.now();return}
   if(!SEC||LM<0||!HID||!$('#lock').hidden||Date.now()-HID<LM*1000)return;
   try{sessionStorage.removeItem('unl')}catch(e){}['#dlg','#rc'].forEach(s=>{const d=$(s);if(d&&d.open)d.close()});document.body.classList.remove('rcp');lock('in',true)});
-function boot(){applyTheme();let nb=0;const bt=setInterval(()=>{const l=$('#lock');if(++nb>40||isApp())return clearInterval(bt);if(l&&l.hidden){showBanner();if($('#ib')||(!DIP&&!/iphone|ipad|ipod/i.test(navigator.userAgent)&&nb>5))clearInterval(bt)}},1500);$('#tg').onclick=toggleTheme;if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});let u=false;try{u=sessionStorage.getItem('unl')}catch(e){}if(SEC&&!u)lock('in');else unlock()}
+/* Interruptor remoto: el archivo estado.json del repositorio decide si la cartera está habilitada. Solo "activo": false la bloquea. */
+const EK='prestamos_estado';let OFFB=false;
+function offShow(msg){OFFB=true;document.body.classList.add('off');['#dlg','#rc'].forEach(s=>{const d=$(s);if(d&&d.open)d.close()});const o=$('#off');o.hidden=false;
+  o.innerHTML=`<div class="lbox"><img src="${IC[curMode()==='dark'?'d':'l']}" width="84" height="84" alt=""><h2>Cartera deshabilitada</h2><p>${esc(msg||'Esta cartera fue deshabilitada. Comunícate con quien te la entregó.')}</p><button class="btn" id="offr" type="button">Volver a comprobar</button><p class="note" id="offm"></p></div>`;
+  $('#offr').onclick=()=>offCheck(true)}
+async function offCheck(manual){
+  if(!/^https?:/.test(location.protocol))return;
+  let r=null;try{const c=new AbortController(),t=setTimeout(()=>c.abort(),7000),res=await fetch('estado.json?t='+Date.now(),{cache:'no-store',signal:c.signal});clearTimeout(t);if(res.ok)r=await res.json()}catch(e){}
+  const m=$('#offm');
+  if(r&&typeof r==='object'&&typeof r.activo==='boolean'){const st={activo:r.activo,mensaje:String(r.mensaje||'').slice(0,300)};try{localStorage.setItem(EK,JSON.stringify(st))}catch(e){}
+    if(!st.activo)offShow(st.mensaje);else if(OFFB)location.reload()}
+  else if(manual&&m)m.textContent='No se pudo comprobar. Revisa tu conexión e inténtalo de nuevo.'}
+function offInit(){try{const s=JSON.parse(localStorage.getItem(EK)||'null');if(s&&s.activo===false)offShow(s.mensaje)}catch(e){}
+  offCheck();document.addEventListener('visibilitychange',()=>{if(!document.hidden)offCheck()});window.addEventListener('online',()=>offCheck());setInterval(offCheck,3e5)}
+function boot(){applyTheme();offInit();let nb=0;const bt=setInterval(()=>{const l=$('#lock');if(++nb>40||isApp())return clearInterval(bt);if(l&&l.hidden){showBanner();if($('#ib')||(!DIP&&!/iphone|ipad|ipod/i.test(navigator.userAgent)&&nb>5))clearInterval(bt)}},1500);$('#tg').onclick=toggleTheme;if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});let u=false;try{u=sessionStorage.getItem('unl')}catch(e){}if(SEC&&!u)lock('in');else unlock()}
 document.addEventListener('input',e=>{if(e.target.id==='biz'){S.biz=e.target.value;save()}});
 boot();
 </script>

@@ -43,8 +43,24 @@ screenshot-*.png        Capturas para el diálogo de instalación
 - Al publicar una versión nueva, cambia el valor de `V` en `sw.js` para refrescar la caché.
 - Haz siempre un respaldo desde Reportes antes de reemplazar archivos.
 
+## Interruptor remoto (habilitar / deshabilitar la cartera)
+
+El archivo `estado.json` de la raíz del repositorio controla si la app funciona:
+
+```json
+{ "activo": true,  "mensaje": "..." }   →  la cartera funciona normal
+{ "activo": false, "mensaje": "Texto que verá la persona." }   →  la cartera se bloquea
+```
+
+Para deshabilitarla: abre `estado.json` en GitHub, pulsa el lápiz (Edit), cambia `true` por `false`, escribe el mensaje y pulsa Commit changes. Para volver a habilitarla, cambia a `true`. Los datos de cada dispositivo no se borran; al reactivar, todo vuelve como estaba.
+
+- La app lo consulta al abrirse, al volver a ella, al recuperar internet y cada 5 minutos. GitHub Pages puede tardar de 1 a 10 minutos en publicar el cambio.
+- Solo `"activo": false` bloquea. Si el archivo falta, está mal escrito o no hay internet, se mantiene el último estado conocido (nunca bloquea por un error).
+- Es un bloqueo de software: detiene el uso normal de la app, pero no cifra ni borra los datos del teléfono.
+
 ## Historial
 
+- 3.8: interruptor remoto con `estado.json`. Nuevo archivo `estado.json`; `sw.js` no lo guarda en caché.
 - 3.7: apertura con huella / Face ID (WebAuthn, verificada en el dispositivo) y bloqueo automático al volver a la app. No cambia el formato de los datos (`VER` sigue en 4); los ajustes de biometría se guardan aparte (`prestamos_bio`, `prestamos_lm`) y no entran en los respaldos.
 - 3.6: corrige que los préstamos nuevos quedaran asignados al primer cliente de la lista (el selector del formulario lo preseleccionaba). Se añade código por préstamo y migración de datos (`VER` 4); los datos existentes se conservan.
 
