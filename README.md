@@ -14,9 +14,20 @@ Aplicación web para controlar una cartera de préstamos: clientes, intereses, c
 - Botón de sol/luna en la cabecera para cambiar entre tema claro y oscuro.
 - Recibos imprimibles, reportes, exportar e importar respaldo (.json).
 - Contraseña con código de recuperación de 4 a 6 dígitos.
-- Entrada con huella, rostro (Face ID) o el bloqueo del teléfono, además de la contraseña (que queda como respaldo). Requiere abrir la app desde https y tener la biometría configurada en el dispositivo; se activa en Ajustes > Huella / Face ID.
-- Bloqueo automático al volver a la app (al instante, 1, 5 o 15 minutos, o nunca), configurable en Ajustes.
+- Avisos y mensajes de WhatsApp con las cuotas pagadas y las pendientes de cada préstamo, y columna «Cuotas» en la lista.
+- Editar un préstamo ya creado (monto, interés, cuotas, frecuencia, fecha, mora o cliente): se conservan su código, sus pagos y sus observaciones, y las cuotas se recalculan.
+- Migración a otro dispositivo con verificación automática de los datos (ver más abajo).
 - Temas claro, oscuro o automático, con varios colores y fondos.
+
+## Migrar los datos a otro dispositivo
+
+1. En el dispositivo de origen: Ajustes > Migrar a otro dispositivo > Exportar paquete de migración.
+2. Envía el archivo `.json` al otro dispositivo (WhatsApp, Drive, correo).
+3. En el dispositivo nuevo abre la app: Ajustes > Importar paquete (también sirve Reportes > Importar respaldo).
+4. La app compara cantidades, total prestado, pagado, saldo, caja y ganancia contra el archivo, y revisa que no queden datos sueltos (préstamos sin cliente, pagos sin préstamo, repetidos, inválidos o con códigos repetidos). Si algo falla, ofrece repararlo.
+5. Si el dispositivo ya tiene datos puedes combinar (no duplica nada; si dos préstamos comparten código, el que llega recibe uno nuevo) o reemplazar.
+6. Antes de importar guarda una copia de lo que había; «Deshacer última importación» la restaura.
+7. «Verificar integridad» repite la revisión cuando quieras. Los respaldos de versiones anteriores siguen funcionando.
 
 ## Cómo usarla
 
@@ -43,30 +54,15 @@ screenshot-*.png        Capturas para el diálogo de instalación
 - Al publicar una versión nueva, cambia el valor de `V` en `sw.js` para refrescar la caché.
 - Haz siempre un respaldo desde Reportes antes de reemplazar archivos.
 
-## Interruptor remoto (habilitar / deshabilitar la cartera)
-
-El archivo `estado.json` de la raíz del repositorio controla si la app funciona:
-
-```json
-{ "activo": true,  "mensaje": "..." }   →  la cartera funciona normal
-{ "activo": false, "mensaje": "Texto que verá la persona." }   →  la cartera se bloquea
-```
-
-Para deshabilitarla: abre `estado.json` en GitHub, pulsa el lápiz (Edit), cambia `true` por `false`, escribe el mensaje y pulsa Commit changes. Para volver a habilitarla, cambia a `true`. Los datos de cada dispositivo no se borran; al reactivar, todo vuelve como estaba.
-
-- La app lo consulta al abrirse, al volver a ella, al recuperar internet y cada 5 minutos. GitHub Pages puede tardar de 1 a 10 minutos en publicar el cambio.
-- Solo `"activo": false` bloquea. Si el archivo falta, está mal escrito o no hay internet, se mantiene el último estado conocido (nunca bloquea por un error).
-- Es un bloqueo de software: detiene el uso normal de la app, pero no cifra ni borra los datos del teléfono.
-
 ## Historial
 
-- 3.8: interruptor remoto con `estado.json`. Nuevo archivo `estado.json`; `sw.js` no lo guarda en caché.
-- 3.7: apertura con huella / Face ID (WebAuthn, verificada en el dispositivo) y bloqueo automático al volver a la app. No cambia el formato de los datos (`VER` sigue en 4); los ajustes de biometría se guardan aparte (`prestamos_bio`, `prestamos_lm`) y no entran en los respaldos.
 - 3.6: corrige que los préstamos nuevos quedaran asignados al primer cliente de la lista (el selector del formulario lo preseleccionaba). Se añade código por préstamo y migración de datos (`VER` 4); los datos existentes se conservan.
+
+- 3.7: migración a otro dispositivo con paquete verificable, informe de integridad, combinar o reemplazar y deshacer; cuotas pagadas y pendientes en avisos y mensajes de WhatsApp; edición de préstamos. No cambia la estructura de datos (`VER` sigue en 4). Sube `V` en `sw.js` a `cartera-v13`.
 
 ## Notas
 
-- La contraseña y la huella / Face ID protegen el acceso a la app en el dispositivo; no cifran los datos ni los respaldos. La huella no se guarda en la app: la verifica el sistema del teléfono.
+- La contraseña protege el acceso en el dispositivo; no cifra los datos ni los respaldos.
 - Los avisos de cobro se muestran mientras la app está abierta o instalada; no hay servidor que envíe mensajes con la app cerrada.
 - Verifica que la tasa de interés no supere el límite legal (usura) vigente en tu país.
 

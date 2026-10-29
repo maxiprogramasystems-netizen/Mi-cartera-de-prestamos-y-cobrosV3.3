@@ -56,7 +56,7 @@ dialog::backdrop{background:rgba(0,0,0,.5)}
 :root[data-bg=cuadricula] body{background:radial-gradient(color-mix(in srgb,var(--ink) 16%,transparent) 1px,transparent 1.3px) 0 0/18px 18px,var(--bg)}
 .card.alert{border-color:var(--acc2);background:color-mix(in srgb,var(--acc2) 12%,var(--card))}.card.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 14%,var(--card));color:var(--ok);margin-bottom:10px}
 .sw{display:flex;gap:10px;margin-top:6px}.swb{width:34px;height:34px;border-radius:50%;border:3px solid transparent;cursor:pointer}.swb.on{border-color:var(--ink)}
-#lock{position:fixed;inset:0;z-index:99;background:var(--bg);display:grid;place-items:center;padding:20px}#lock[hidden]{display:none}.lbox{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;max-width:360px;width:100%;text-align:center;display:grid;gap:12px;justify-items:center}.lbox form{grid-template-columns:1fr;width:100%;text-align:left}.lbox h2{margin:0}body.locked main{display:none}#off{position:fixed;inset:0;z-index:300;background:var(--bg);display:grid;place-items:center;padding:20px}#off[hidden]{display:none}body.off main,body.off #lock{display:none}#off p{margin:0}.lbox #bb{width:100%;padding:14px;font-size:1.05rem}.row span{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.empty{color:var(--mut);padding:8px 0}
+#lock{position:fixed;inset:0;z-index:99;background:var(--bg);display:grid;place-items:center;padding:20px}#lock[hidden]{display:none}.lbox{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;max-width:360px;width:100%;text-align:center;display:grid;gap:12px;justify-items:center}.lbox form{grid-template-columns:1fr;width:100%;text-align:left}.lbox h2{margin:0}body.locked main{display:none}.row span{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.empty{color:var(--mut);padding:8px 0}
 .note{font-size:.85rem;color:var(--mut)}
 @media print{nav,.btn,form{display:none}body{background:#fff}body.rcp main,body.rcp #dlg{display:none!important}#rc{position:static;border:0;color:#000;background:#fff;max-width:none;width:100%}#rc .noprint{display:none}}
 .rbox{border:2px dashed var(--line);padding:16px;border-radius:8px}.rbox table td{border:0;padding:4px 0}.firma{margin-top:44px;border-top:1px solid currentColor;width:240px;padding-top:4px;font-size:.85rem}
@@ -67,6 +67,7 @@ tr.okr{background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok);f
 .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;background:var(--line)}.dot.g{background:var(--ok)}.dot.r{background:var(--bad)}.dot.y{background:var(--acc2)}
 .brand .tgl+*{}
 .ib{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:40;max-width:520px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:18px;background:var(--card);border:1px solid var(--line);box-shadow:0 10px 30px rgba(0,0,0,.25)}.ib img{width:44px;height:44px;border-radius:10px;flex:none}.ib div{flex:1;font-size:.92rem;line-height:1.3}.ib .x{background:none;border:0;color:var(--ink);font-size:1.3rem;cursor:pointer;padding:4px 8px}.dg li{list-style:none;margin:6px 0}.dg ul{padding:0;margin:0}
+.cmp td,.cmp th{white-space:normal;padding:7px 3px;font-size:.82rem}.cmp .tag{padding:1px 7px}
 </style>
 <link rel="manifest" href="manifest.webmanifest?v=11">
 <link rel="icon" id="fav" type="image/png" sizes="48x48" href="icon-48.png?v=11">
@@ -82,7 +83,6 @@ tr.okr{background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok);f
 <div id="v"></div>
 </main>
 <div id="lock" hidden></div>
-<div id="off" hidden></div>
 <dialog id="dlg"></dialog>
 <dialog id="rc"></dialog>
 <script>
@@ -91,7 +91,7 @@ const fmt=n=>'$'+Math.round(n).toLocaleString('es-CO');
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const today=()=>new Date().toISOString().slice(0,10);
 const DAYS={d:1,s:7,q:15,m:30},FN={d:'Diaria',s:'Semanal',q:'Quincenal',m:'Mensual'};
-const APPV='3.8',VER=4,MIG={3:r=>{let n=0;r.loans.forEach(l=>{if(!l.code)l.code='P-'+String(++n).padStart(3,'0')})}};/* migraciones futuras: MIG[n]=s=>{...} convierte datos de la versión n a n+1 sin perder nada */
+const APPV='3.7',VER=4,MIG={3:r=>{let n=0;r.loans.forEach(l=>{if(!l.code)l.code='P-'+String(++n).padStart(3,'0')})}};/* migraciones futuras: MIG[n]=s=>{...} convierte datos de la versión n a n+1 sin perder nada */
 function migrate(r){r=r||{};r.clients=r.clients||[];r.loans=r.loans||[];r.pays=r.pays||[];r.cap=r.cap||[];r.cfg=Object.assign({theme:'auto',accent:'verde',bg:'liso',notif:false},r.cfg||{});let v=r.v||1;while(v<VER){(MIG[v]||(()=>{}))(r);v++}r.v=VER;return r}
 let S=migrate();
 const newCode=()=>'P-'+String(Math.max(0,...S.loans.map(l=>+String(l.code||'').replace(/\D/g,'')||0))+1).padStart(3,'0');
@@ -105,44 +105,6 @@ matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>{if(S.cf
 const LBL={activo:'Activo',mora:'En mora',pagado:'Finalizado ✓'};
 const SK='prestamos_sec';let SEC=null;try{SEC=JSON.parse(localStorage.getItem(SK)||'null')}catch(e){}
 async function hs(t,salt,alg){const d=salt+'|'+t;if(alg==='sha'){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(d));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}let h=5381;for(const c of d)h=(h*33^c.charCodeAt(0))>>>0;return'f'+h.toString(16)}
-/* Huella / Face ID (WebAuthn). Se añade sobre la contraseña, que siempre queda como respaldo. */
-const BK='prestamos_bio',LKY='prestamos_lm';let BIO=null,BIOOK=false,LM=-1,LSOFT=false,NOAUTO=false;
-try{BIO=JSON.parse(localStorage.getItem(BK)||'null')}catch(e){}
-try{const v=localStorage.getItem(LKY);LM=v===null?-1:+v}catch(e){}
-try{NOAUTO=!!sessionStorage.getItem('noauto');sessionStorage.removeItem('noauto')}catch(e){}
-const bioSupported=()=>!!(window.isSecureContext&&window.PublicKeyCredential&&navigator.credentials&&window.crypto&&crypto.subtle);
-if(bioSupported()&&PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable)PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().then(v=>{BIOOK=!!v}).catch(()=>{});
-const B64={e:b=>btoa(String.fromCharCode(...new Uint8Array(b))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''),d:s=>Uint8Array.from(atob(s.replace(/-/g,'+').replace(/_/g,'/')+'='.repeat((4-s.length%4)%4)),c=>c.charCodeAt(0))};
-function derRaw(s){s=new Uint8Array(s);let o=2;if(s[1]&128)o+=s[1]&127;const rl=s[o+1],r=s.slice(o+2,o+2+rl);o+=2+rl;const ql=s[o+1],q=s.slice(o+2,o+2+ql);
-  const f=x=>{while(x.length>32&&x[0]===0)x=x.slice(1);const z=new Uint8Array(32);z.set(x,32-x.length);return z},out=new Uint8Array(64);out.set(f(r),0);out.set(f(q),32);return out}
-async function bioReg(){
-  const cr=await navigator.credentials.create({publicKey:{challenge:crypto.getRandomValues(new Uint8Array(32)),rp:{name:'Préstamos y Cobros'},user:{id:crypto.getRandomValues(new Uint8Array(16)),name:'propietario',displayName:'Propietario'},
-    pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],authenticatorSelection:{authenticatorAttachment:'platform',userVerification:'required',residentKey:'discouraged'},attestation:'none',timeout:60000}});
-  const r=cr.response;let pk=null,alg=-7;
-  if(r.getPublicKey){const k=r.getPublicKey();if(k){pk=B64.e(k);alg=r.getPublicKeyAlgorithm?r.getPublicKeyAlgorithm():-7}}
-  BIO={id:B64.e(cr.rawId),pk,alg};localStorage.setItem(BK,JSON.stringify(BIO))}
-async function bioAuth(){
-  const ch=crypto.getRandomValues(new Uint8Array(32));
-  const a=await navigator.credentials.get({publicKey:{challenge:ch,allowCredentials:[{type:'public-key',id:B64.d(BIO.id),transports:['internal']}],userVerification:'required',timeout:60000}});
-  const r=a.response,cd=JSON.parse(new TextDecoder().decode(r.clientDataJSON));
-  if(cd.type!=='webauthn.get'||cd.challenge!==B64.e(ch)||cd.origin!==location.origin)return false;
-  const ad=new Uint8Array(r.authenticatorData);if(!(ad[32]&4))return false;
-  const rp=new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(location.hostname)));for(let i=0;i<32;i++)if(ad[i]!==rp[i])return false;
-  if(BIO.pk){const rsa=BIO.alg===-257,key=await crypto.subtle.importKey('spki',B64.d(BIO.pk),rsa?{name:'RSASSA-PKCS1-v1_5',hash:'SHA-256'}:{name:'ECDSA',namedCurve:'P-256'},false,['verify']),
-    hc=new Uint8Array(await crypto.subtle.digest('SHA-256',r.clientDataJSON)),data=new Uint8Array(ad.length+32);data.set(ad);data.set(hc,ad.length);
-    if(!await crypto.subtle.verify(rsa?{name:'RSASSA-PKCS1-v1_5'}:{name:'ECDSA',hash:'SHA-256'},key,rsa?r.signature:derRaw(r.signature),data))return false}
-  return true}
-const bioMsg=e=>{const n=e&&e.name;return n==='NotAllowedError'?'Se canceló o no se pudo verificar la huella / Face ID.':n==='InvalidStateError'?'Este dispositivo ya tiene una huella / Face ID registrada para la app.':'No se pudo usar la huella / Face ID en este dispositivo.'};
-function bioCard(){
-  const op=(v,l)=>`<option value="${v}" ${LM===v?'selected':''}>${l}</option>`;let t='<div class="card"><h2>Huella / Face ID</h2>';
-  if(!SEC)t+='<p class="note">Primero activa una contraseña (en Seguridad). La huella o Face ID se añade encima de ella y la contraseña queda como respaldo.</p>';
-  else{
-    if(!bioSupported())t+='<p class="note">Para usar huella o Face ID abre la app desde su dirección https (la publicada en GitHub Pages) o instálala; desde un archivo local no está disponible.</p>';
-    else if(BIO)t+='<p><b>✓ Huella / Face ID activada.</b></p><p class="note">Al abrir la app se pedirá tu huella, rostro o el bloqueo del teléfono. Si falla, entras con tu contraseña.</p><p><button class="btn" id="bt" type="button">Probar ahora</button> <button class="btn ghost" id="bo" type="button">Desactivar</button></p>';
-    else if(!BIOOK)t+='<p class="note">Este dispositivo no tiene huella, rostro o bloqueo de pantalla configurado, o el navegador no lo permite. Actívalo en los ajustes del teléfono y vuelve aquí.</p>';
-    else t+='<p class="note">Entra a la app con tu huella, rostro o el bloqueo del teléfono, sin escribir la contraseña. La contraseña sigue funcionando como respaldo.</p><p><button class="btn" id="bn" type="button">Activar huella / Face ID</button></p>';
-    t+=`<form id="fl2"><label>Bloquear la app al volver a ella<select>${op(-1,'Nunca (solo al abrirla)')}${op(0,'Al instante')}${op(60,'Tras 1 minuto fuera')}${op(300,'Tras 5 minutos fuera')}${op(900,'Tras 15 minutos fuera')}</select></label></form>`}
-  return t+'</div>'}
 async function setSec(p,c){const alg=window.crypto&&crypto.subtle?'sha':'f',salt=uid()+uid();SEC={salt,alg,h:await hs(p,salt,alg),r:await hs(c,salt,alg)};localStorage.setItem(SK,JSON.stringify(SEC))}
 const save=()=>{try{localStorage.setItem('prestamos_v1',JSON.stringify(S))}catch(e){}};
 const uid=()=>Math.random().toString(36).slice(2,9);
@@ -196,8 +158,9 @@ for(const z of ['192x192','512x512']){let g=false;try{const ic=mj.icons.find(x=>
 L.push('<li>'+(isApp()?'✅ App instalada en este dispositivo':'ℹ️ Aún no instalada en este dispositivo')+'</li>');
 el.innerHTML='<ul>'+L.join('')+'</ul>'}
 function overdueList(){const o=[];S.loans.forEach(l=>{const s=sched(l);if(s.st==='mora')o.push({l,s,v:s.overdue})});return o}
-function dueTom(){const t=addDate(today(),1,'d'),o=[];S.loans.forEach(l=>sched(l).rows.forEach(r=>{if(r.date===t&&r.paid<r.tot-.5)o.push({l,r,v:r.tot-r.paid})}));return o}
-function notify(){if(OFFB||!S.cfg.notif||!('Notification'in window)||Notification.permission!=='granted')return;const t=dueTom(),m=overdueList();if(!t.length&&!m.length||S.cfg.lastN===today())return;S.cfg.lastN=today();save();const b=[];if(t.length)b.push('Mañana vencen: '+t.map(x=>cname(x.l.client)+' '+fmt(x.v)).join(', '));if(m.length)b.push('Pagos vencidos: '+m.map(x=>cname(x.l.client)+' '+fmt(x.v)).join(', '));const ti=m.length?'Cobros: hay pagos vencidos':'Cobros de mañana',o={body:b.join('\n'),icon:IC.l},n=()=>new Notification(ti,o);navigator.serviceWorker&&navigator.serviceWorker.getRegistration?navigator.serviceWorker.getRegistration().then(g=>g?g.showNotification(ti,o):n()).catch(n):n()}
+const cq=s=>{const p=s.rows.filter(r=>r.paid>=r.tot-.5).length;return{p,n:s.rows.length-p}},cqT=s=>{const c=cq(s);return'Cuotas pagadas: '+c.p+' · pendientes: '+c.n};
+function dueTom(){const t=addDate(today(),1,'d'),o=[];S.loans.forEach(l=>{const s=sched(l);s.rows.forEach(r=>{if(r.date===t&&r.paid<r.tot-.5)o.push({l,r,s,v:r.tot-r.paid})})});return o}
+function notify(){if(!S.cfg.notif||!('Notification'in window)||Notification.permission!=='granted')return;const t=dueTom(),m=overdueList();if(!t.length&&!m.length||S.cfg.lastN===today())return;S.cfg.lastN=today();save();const b=[];if(t.length)b.push('Mañana vencen: '+t.map(x=>cname(x.l.client)+' '+fmt(x.v)+' ('+cqT(x.s).toLowerCase()+')').join('; '));if(m.length)b.push('Pagos vencidos: '+m.map(x=>cname(x.l.client)+' '+fmt(x.v)+' ('+cqT(x.s).toLowerCase()+')').join('; '));const ti=m.length?'Cobros: hay pagos vencidos':'Cobros de mañana',o={body:b.join('\n'),icon:IC.l},n=()=>new Notification(ti,o);navigator.serviceWorker&&navigator.serviceWorker.getRegistration?navigator.serviceWorker.getRegistration().then(g=>g?g.showNotification(ti,o):n()).catch(n):n()}
 function enableNotif(){if(!('Notification'in window)){alert('Tu navegador no admite notificaciones.');return}Notification.requestPermission().then(p=>{S.cfg.notif=p==='granted';save();if(p==='granted'){alert('Listo. Te avisaré un día antes de cada cobro mientras la app esté abierta o instalada.');notify()}else alert('No diste permiso. Puedes activarlo desde los ajustes del navegador.');render()})}
 const startAlerts=()=>{notify();setInterval(notify,18e5)};
 const cname=id=>(S.clients.find(c=>c.id===id)||{nombre:'(eliminado)'}).nombre;
@@ -210,9 +173,9 @@ function panel(){
   const L=S.loans.map(l=>({l,s:sched(l)}));
   const prest=S.loans.reduce((a,l)=>a+ +l.monto,0),rec=L.reduce((a,x)=>a+x.s.paid,0),saldo=L.reduce((a,x)=>a+x.s.saldo,0),gan=L.reduce((a,x)=>a+x.s.intPaid,0);
   const m=L.filter(x=>x.s.st==='mora');
-  const lim=addDate(today(),7,'d'),up=L.map(x=>{const r=x.s.rows.find(r=>r.paid<r.tot-.5&&r.date>=today()&&r.date<=lim);return r?{l:x.l,r}:null}).filter(Boolean).sort((a,b)=>a.r.date.localeCompare(b.r.date));
+  const lim=addDate(today(),7,'d'),up=L.map(x=>{const r=x.s.rows.find(r=>r.paid<r.tot-.5&&r.date>=today()&&r.date<=lim);return r?{l:x.l,r,s:x.s}:null}).filter(Boolean).sort((a,b)=>a.r.date.localeCompare(b.r.date));
   const oldBk=S.loans.length&&(!S.lastBackup||(new Date(today())-new Date(S.lastBackup))/864e5>7);
-  const tom=dueTom(),lateHtml=m.length?`<div class="card late"><h2>⚠ ${m.length} préstamo(s) con pagos vencidos</h2>${m.map(x=>`<div class="row"><div><b>${esc(cname(x.l.client))}</b><small>Vencido: ${fmt(x.s.overdue)}</small></div><span>${waA(x.l.client,'Hola '+cname(x.l.client)+', le recordamos que tiene un pago vencido de '+fmt(x.s.overdue)+'. Por favor comuníquese para ponerse al día.',x.l)} <a class="lk" data-open="${x.l.id}">Ver</a></span></div>`).join('')}</div>`:'',tomHtml=tom.length?`<div class="card alert"><h2>Mañana vencen ${tom.length} cobro(s)</h2>${tom.map(x=>`<div class="row"><div>${esc(cname(x.l.client))}<small>Cuota ${x.r.k}: ${fmt(x.v)}</small></div><span>${waA(x.l.client,'Hola '+cname(x.l.client)+', le recordamos que mañana vence su cuota de '+fmt(x.v)+'. ¡Gracias!',x.l)} <a class="lk" data-open="${x.l.id}">Ver</a></span></div>`).join('')}</div>`:'';
+  const tom=dueTom(),lateHtml=m.length?`<div class="card late"><h2>⚠ ${m.length} préstamo(s) con pagos vencidos</h2>${m.map(x=>`<div class="row"><div><b>${esc(cname(x.l.client))}</b><small>Vencido: ${fmt(x.s.overdue)}</small><small>${cqT(x.s)}</small></div><span>${waA(x.l.client,'Hola '+cname(x.l.client)+', le recordamos que tiene un pago vencido de '+fmt(x.s.overdue)+'. '+cqT(x.s)+'. Por favor comuníquese para ponerse al día.',x.l)} <a class="lk" data-open="${x.l.id}">Ver</a></span></div>`).join('')}</div>`:'',tomHtml=tom.length?`<div class="card alert"><h2>Mañana vencen ${tom.length} cobro(s)</h2>${tom.map(x=>`<div class="row"><div>${esc(cname(x.l.client))}<small>Cuota ${x.r.k} de ${x.l.n}: ${fmt(x.v)}</small><small>${cqT(x.s)}</small></div><span>${waA(x.l.client,'Hola '+cname(x.l.client)+', le recordamos que mañana vence su cuota '+x.r.k+' de '+x.l.n+' por '+fmt(x.v)+'. '+cqT(x.s)+'. ¡Gracias!',x.l)} <a class="lk" data-open="${x.l.id}">Ver</a></span></div>`).join('')}</div>`:'';
   const ntBtn=('Notification'in window&&!S.cfg.notif)?'<div class="card"><button class="btn" id="nt">Activar aviso un día antes del cobro</button> <span class="note">El aviso aparece cuando la app está abierta o instalada.</span></div>':'';
   $('#v').innerHTML=`<div class="grid">
   <div class="card stat"><b>${fmt(prest)}</b><span>Total prestado</span></div>
@@ -223,8 +186,8 @@ function panel(){
   ${lateHtml}${tomHtml}${ntBtn}${installHtml(false)}
   ${oldBk?'<div class="card note">Hace más de 7 días que no haces un respaldo. Ve a Reportes y pulsa Exportar respaldo.</div>':''}
   <div class="card"><label>Nombre de tu negocio o tu nombre (aparece en los recibos)<input id="biz" value="${esc(S.biz||'')}" placeholder="Ej: Préstamos Don Carlos"></label></div>
-  <div class="card"><h2>Cobros vencidos</h2>${m.length?m.map(x=>`<div class="row"><div>${esc(cname(x.l.client))}<small>Vencido: ${fmt(x.s.overdue)} · Mora estimada: ${fmt(x.s.mora)}</small></div><span>${waA(x.l.client,'Hola '+cname(x.l.client)+', le recordamos que tiene un pago vencido de '+fmt(x.s.overdue)+'. Por favor comuníquese para ponerse al día.',x.l)} <a class="lk" data-open="${x.l.id}">Ver préstamo</a></span></div>`).join(''):'<p class="empty">No tienes cuotas vencidas.</p>'}</div>
-  <div class="card"><h2>Próximos cobros (7 días)</h2>${up.length?up.map(x=>{const v=x.r.tot-x.r.paid;return`<div class="row"><div>${esc(cname(x.l.client))}<small>${x.r.date===today()?'Hoy':x.r.date} · Cuota ${x.r.k}: ${fmt(v)}</small></div><span>${waA(x.l.client,'Hola '+cname(x.l.client)+', le recordamos que su cuota de '+fmt(v)+' vence el '+x.r.date+'. ¡Gracias!',x.l)} <a class="lk" data-open="${x.l.id}">Ver</a></span></div>`}).join(''):'<p class="empty">No hay cobros en los próximos 7 días.</p>'}</div>
+  <div class="card"><h2>Cobros vencidos</h2>${m.length?m.map(x=>`<div class="row"><div>${esc(cname(x.l.client))}<small>Vencido: ${fmt(x.s.overdue)} · Mora estimada: ${fmt(x.s.mora)}</small><small>${cqT(x.s)}</small></div><span>${waA(x.l.client,'Hola '+cname(x.l.client)+', le recordamos que tiene un pago vencido de '+fmt(x.s.overdue)+'. '+cqT(x.s)+'. Por favor comuníquese para ponerse al día.',x.l)} <a class="lk" data-open="${x.l.id}">Ver préstamo</a></span></div>`).join(''):'<p class="empty">No tienes cuotas vencidas.</p>'}</div>
+  <div class="card"><h2>Próximos cobros (7 días)</h2>${up.length?up.map(x=>{const v=x.r.tot-x.r.paid;return`<div class="row"><div>${esc(cname(x.l.client))}<small>${x.r.date===today()?'Hoy':x.r.date} · Cuota ${x.r.k} de ${x.l.n}: ${fmt(v)}</small><small>${cqT(x.s)}</small></div><span>${waA(x.l.client,'Hola '+cname(x.l.client)+', le recordamos que su cuota de '+fmt(v)+' vence el '+x.r.date+'. '+cqT(x.s)+'. ¡Gracias!',x.l)} <a class="lk" data-open="${x.l.id}">Ver</a></span></div>`}).join(''):'<p class="empty">No hay cobros en los próximos 7 días.</p>'}</div>
   ${S.clients.length?'':'<div class="card"><p class="empty">Empieza creando tu primer cliente en la pestaña Clientes.</p></div>'}`;
   bindOpen();
   const nt=$('#nt');if(nt)nt.onclick=enableNotif;bindInstall();
@@ -285,7 +248,7 @@ function prestamos(){
 
 function drawL(){
   const t=q.l.toLowerCase(),R=S.loans.map(l=>({l,s:sched(l)})).filter(x=>(cname(x.l.client)+' '+(x.l.code||'')).toLowerCase().includes(t)&&(!q.st||x.s.st===q.st));
-  $('#ll').innerHTML=R.length?`<div class="wrap"><table><tr><th>Cliente</th><th class="n">Monto</th><th class="n">Tasa</th><th class="n">Saldo</th><th>Próx. pago</th><th>Estado</th><th></th></tr>${R.map(({l,s})=>{const nx=s.rows.find(r=>r.paid<r.tot-.5),late=s.st==='mora',dn=s.st==='pagado',soon=nx&&!late&&nx.date<=addDate(today(),1,'d'),msg=late?'Hola '+cname(l.client)+', le recordamos que tiene un pago vencido de '+fmt(s.overdue)+'. Por favor comuníquese para ponerse al día.':nx?'Hola '+cname(l.client)+', le recordamos que su cuota de '+fmt(nx.tot-nx.paid)+' vence el '+nx.date+'. ¡Gracias!':'';return`<tr class="${dn?'okr':late?'later':''}"><td>${esc(cname(l.client))}<small style="display:block;color:var(--mut)">${esc(l.code||'')}</small></td><td class="n">${fmt(l.monto)}</td><td class="n">${l.tasa}%</td><td class="n">${fmt(s.saldo)}</td><td><span class="dot ${dn?'g':late?'r':soon?'y':''}"></span>${dn?'Pagado':nx?nx.date:'—'}</td><td><span class="tag ${s.st}">${LBL[s.st]}</span></td><td>${msg?waA(l.client,msg,l)+' ':''}<a class="lk" data-open="${l.id}">Abrir</a></td></tr>`}).join('')}</table></div>`:`<p class="empty">${S.loans.length?'Sin resultados.':'Aún no hay préstamos.'}</p>`;
+  $('#ll').innerHTML=R.length?`<div class="wrap"><table><tr><th>Cliente</th><th class="n">Monto</th><th class="n">Tasa</th><th class="n">Saldo</th><th class="n">Cuotas</th><th>Próx. pago</th><th>Estado</th><th></th></tr>${R.map(({l,s})=>{const nx=s.rows.find(r=>r.paid<r.tot-.5),late=s.st==='mora',dn=s.st==='pagado',soon=nx&&!late&&nx.date<=addDate(today(),1,'d'),msg=late?'Hola '+cname(l.client)+', le recordamos que tiene un pago vencido de '+fmt(s.overdue)+'. '+cqT(s)+'. Por favor comuníquese para ponerse al día.':nx?'Hola '+cname(l.client)+', le recordamos que su cuota de '+fmt(nx.tot-nx.paid)+' vence el '+nx.date+'. '+cqT(s)+'. ¡Gracias!':'';return`<tr class="${dn?'okr':late?'later':''}"><td>${esc(cname(l.client))}<small style="display:block;color:var(--mut)">${esc(l.code||'')}</small></td><td class="n">${fmt(l.monto)}</td><td class="n">${l.tasa}%</td><td class="n">${fmt(s.saldo)}</td><td class="n">${cq(s).p}/${s.rows.length}</td><td><span class="dot ${dn?'g':late?'r':soon?'y':''}"></span>${dn?'Pagado':nx?nx.date:'—'}</td><td><span class="tag ${s.st}">${LBL[s.st]}</span></td><td>${msg?waA(l.client,msg,l)+' ':''}<a class="lk" data-open="${l.id}">Abrir</a></td></tr>`}).join('')}</table></div>`:`<p class="empty">${S.loans.length?'Sin resultados.':'Aún no hay préstamos.'}</p>`;
   bindOpen();
 }
 function bindOpen(){document.querySelectorAll('[data-open]').forEach(a=>a.onclick=()=>openLoan(a.dataset.open))}
@@ -294,10 +257,10 @@ function openLoan(id){
   d.innerHTML=`<h2>${l.code?esc(l.code)+' · ':''}${esc(cname(l.client))} · ${fmt(l.monto)} al ${l.tasa}% mensual</h2>
   <p class="note">${l.metodo==='simple'?'Interés simple':'Interés sobre saldo'} · ${l.n} cuotas ${FN[l.freq].toLowerCase()}s · <span class="tag ${s.st}">${LBL[s.st]}</span></p>
   ${s.st==='pagado'?'<div class="card ok"><b>✓ Préstamo finalizado.</b> El cliente está al día y no tiene deuda pendiente.</div>':''}${s.st==='mora'?`<div class="card late"><b>⚠ Pago vencido:</b> ${fmt(s.overdue)} ${waA(l.client,'Hola '+cname(l.client)+', le recordamos que tiene un pago vencido de '+fmt(s.overdue)+'. Por favor comuníquese para ponerse al día.',l)}</div>`:''}<label style="margin-bottom:10px">Observaciones del préstamo<textarea id="lob" rows="2">${esc(l.obs)}</textarea></label><label style="margin-bottom:10px">Mensaje opcional para el cliente (se agrega a los avisos de WhatsApp)<textarea id="lmsg" rows="2" placeholder="Ej: Puede pagar por Nequi o Bancolombia.">${esc(l.msg)}</textarea></label>
-  <div class="grid" style="margin-bottom:12px"><div class="stat"><b>${fmt(s.total)}</b><span>Total a pagar</span></div><div class="stat"><b>${fmt(s.paid)}</b><span>Pagado</span></div><div class="stat"><b>${fmt(s.saldo)}</b><span>Saldo</span></div><div class="stat"><b>${fmt(s.mora)}</b><span>Mora estimada</span></div></div>
+  <div class="grid" style="margin-bottom:12px"><div class="stat"><b>${fmt(s.total)}</b><span>Total a pagar</span></div><div class="stat"><b>${fmt(s.paid)}</b><span>Pagado</span></div><div class="stat"><b>${fmt(s.saldo)}</b><span>Saldo</span></div><div class="stat"><b>${cq(s).p} de ${s.rows.length}</b><span>Cuotas pagadas (${cq(s).n} pendientes)</span></div><div class="stat"><b>${fmt(s.mora)}</b><span>Mora estimada</span></div></div>
   <div class="wrap"><table><tr><th>#</th><th>Fecha</th><th class="n">Capital</th><th class="n">Interés</th><th class="n">Cuota</th><th class="n">Pagado</th><th>Estado</th><th></th></tr>${s.rows.map(r=>{const ok=r.paid>=r.tot-.5,ab=r.paid>0&&!ok;return`<tr class="${ok?'okr':r.late?'later':''}"><td>${r.k}</td><td>${r.date}</td><td class="n">${fmt(r.cap)}</td><td class="n">${fmt(r.int)}</td><td class="n">${fmt(r.tot)}</td><td class="n" style="${r.paid>0?'color:var(--ok);font-weight:700':''}">${fmt(r.paid)}</td><td><span class="tag ${ok?'pagado':ab?'activo':r.late?'mora':''}">${ok?'✓ Pagada':ab?'Abonó':r.late?'Atrasada':'Pendiente'}</span></td><td>${ok?'':waA(l.client,r.late?'Hola '+cname(l.client)+', su cuota '+r.k+' de '+fmt(r.tot-r.paid)+' venció el '+r.date+'. Por favor comuníquese para ponerse al día.':'Hola '+cname(l.client)+', le recordamos que su cuota '+r.k+' de '+fmt(r.tot-r.paid)+' vence el '+r.date+'. ¡Gracias!',l)}</td></tr>`}).join('')}</table></div>
   <h2 style="margin-top:14px">Registrar pago o abono</h2>
-  <form id="fp"><label>Valor ($)<input name="amt" type="number" min="1" step="any" required></label><label>Fecha<input name="date" type="date" value="${today()}" required></label><label class="full">Nota (opcional)<input name="nota"></label><div class="full"><button class="btn">Guardar pago</button> <button type="button" class="btn ghost" id="cl">Cerrar</button> <button type="button" class="btn ghost" id="dl">Eliminar préstamo</button></div></form>
+  <form id="fp"><label>Valor ($)<input name="amt" type="number" min="1" step="any" required></label><label>Fecha<input name="date" type="date" value="${today()}" required></label><label class="full">Nota (opcional)<input name="nota"></label><div class="full"><button class="btn">Guardar pago</button> <button type="button" class="btn ghost" id="cl">Cerrar</button> <button type="button" class="btn ghost" id="el">Editar préstamo</button> <button type="button" class="btn ghost" id="dl">Eliminar préstamo</button></div></form>
   <h2 style="margin-top:14px">Pagos registrados</h2>${S.pays.filter(p=>p.loan===id).map(p=>`<div class="row"><div><span class="tag pagado">✓ Pagó</span> ${p.date} · <b style="color:var(--ok)">${fmt(p.amt)}</b>${p.nota?'<small>'+esc(p.nota)+'</small>':''}</div><span><a class="lk" data-rc="${p.id}">Recibo</a> · <a class="lk" data-pe="${p.id}">Editar</a> · <a class="lk" data-pd="${p.id}">Eliminar</a></span></div>`).join('')||'<p class="empty">Ninguno todavía.</p>'}`;
   d.showModal();
   d.querySelectorAll('[data-rc]').forEach(a=>a.onclick=()=>receipt(a.dataset.rc));
@@ -305,11 +268,18 @@ function openLoan(id){
   d.querySelectorAll('[data-pd]').forEach(a=>a.onclick=()=>{if(confirm('¿Eliminar este pago?')){S.pays=S.pays.filter(x=>x.id!==a.dataset.pd);save();openLoan(id);render()}});
   $('#lob').onchange=e=>{l.obs=e.target.value;save()};
   $('#lmsg').onchange=e=>{l.msg=e.target.value;save();openLoan(id)};
+  $('#el').onclick=()=>editLoan(id);
   $('#cl').onclick=()=>{d.close();render()};
   $('#dl').onclick=()=>{if(confirm('¿Eliminar este préstamo y sus pagos?')){S.loans=S.loans.filter(x=>x.id!==id);S.pays=S.pays.filter(p=>p.loan!==id);save();d.close();render()}};
   $('#fp').onsubmit=e=>{e.preventDefault();const f=Object.fromEntries(new FormData(e.target));S.nextNo=Math.max(S.nextNo||0,S.pays.length)+1;S.pays.push({id:uid(),loan:id,amt:+f.amt,date:f.date,nota:f.nota||'',no:S.nextNo});save();openLoan(id);render()};
 }
 
+function editLoan(id){
+  const l=S.loans.find(x=>x.id===id),d=$('#dlg'),sel=(n,o,v)=>`<select name="${n}">${o.map(x=>`<option value="${x[0]}" ${String(v)===x[0]?'selected':''}>${x[1]}</option>`).join('')}</select>`;
+  d.innerHTML=`<h2>Editar préstamo ${esc(l.code||'')}</h2><p class="note">Los pagos registrados, el código y las observaciones se conservan. Las cuotas se recalculan con los nuevos datos.</p><form id="fe"><label>Cliente${sel('client',S.clients.map(c=>[c.id,esc(c.nombre)]),l.client)}</label><label>Monto prestado ($)<input name="monto" type="number" min="1" step="any" value="${l.monto}" required></label><label class="pct"><span>Porcentaje de interés (% por mes)</span><input name="tasa" type="number" min="0" step="0.01" value="${l.tasa}" required></label><label>Tipo de interés${sel('metodo',[['simple','Simple sobre el capital'],['saldo','Sobre saldo (cuota fija)']],l.metodo)}</label><label>Número de cuotas<input name="n" type="number" min="1" step="1" value="${l.n}" required></label><label>Frecuencia de pago${sel('freq',Object.entries(FN),l.freq)}</label><label>Fecha del préstamo<input name="fecha" type="date" value="${l.fecha}" required></label><label>Interés por mora (% por mes)<input name="mora" type="number" min="0" step="0.01" value="${l.mora||0}"></label><div class="full"><button class="btn">Guardar cambios</button> <button type="button" class="btn ghost" id="ec">Cancelar</button></div></form>`;
+  $('#ec').onclick=()=>openLoan(id);
+  $('#fe').onsubmit=e=>{e.preventDefault();const f=Object.fromEntries(new FormData(e.target));if(!S.clients.some(c=>c.id===f.client)){alert('Selecciona un cliente válido.');return}if(!confirm('¿Guardar los cambios de este préstamo? Las cuotas se recalculan.'))return;Object.assign(l,f);save();openLoan(id);render()};
+}
 function receipt(pid){
   const p=S.pays.find(x=>x.id===pid),l=S.loans.find(x=>x.id===p.loan),c=S.clients.find(x=>x.id===l.client)||{},s=sched(l);
   const ant=S.pays.filter(x=>x.loan===l.id);const upto=ant.slice(0,ant.indexOf(p)+1).reduce((a,x)=>a+x.amt,0);
@@ -331,9 +301,9 @@ function reportes(){
   $('#v').innerHTML=`<div class="card"><h2>Cartera por cliente</h2>${Object.keys(by).length?`<div class="wrap"><table><tr><th>Cliente</th><th class="n">Prestado</th><th class="n">Pagado</th><th class="n">Saldo</th></tr>${Object.entries(by).map(([k,v])=>`<tr><td>${esc(cname(k))}</td><td class="n">${fmt(v.p)}</td><td class="n">${fmt(v.r)}</td><td class="n">${fmt(v.s)}</td></tr>`).join('')}</table></div>`:'<p class="empty">Sin datos todavía.</p>'}</div>
   <div class="card"><h2>Ganancias por mes (intereses cobrados)</h2>${Object.keys(mes).length?`<div class="wrap"><table><tr><th>Mes</th><th class="n">Intereses</th></tr>${Object.keys(mes).sort().map(m=>`<tr><td>${m}</td><td class="n">${fmt(mes[m])}</td></tr>`).join('')}</table></div>`:'<p class="empty">Sin datos todavía.</p>'}</div>
   <div class="card"><p class="note">Último respaldo: ${S.lastBackup||'nunca'}. Guarda el archivo en tu correo o Drive para no perder tu cartera.</p><button class="btn" id="bk">Exportar respaldo</button> <button class="btn ghost" id="im">Importar respaldo</button><input type="file" id="fi" accept=".json,application/json" hidden> <button class="btn ghost" id="cp">Copiar para Excel</button> <button class="btn ghost" id="pr">Imprimir o guardar PDF</button> <button class="btn ghost" id="rs">Borrar todos los datos</button></div>`;
-  $('#bk').onclick=()=>{S.lastBackup=today();save();const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:'application/json'}));a.download='cartera-respaldo-'+today()+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);reportes()};
+  $('#bk').onclick=async()=>{await exportPack(false);reportes()};
   $('#im').onclick=()=>$('#fi').click();
-  $('#fi').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d.clients)||!Array.isArray(d.loans)||!Array.isArray(d.pays))throw 0;if(confirm('Se reemplazarán los datos actuales por el respaldo ('+d.clients.length+' clientes, '+d.loans.length+' préstamos). ¿Continuar?')){S=migrate(d);save();applyTheme();render()}}catch(x){alert('El archivo no es un respaldo válido.')}};r.readAsText(f)};
+  $('#fi').onchange=e=>{const f=e.target.files[0];e.target.value='';if(f)importPack(f)};
   $('#cp').onclick=async()=>{try{await navigator.clipboard.writeText(tsv);alert('Copiado. Pégalo en Excel.')}catch(e){alert('No se pudo copiar.')}};
   $('#pr').onclick=()=>window.print();
   $('#rs').onclick=()=>{if(confirm('Se borrarán todos los clientes, préstamos y pagos de este navegador.')){S=migrate({cfg:S.cfg});save();render()}};
@@ -359,7 +329,7 @@ function ajustes(){
   $('#v').innerHTML=`<div class="card"><h2>Apariencia</h2><form id="fa"><label>Tema<select name="theme">${op([['auto','Automático (el del dispositivo)'],['light','Claro'],['dark','Oscuro']],c.theme)}</select></label><label>Fondo<select name="bg">${op([['liso','Liso'],['degradado','Degradado'],['cuadricula','Cuadrícula']],c.bg)}</select></label><div class="full"><span class="note">Color principal</span><div class="sw">${Object.entries(AC).map(([k,v])=>`<button type="button" class="swb ${c.accent===k?'on':''}" data-ac="${k}" style="background:${v}" title="${k}" aria-label="${k}"></button>`).join('')}</div></div></form></div>
   <div class="card"><h2>Avisos</h2><p class="note">Recibe una notificación un día antes de cada cobro. Funciona mientras la app esté abierta o instalada en el dispositivo.</p>${'Notification'in window?(c.notif&&Notification.permission==='granted'?'<p><b>Avisos activados.</b></p><button class="btn ghost" id="nf">Desactivar avisos</button>':'<button class="btn" id="nf">Activar avisos</button>'):'<p class="note">Tu navegador no admite notificaciones.</p>'}</div>
   <div class="card"><h2>Seguridad</h2><p class="note">Protege el acceso a la app en este dispositivo. El código de 4 a 6 dígitos sirve para recuperar la contraseña. Los respaldos .json no van cifrados.</p>${SEC?`<form id="fs"><label>Contraseña actual<input type="password" name="o" required></label><label>Nueva contraseña (mín. 4)<input type="password" name="p" minlength="4" required></label><label>Nuevo código de recuperación (4 a 6 dígitos)<input name="c" inputmode="numeric" pattern="[0-9]{4,6}" required></label><div class="full"><button class="btn">Guardar cambios</button> <button type="button" class="btn ghost" id="lk">Bloquear ahora</button> <button type="button" class="btn ghost" id="rm">Quitar contraseña</button></div></form>`:`<form id="fs"><label>Contraseña (mín. 4)<input type="password" name="p" minlength="4" required></label><label>Código de recuperación (4 a 6 dígitos)<input name="c" inputmode="numeric" pattern="[0-9]{4,6}" required></label><div class="full"><button class="btn">Activar contraseña</button></div></form>`}</div>
-  ${bioCard()}
+  <div class="card"><h2>Migrar a otro dispositivo</h2><p class="note">1) Aquí pulsa Exportar. 2) Envía el archivo a tu otro dispositivo (WhatsApp, Drive o correo). 3) En la app del otro dispositivo pulsa Importar. La app verifica que todo llegue completo y sin datos sueltos.</p><button class="btn" id="mg1">Exportar paquete de migración</button> ${navigator.share?'<button class="btn ghost" id="mg1s">Compartir…</button>':''} <button class="btn ghost" id="mg2">Importar paquete</button><input type="file" id="mgf" accept=".json,application/json" hidden> <button class="btn ghost" id="mg3">Verificar integridad</button>${localStorage.getItem('prestamos_prev')?' <button class="btn ghost" id="mg4">Deshacer última importación</button>':''}<p class="note">El paquete incluye clientes, préstamos, pagos, capital, notas, apariencia y la contraseña con su código de recuperación. Guárdalo en un lugar privado: no va cifrado.</p></div>
   ${installHtml(true)}
   <div class="card"><h2>Diagnóstico de instalación</h2><div id="dg" class="note dg">Comprobando…</div></div>
   <div class="card"><h2>Acerca de</h2><p class="note">Préstamos y Cobros · versión ${APPV}. Tus datos se conservan cuando reemplazas el archivo por una versión nueva. Antes de actualizar, exporta un respaldo desde Reportes.</p></div>`;
@@ -370,43 +340,66 @@ function ajustes(){
     if(!/^\d{4,6}$/.test(f.c)){alert('El código debe tener de 4 a 6 dígitos.');return}
     if(SEC&&await hs(f.o,SEC.salt,SEC.alg)!==SEC.h){alert('La contraseña actual no es correcta.');return}
     await setSec(f.p,f.c);sessionStorage.setItem('unl','1');alert('Seguridad guardada.');ajustes()};
-  const lk=$('#lk');if(lk)lk.onclick=()=>{try{sessionStorage.setItem('noauto','1')}catch(e){}sessionStorage.removeItem('unl');location.reload()};
-  const rm=$('#rm');if(rm)rm.onclick=async()=>{const o=prompt('Escribe tu contraseña actual para quitarla:');if(o===null)return;if(await hs(o,SEC.salt,SEC.alg)===SEC.h){localStorage.removeItem(SK);localStorage.removeItem(BK);BIO=null;SEC=null;sessionStorage.removeItem('unl');ajustes()}else alert('Contraseña incorrecta.')};
-  const bn=$('#bn');if(bn)bn.onclick=async()=>{try{await bioReg();if(LM<0){LM=60;localStorage.setItem(LKY,'60')}alert('Huella / Face ID activada. Por seguridad la app se bloqueará tras 1 minuto fuera de ella; puedes cambiarlo en esta misma tarjeta.');ajustes()}catch(e){alert(bioMsg(e))}};
-  const bt=$('#bt');if(bt)bt.onclick=async()=>{try{alert(await bioAuth()?'Funciona correctamente ✓':'No se pudo verificar.')}catch(e){alert(bioMsg(e))}};
-  const bo=$('#bo');if(bo)bo.onclick=()=>{if(confirm('¿Desactivar la huella / Face ID? Seguirás entrando con tu contraseña.')){localStorage.removeItem(BK);BIO=null;ajustes()}};
-  const l2=$('#fl2');if(l2)l2.onchange=e=>{LM=+e.target.value;try{localStorage.setItem(LKY,String(LM))}catch(x){}};
+  const lk=$('#lk');if(lk)lk.onclick=()=>{sessionStorage.removeItem('unl');location.reload()};
+  const rm=$('#rm');if(rm)rm.onclick=async()=>{const o=prompt('Escribe tu contraseña actual para quitarla:');if(o===null)return;if(await hs(o,SEC.salt,SEC.alg)===SEC.h){localStorage.removeItem(SK);SEC=null;sessionStorage.removeItem('unl');ajustes()}else alert('Contraseña incorrecta.')};
+  mgBind();
 }
-function lock(mode,soft){
-  const L=$('#lock'),first=L.hidden;if(soft!==undefined)LSOFT=soft;L.hidden=false;document.body.classList.add('locked');
-  L.innerHTML=`<div class="lbox"><img src="${IC[curMode()==='dark'?'d':'l']}" width="84" height="84" alt=""><h2>Mi cartera de préstamos</h2>${mode==='in'&&BIO&&bioSupported()?'<button class="btn" id="bb" type="button">👆 Entrar con huella / Face ID</button><p class="note">o escribe tu contraseña</p>':''}${mode==='in'?`<form id="lf"><label>Contraseña<input type="password" name="p" autocomplete="current-password" required></label><button class="btn">Entrar</button><a class="lk" id="fg">Olvidé mi contraseña</a><p class="note" id="lm"></p></form>`:`<form id="lf"><label>Código de recuperación (4 a 6 dígitos)<input name="c" inputmode="numeric" pattern="[0-9]{4,6}" required></label><label>Nueva contraseña (mín. 4)<input type="password" name="p" minlength="4" required></label><button class="btn">Restablecer</button><a class="lk" id="fg">Volver</a><p class="note" id="lm"></p></form>`}</div>`;
+function lock(mode){
+  const L=$('#lock');L.hidden=false;document.body.classList.add('locked');
+  L.innerHTML=`<div class="lbox"><img src="${IC[curMode()==='dark'?'d':'l']}" width="84" height="84" alt=""><h2>Mi cartera de préstamos</h2>${mode==='in'?`<form id="lf"><label>Contraseña<input type="password" name="p" autocomplete="current-password" required></label><button class="btn">Entrar</button><a class="lk" id="fg">Olvidé mi contraseña</a><p class="note" id="lm"></p></form>`:`<form id="lf"><label>Código de recuperación (4 a 6 dígitos)<input name="c" inputmode="numeric" pattern="[0-9]{4,6}" required></label><label>Nueva contraseña (mín. 4)<input type="password" name="p" minlength="4" required></label><button class="btn">Restablecer</button><a class="lk" id="fg">Volver</a><p class="note" id="lm"></p></form>`}</div>`;
   $('#fg').onclick=()=>lock(mode==='in'?'rec':'in');
-  const bb=$('#bb'),tryBio=async()=>{const m=$('#lm');try{if(await bioAuth()){sessionStorage.setItem('unl','1');unlock()}else if(m)m.textContent='No se pudo verificar. Usa tu contraseña.'}catch(e){if(m&&e.name!=='NotAllowedError')m.textContent=bioMsg(e)}};
-  if(bb){bb.onclick=tryBio;if(first&&mode==='in'&&!NOAUTO)tryBio();NOAUTO=false}
   $('#lf').onsubmit=async ev=>{ev.preventDefault();const f=Object.fromEntries(new FormData(ev.target)),m=$('#lm');
     if(mode==='in'){if(await hs(f.p,SEC.salt,SEC.alg)===SEC.h){sessionStorage.setItem('unl','1');unlock()}else m.textContent='Contraseña incorrecta.'}
     else if(await hs(f.c,SEC.salt,SEC.alg)===SEC.r){await setSec(f.p,f.c);sessionStorage.setItem('unl','1');unlock()}else m.textContent='Código incorrecto.'};
 }
-function unlock(){$('#lock').hidden=true;document.body.classList.remove('locked');if(LSOFT){LSOFT=false;return}render();startAlerts()}
-/* Bloqueo al volver a la app (según Ajustes > Huella / Face ID) */
-let HID=0;document.addEventListener('visibilitychange',()=>{if(document.hidden){HID=Date.now();return}
-  if(!SEC||LM<0||!HID||!$('#lock').hidden||Date.now()-HID<LM*1000)return;
-  try{sessionStorage.removeItem('unl')}catch(e){}['#dlg','#rc'].forEach(s=>{const d=$(s);if(d&&d.open)d.close()});document.body.classList.remove('rcp');lock('in',true)});
-/* Interruptor remoto: el archivo estado.json del repositorio decide si la cartera está habilitada. Solo "activo": false la bloquea. */
-const EK='prestamos_estado';let OFFB=false;
-function offShow(msg){OFFB=true;document.body.classList.add('off');['#dlg','#rc'].forEach(s=>{const d=$(s);if(d&&d.open)d.close()});const o=$('#off');o.hidden=false;
-  o.innerHTML=`<div class="lbox"><img src="${IC[curMode()==='dark'?'d':'l']}" width="84" height="84" alt=""><h2>Cartera deshabilitada</h2><p>${esc(msg||'Esta cartera fue deshabilitada. Comunícate con quien te la entregó.')}</p><button class="btn" id="offr" type="button">Volver a comprobar</button><p class="note" id="offm"></p></div>`;
-  $('#offr').onclick=()=>offCheck(true)}
-async function offCheck(manual){
-  if(!/^https?:/.test(location.protocol))return;
-  let r=null;try{const c=new AbortController(),t=setTimeout(()=>c.abort(),7000),res=await fetch('estado.json?t='+Date.now(),{cache:'no-store',signal:c.signal});clearTimeout(t);if(res.ok)r=await res.json()}catch(e){}
-  const m=$('#offm');
-  if(r&&typeof r==='object'&&typeof r.activo==='boolean'){const st={activo:r.activo,mensaje:String(r.mensaje||'').slice(0,300)};try{localStorage.setItem(EK,JSON.stringify(st))}catch(e){}
-    if(!st.activo)offShow(st.mensaje);else if(OFFB)location.reload()}
-  else if(manual&&m)m.textContent='No se pudo comprobar. Revisa tu conexión e inténtalo de nuevo.'}
-function offInit(){try{const s=JSON.parse(localStorage.getItem(EK)||'null');if(s&&s.activo===false)offShow(s.mensaje)}catch(e){}
-  offCheck();document.addEventListener('visibilitychange',()=>{if(!document.hidden)offCheck()});window.addEventListener('online',()=>offCheck());setInterval(offCheck,3e5)}
-function boot(){applyTheme();offInit();let nb=0;const bt=setInterval(()=>{const l=$('#lock');if(++nb>40||isApp())return clearInterval(bt);if(l&&l.hidden){showBanner();if($('#ib')||(!DIP&&!/iphone|ipad|ipod/i.test(navigator.userAgent)&&nb>5))clearInterval(bt)}},1500);$('#tg').onclick=toggleTheme;if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});let u=false;try{u=sessionStorage.getItem('unl')}catch(e){}if(SEC&&!u)lock('in');else unlock()}
+function unlock(){$('#lock').hidden=true;document.body.classList.remove('locked');render();startAlerts()}
+function boot(){applyTheme();let nb=0;const bt=setInterval(()=>{const l=$('#lock');if(++nb>40||isApp())return clearInterval(bt);if(l&&l.hidden){showBanner();if($('#ib')||(!DIP&&!/iphone|ipad|ipod/i.test(navigator.userAgent)&&nb>5))clearInterval(bt)}},1500);$('#tg').onclick=toggleTheme;if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});let u=false;try{u=sessionStorage.getItem('unl')}catch(e){}if(SEC&&!u)lock('in');else unlock()}
+function resumen(){const L=S.loans.map(sched),c=capStats();return{clientes:S.clients.length,prestamos:S.loans.length,pagos:S.pays.length,capital:S.cap.length,prestado:Math.round(c.prest),pagado:Math.round(L.reduce((a,s)=>a+s.paid,0)),saldo:Math.round(L.reduce((a,s)=>a+s.saldo,0)),caja:Math.round(c.caja),ganancia:Math.round(c.gan)}}
+function audit(){
+  const er=[],wn=[],cl=new Set(S.clients.map(c=>c.id)),ln=new Set(S.loans.map(l=>l.id));let fix=false;
+  [['clients','clientes'],['loans','préstamos'],['pays','pagos'],['cap','movimientos de capital']].forEach(([k,n])=>{const ids=S[k].map(x=>x.id);if(new Set(ids).size!==ids.length)er.push('Hay identificadores repetidos en '+n+'.')});
+  S.loans.forEach(l=>{const nm=cname(l.client);
+    if(!cl.has(l.client)){er.push('Préstamo de '+fmt(l.monto)+' sin cliente asignado.');fix=true}
+    if(!(+l.monto>0)||!(+l.n>=1)||!(+l.tasa>=0)||isNaN(new Date(l.fecha)))er.push('Préstamo de '+nm+' con datos inválidos (monto, cuotas, tasa o fecha).');
+    const s=sched(l);if(!s.rows.length||!isFinite(s.total)||!isFinite(s.saldo)||!isFinite(s.mora))er.push('No se pudo calcular el préstamo de '+nm+'.');
+    if(s.paid>s.total+1)wn.push('El préstamo de '+nm+' tiene '+fmt(s.paid-s.total)+' pagados de más.')});
+  {const cs=S.loans.map(l=>l.code).filter(Boolean);if(new Set(cs).size!==cs.length)wn.push('Hay códigos de préstamo repetidos.')}
+  S.pays.forEach(p=>{if(!ln.has(p.loan))er.push('Pago de '+fmt(p.amt)+' ('+p.date+') sin préstamo asignado.');else if(!(+p.amt>0)||isNaN(new Date(p.date)))er.push('Pago con valor o fecha inválidos.')});
+  S.cap.forEach(x=>{if(!(+x.amt>0)||isNaN(new Date(x.date)))er.push('Movimiento de capital con valor o fecha inválidos.')});
+  const c=capStats();if(Math.abs(c.caja+c.calle-(c.ap-c.rt+c.gan))>1)er.push('El balance de capital no cuadra.');
+  return{errors:er,warns:wn,fixable:fix}}
+function repair(){const cl=new Set(S.clients.map(c=>c.id));let rc=null;S.loans.forEach(l=>{if(!cl.has(l.client)){if(!rc){rc=S.clients.find(c=>c.nombre==='Cliente recuperado');if(!rc){rc={id:uid(),nombre:'Cliente recuperado',nota:'Creado al reparar préstamos sin cliente'};S.clients.push(rc)}}l.client=rc.id}});save()}
+function reportDlg(title,cmp,au,undoable){
+  const d=$('#dlg');
+  d.innerHTML=`<h2>${title}</h2>${cmp?`<div class="wrap"><table class="cmp"><tr><th>Dato</th><th class="n">Archivo</th><th class="n">Aquí</th><th></th></tr>${cmp.map(r=>`<tr><td>${r[0]}</td><td class="n">${r[1]}</td><td class="n">${r[2]}</td><td>${r[3]?'<span class="tag pagado">✓</span>':'<span class="tag mora">✗</span>'}</td></tr>`).join('')}</table></div>`:''}<h2 style="margin-top:14px">Integridad de los datos</h2>${au.errors.length||au.warns.length?au.errors.map(x=>`<p class="note" style="color:var(--bad)">✗ ${esc(x)}</p>`).join('')+au.warns.map(x=>`<p class="note">⚠ ${esc(x)}</p>`).join(''):'<div class="card ok"><b>✓ Todo en orden.</b> Sin datos huérfanos ni repetidos, y los cálculos son consistentes.</div>'}<div style="margin-top:12px"><button class="btn" id="rd1">Cerrar</button>${au.fixable?' <button class="btn ghost" id="rd2">Reparar automáticamente</button>':''}${undoable?' <button class="btn ghost" id="rd3">Deshacer importación</button>':''}</div>`;
+  if(!d.open)d.showModal();
+  $('#rd1').onclick=()=>{d.close();render()};
+  const r2=$('#rd2');if(r2)r2.onclick=()=>{repair();reportDlg(title,cmp,audit(),undoable)};
+  const r3=$('#rd3');if(r3)r3.onclick=()=>{d.close();undo()};
+}
+async function buildPack(){S.lastBackup=today();save();const data=JSON.parse(JSON.stringify(S));let alg='sha',sum;try{sum=await hs(JSON.stringify(data),'pk','sha')}catch(e){alg='f';sum=await hs(JSON.stringify(data),'pk','f')}return{app:'prestamos-cobros',fmt:1,ver:VER,appv:APPV,fecha:new Date().toISOString(),res:resumen(),alg,sum,data,sec:SEC||null}}
+async function exportPack(share){const p=await buildPack(),name='cartera-migracion-'+today()+'.json',f=new File([JSON.stringify(p)],name,{type:'application/json'});
+  if(share&&navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:'Respaldo Préstamos y Cobros'});return}catch(e){if(e.name==='AbortError')return}}
+  const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+async function importPack(file){
+  let d;try{d=JSON.parse(await file.text())}catch(e){alert('El archivo no se pudo leer o no es válido.');return}
+  const pack=d.app==='prestamos-cobros'?d:{data:d},D=pack.data;
+  if(!D||!Array.isArray(D.clients)||!Array.isArray(D.loans)||!Array.isArray(D.pays)){alert('El archivo no es un respaldo de esta app.');return}
+  if((pack.fmt||1)>1||(pack.ver||1)>VER){alert('El paquete viene de una versión más nueva de la app. Actualiza esta app primero.');return}
+  if(pack.sum){let ok=true;try{ok=await hs(JSON.stringify(D),'pk',pack.alg||'sha')===pack.sum}catch(e){}if(!ok&&!confirm('El archivo parece modificado o dañado. ¿Importarlo de todos modos?'))return}
+  const hay=S.clients.length||S.loans.length||S.pays.length||S.cap.length;let mode='replace';
+  if(hay){if(confirm('Este dispositivo ya tiene datos.\n\nAceptar = COMBINAR (agrega lo que falte y conserva lo actual).\nCancelar = otras opciones.'))mode='merge';else if(!confirm('¿REEMPLAZAR todos los datos de este dispositivo por los del archivo? Podrás deshacerlo.'))return}
+  localStorage.setItem('prestamos_prev',JSON.stringify({S,SEC,when:Date.now()}));
+  const inc=migrate(JSON.parse(JSON.stringify(D)));let cmp;
+  if(mode==='replace'){const keep=S.cfg;inc.cfg=Object.assign({},inc.cfg,{notif:false,lastN:null});S=inc;if(pack.sec){SEC=pack.sec;localStorage.setItem(SK,JSON.stringify(SEC));try{sessionStorage.setItem('unl','1')}catch(e){}}}
+  else{['clients','loans','pays','cap'].forEach(k=>{const ids=new Set(S[k].map(x=>x.id));inc[k].forEach(x=>{if(!ids.has(x.id)){if(k==='loans'&&x.code&&S.loans.some(y=>y.code===x.code))x.code=newCode();S[k].push(x)}})});if(!S.biz&&inc.biz)S.biz=inc.biz;S.nextNo=Math.max(S.nextNo||0,inc.nextNo||0)}
+  save();applyTheme();
+  if(mode==='replace'&&pack.res){const r=resumen(),R=pack.res;cmp=[['Clientes','clientes',0],['Préstamos','prestamos',0],['Pagos','pagos',0],['Mov. de capital','capital',0],['Total prestado','prestado',1],['Total pagado','pagado',1],['Saldo pendiente','saldo',1],['Disponible en caja','caja',1],['Ganancia cobrada','ganancia',1]].map(x=>[x[0],x[2]?fmt(R[x[1]]):R[x[1]],x[2]?fmt(r[x[1]]):r[x[1]],R[x[1]]===r[x[1]]])}
+  else if(mode==='merge'){cmp=[['Clientes','clients'],['Préstamos','loans'],['Pagos','pays'],['Mov. de capital','cap']].map(x=>{const n=inc[x[1]].filter(i=>S[x[1]].some(y=>y.id===i.id)).length;return[x[0],inc[x[1]].length,n,n===inc[x[1]].length]})}
+  reportDlg(mode==='merge'?'Datos combinados':'Migración completada',cmp,audit(),true);
+}
+function undo(){let p;try{p=JSON.parse(localStorage.getItem('prestamos_prev'))}catch(e){}if(!p||!confirm('¿Volver a los datos que tenías antes de la última importación?'))return;S=migrate(p.S);if(p.SEC){SEC=p.SEC;localStorage.setItem(SK,JSON.stringify(SEC))}else{SEC=null;localStorage.removeItem(SK)}localStorage.removeItem('prestamos_prev');save();applyTheme();render()}
+function mgBind(){$('#mg1').onclick=()=>exportPack(false);const sh=$('#mg1s');if(sh)sh.onclick=()=>exportPack(true);$('#mg2').onclick=()=>$('#mgf').click();$('#mgf').onchange=e=>{const f=e.target.files[0];e.target.value='';if(f)importPack(f)};$('#mg3').onclick=()=>reportDlg('Verificación de datos',null,audit(),false);const u=$('#mg4');if(u)u.onclick=undo}
 document.addEventListener('input',e=>{if(e.target.id==='biz'){S.biz=e.target.value;save()}});
 boot();
 </script>
