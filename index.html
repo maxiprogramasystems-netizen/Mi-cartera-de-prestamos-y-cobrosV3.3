@@ -95,7 +95,7 @@ const fmt=n=>'$'+Math.round(n).toLocaleString('es-CO');
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const DAYS={d:1,s:7,q:15,m:30},FN={d:'Diaria',s:'Semanal',q:'Quincenal',m:'Mensual'};
-const APPV='3.7',VER=4,MIG={3:r=>{let n=0;r.loans.forEach(l=>{if(!l.code)l.code='P-'+String(++n).padStart(3,'0')})}};/* migraciones futuras: MIG[n]=s=>{...} convierte datos de la versión n a n+1 sin perder nada */
+const APPV='3.9',VER=4,MIG={3:r=>{let n=0;r.loans.forEach(l=>{if(!l.code)l.code='P-'+String(++n).padStart(3,'0')})}};/* migraciones futuras: MIG[n]=s=>{...} convierte datos de la versión n a n+1 sin perder nada */
 function migrate(r){r=r||{};r.clients=r.clients||[];r.loans=r.loans||[];r.pays=r.pays||[];r.cap=r.cap||[];r.cfg=Object.assign({theme:'auto',accent:'verde',bg:'liso',notif:false},r.cfg||{});let v=r.v||1;while(v<VER){(MIG[v]||(()=>{}))(r);v++}r.v=VER;return r}
 let S=migrate();
 const newCode=()=>'P-'+String(Math.max(0,...S.loans.map(l=>+String(l.code||'').replace(/\D/g,'')||0))+1).padStart(3,'0');
@@ -110,6 +110,43 @@ const LBL={activo:'Activo',mora:'En mora',pagado:'Finalizado ✓'};
 const SK='prestamos_sec';let SEC=null;try{SEC=JSON.parse(localStorage.getItem(SK)||'null')}catch(e){}
 async function hs(t,salt,alg){const d=salt+'|'+t;if(alg==='sha'){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(d));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}let h=5381;for(const c of d)h=(h*33^c.charCodeAt(0))>>>0;return'f'+h.toString(16)}
 async function setSec(p,c){const alg=window.crypto&&crypto.subtle?'sha':'f',salt=uid()+uid();SEC={salt,alg,h:await hs(p,salt,alg),r:await hs(c,salt,alg)};localStorage.setItem(SK,JSON.stringify(SEC))}
+/* ===== BIOMETRÍA (huella / rostro / bloqueo del dispositivo) — NO ELIMINAR EN FUTURAS VERSIONES =====
+   Se guarda aparte (clave 'prestamos_bio'), así que no se toca al actualizar ni al importar respaldos. */
+const BK='prestamos_bio';let BIO=null;try{BIO=JSON.parse(localStorage.getItem(BK)||'null')}catch(e){}
+const b64=u=>btoa(String.fromCharCode(...new Uint8Array(u))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+const unb64=t=>Uint8Array.from(atob(t.replace(/-/g,'+').replace(/_/g,'/')+'='.repeat((4-t.length%4)%4)),c=>c.charCodeAt(0));
+const bioSupported=()=>!!(window.PublicKeyCredential&&navigator.credentials&&window.isSecureContext);
+function der2raw(d){let o=2;if(d[1]&128)o+=d[1]&127;const rl=d[o+1],r=d.slice(o+2,o+2+rl);o+=2+rl;const sl=d[o+1],q=d.slice(o+2,o+2+sl);
+  const f=x=>{while(x.length>32&&x[0]===0)x=x.slice(1);const z=new Uint8Array(32);z.set(x,32-x.length);return z};const out=new Uint8Array(64);out.set(f(r));out.set(f(q),32);return out}
+async function bioReg(){
+  const ch=crypto.getRandomValues(new Uint8Array(32)),id=crypto.getRandomValues(new Uint8Array(16));
+  const cr=await navigator.credentials.create({publicKey:{challenge:ch,rp:{name:'Préstamos y Cobros'},user:{id,name:'cartera',displayName:'Mi cartera'},
+    pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],
+    authenticatorSelection:{authenticatorAttachment:'platform',userVerification:'required',residentKey:'discouraged'},timeout:60000,attestation:'none'}});
+  const r=cr.response;let pk=null,alg=null;
+  try{if(r.getPublicKey){const k=r.getPublicKey();if(k){pk=b64(k);alg=r.getPublicKeyAlgorithm()}}}catch(e){}
+  BIO={id:b64(cr.rawId),pk,alg};localStorage.setItem(BK,JSON.stringify(BIO))}
+async function bioAuth(){
+  const ch=crypto.getRandomValues(new Uint8Array(32));
+  const a=await navigator.credentials.get({publicKey:{challenge:ch,allowCredentials:[{type:'public-key',id:unb64(BIO.id),transports:['internal']}],userVerification:'required',timeout:60000}});
+  const r=a.response,ad=new Uint8Array(r.authenticatorData);
+  if(!(ad[32]&4))return false;
+  const cd=JSON.parse(new TextDecoder().decode(r.clientDataJSON));
+  if(cd.type!=='webauthn.get'||cd.challenge!==b64(ch))return false;
+  if(BIO.pk&&window.crypto&&crypto.subtle){try{
+    const h=new Uint8Array(await crypto.subtle.digest('SHA-256',r.clientDataJSON)),m=new Uint8Array(ad.length+32);m.set(ad);m.set(h,ad.length);
+    const spki=unb64(BIO.pk),sig=new Uint8Array(r.signature);
+    if(BIO.alg===-7){const k=await crypto.subtle.importKey('spki',spki,{name:'ECDSA',namedCurve:'P-256'},false,['verify']);return await crypto.subtle.verify({name:'ECDSA',hash:'SHA-256'},k,der2raw(sig),m)}
+    if(BIO.alg===-257){const k=await crypto.subtle.importKey('spki',spki,{name:'RSASSA-PKCS1-v1_5',hash:'SHA-256'},false,['verify']);return await crypto.subtle.verify('RSASSA-PKCS1-v1_5',k,sig,m)}
+  }catch(e){}}
+  return true}
+const BNO='prestamos_bio_no';let bioAutoDone=false;
+/* Ofrece activar la biometría sola (una vez) justo después de entrar con contraseña */
+async function offerBio(){
+  try{if(!SEC||BIO||!bioSupported()||localStorage.getItem(BNO))return;
+    if(confirm('¿Quieres entrar la próxima vez con tu huella, rostro o bloqueo del dispositivo?')){await bioReg()}else localStorage.setItem(BNO,'1')}
+  catch(e){try{localStorage.setItem(BNO,'1')}catch(_){}}}
+/* ===== FIN BIOMETRÍA ===== */
 const save=()=>{try{localStorage.setItem('prestamos_v1',JSON.stringify(S))}catch(e){}};
 const uid=()=>Math.random().toString(36).slice(2,9);
 let tab='panel';
@@ -380,7 +417,7 @@ function receipt(pid,fresh){
     bind:()=>{$('#cpr').onclick=()=>receiptPrint(pid);const u=$('#cud');if(u)u.onclick=()=>{if(!confirm('¿Deshacer este pago?'))return;S.pays=S.pays.filter(x=>x.id!==pid);save();LASTPAY=0;$('#rc').close();if($('#dlg').open)openLoan(l.id);render()}}});
 }
 /* Novedades (se muestran una vez por versión) */
-const NEWS=['Al crear un préstamo aparece la aprobación con el número de cuotas y todas las fechas de pago, lista para compartir como imagen.','Pago en un toque: la próxima cuota ya aparece lista, solo toca «Pagar».','El recibo de pago ahora es una imagen para compartir, con cuotas pagadas y pendientes.','La app descarga las mejoras cuando hay internet y te avisa para que las aceptes. Tus datos no se tocan.'];
+const NEWS=['La biometría (huella, rostro o bloqueo del dispositivo) vuelve a estar disponible y se aplica sola: la app te ofrece activarla al entrar y, una vez activa, la pide automáticamente al abrir.','Si no quieres usarla, puedes entrar con tu contraseña; en Ajustes > Biometría la activas o desactivas cuando quieras.'];
 function showNews(){const c=S.cfg;if(c.seenV===APPV)return;const first=!c.seenV&&!S.clients.length&&!S.loans.length;c.seenV=APPV;save();if(first)return;
   const r=$('#rc');document.body.classList.remove('rcp');r.onclose=null;r.innerHTML='<h2>✨ Novedades · versión '+APPV+'</h2><ul>'+NEWS.map(n=>'<li>'+esc(n)+'</li>').join('')+'</ul><p class="note">Tus clientes, préstamos, pagos y capital siguen intactos.</p><p><button class="btn" id="nx">Entendido</button></p>';if(!r.open)r.showModal();$('#nx').onclick=()=>r.close()}
 /* Actualizaciones: se descargan solas con internet y el cliente las acepta con un toque */
@@ -447,6 +484,7 @@ function ajustes(){
   $('#v').innerHTML=`<div class="card"><h2>Apariencia</h2><form id="fa"><label>Tema<select name="theme">${op([['auto','Automático (el del dispositivo)'],['light','Claro'],['dark','Oscuro']],c.theme)}</select></label><label>Fondo<select name="bg">${op([['liso','Liso'],['degradado','Degradado'],['cuadricula','Cuadrícula']],c.bg)}</select></label><div class="full"><span class="note">Color principal</span><div class="sw">${Object.entries(AC).map(([k,v])=>`<button type="button" class="swb ${c.accent===k?'on':''}" data-ac="${k}" style="background:${v}" title="${k}" aria-label="${k}"></button>`).join('')}</div></div></form></div>
   <div class="card"><h2>Avisos</h2><p class="note">Recibe una notificación un día antes de cada cobro. Funciona mientras la app esté abierta o instalada en el dispositivo.</p>${'Notification'in window?(c.notif&&Notification.permission==='granted'?'<p><b>Avisos activados.</b></p><button class="btn ghost" id="nf">Desactivar avisos</button>':'<button class="btn" id="nf">Activar avisos</button>'):'<p class="note">Tu navegador no admite notificaciones.</p>'}</div>
   <div class="card"><h2>Seguridad</h2><p class="note">Protege el acceso a la app en este dispositivo. El código de 4 a 6 dígitos sirve para recuperar la contraseña. Los respaldos .json no van cifrados.</p>${SEC?`<form id="fs"><label>Contraseña actual<input type="password" name="o" required></label><label>Nueva contraseña (mín. 4)<input type="password" name="p" minlength="4" required></label><label>Nuevo código de recuperación (4 a 6 dígitos)<input name="c" inputmode="numeric" pattern="[0-9]{4,6}" required></label><div class="full"><button class="btn">Guardar cambios</button> <button type="button" class="btn ghost" id="lk">Bloquear ahora</button> <button type="button" class="btn ghost" id="rm">Quitar contraseña</button></div></form>`:`<form id="fs"><label>Contraseña (mín. 4)<input type="password" name="p" minlength="4" required></label><label>Código de recuperación (4 a 6 dígitos)<input name="c" inputmode="numeric" pattern="[0-9]{4,6}" required></label><div class="full"><button class="btn">Activar contraseña</button></div></form>`}</div>
+  <div class="card" id="biocard"><h2>Biometría</h2>${!SEC?'<p class="note">Primero activa una contraseña en Seguridad; después podrás entrar con tu huella o rostro.</p>':!bioSupported()?'<p class="note">Este navegador o esta forma de abrir la app no admite biometría. Ábrela desde su dirección https (GitHub Pages) en un dispositivo con huella, rostro o bloqueo de pantalla.</p>':`<p class="note">Entra a la app con tu huella, rostro o el bloqueo del dispositivo. La contraseña sigue funcionando siempre como respaldo.</p>${BIO?'<p><b>Biometría activada en este dispositivo.</b></p>':''}<button class="btn ${BIO?'ghost':''}" id="bo">${BIO?'Desactivar biometría':'Activar biometría'}</button>`}</div>
   ${installHtml(true)}
   <div class="card"><h2>Diagnóstico de instalación</h2><div id="dg" class="note dg">Comprobando…</div></div>
   <div class="card"><h2>Acerca de</h2><p class="note">Préstamos y Cobros · versión ${APPV}. Tus datos se conservan cuando reemplazas el archivo por una versión nueva. Antes de actualizar, exporta un respaldo desde Reportes.</p><button class="btn ghost" id="bu">Buscar actualización</button></div>`;
@@ -456,16 +494,19 @@ function ajustes(){
   $('#fs').onsubmit=async ev=>{ev.preventDefault();const f=Object.fromEntries(new FormData(ev.target));
     if(!/^\d{4,6}$/.test(f.c)){alert('El código debe tener de 4 a 6 dígitos.');return}
     if(SEC&&await hs(f.o,SEC.salt,SEC.alg)!==SEC.h){alert('La contraseña actual no es correcta.');return}
-    await setSec(f.p,f.c);sessionStorage.setItem('unl','1');alert('Seguridad guardada.');ajustes()};
+    await setSec(f.p,f.c);sessionStorage.setItem('unl','1');alert('Seguridad guardada.');await offerBio();ajustes()};
+  const bo=$('#bo');if(bo)bo.onclick=async()=>{bo.disabled=true;try{if(BIO){if(confirm('¿Desactivar la entrada con biometría en este dispositivo?')){localStorage.removeItem(BK);BIO=null;localStorage.setItem(BNO,'1')}}else{await bioReg();localStorage.removeItem(BNO);alert('Biometría activada. La próxima vez podrás entrar con tu huella o rostro.')}}catch(e){alert('No se pudo activar la biometría: '+(e&&e.name==='NotAllowedError'?'se canceló o no se completó la verificación.':'tu dispositivo o navegador no la permite aquí.'))}ajustes()};
   const lk=$('#lk');if(lk)lk.onclick=()=>{sessionStorage.removeItem('unl');location.reload()};
-  const rm=$('#rm');if(rm)rm.onclick=async()=>{const o=prompt('Escribe tu contraseña actual para quitarla:');if(o===null)return;if(await hs(o,SEC.salt,SEC.alg)===SEC.h){localStorage.removeItem(SK);SEC=null;sessionStorage.removeItem('unl');ajustes()}else alert('Contraseña incorrecta.')};
+  const rm=$('#rm');if(rm)rm.onclick=async()=>{const o=prompt('Escribe tu contraseña actual para quitarla:');if(o===null)return;if(await hs(o,SEC.salt,SEC.alg)===SEC.h){localStorage.removeItem(SK);localStorage.removeItem(BK);localStorage.removeItem(BNO);BIO=null;SEC=null;sessionStorage.removeItem('unl');ajustes()}else alert('Contraseña incorrecta.')};
 }
 function lock(mode){
   const L=$('#lock');L.hidden=false;document.body.classList.add('locked');
-  L.innerHTML=`<div class="lbox"><img src="${IC[curMode()==='dark'?'d':'l']}" width="84" height="84" alt=""><h2>Mi cartera de préstamos</h2>${mode==='in'?`<form id="lf"><label>Contraseña<input type="password" name="p" autocomplete="current-password" required></label><button class="btn">Entrar</button><a class="lk" id="fg">Olvidé mi contraseña</a><p class="note" id="lm"></p></form>`:`<form id="lf"><label>Código de recuperación (4 a 6 dígitos)<input name="c" inputmode="numeric" pattern="[0-9]{4,6}" required></label><label>Nueva contraseña (mín. 4)<input type="password" name="p" minlength="4" required></label><button class="btn">Restablecer</button><a class="lk" id="fg">Volver</a><p class="note" id="lm"></p></form>`}</div>`;
+  L.innerHTML=`<div class="lbox"><img src="${IC[curMode()==='dark'?'d':'l']}" width="84" height="84" alt=""><h2>Mi cartera de préstamos</h2>${mode==='in'?`<form id="lf"><label>Contraseña<input type="password" name="p" autocomplete="current-password" required></label><button class="btn">Entrar</button>${BIO&&bioSupported()?'<button type="button" class="btn ghost" id="bb">🔐 Entrar con biometría</button>':''}<a class="lk" id="fg">Olvidé mi contraseña</a><p class="note" id="lm"></p></form>`:`<form id="lf"><label>Código de recuperación (4 a 6 dígitos)<input name="c" inputmode="numeric" pattern="[0-9]{4,6}" required></label><label>Nueva contraseña (mín. 4)<input type="password" name="p" minlength="4" required></label><button class="btn">Restablecer</button><a class="lk" id="fg">Volver</a><p class="note" id="lm"></p></form>`}</div>`;
   $('#fg').onclick=()=>lock(mode==='in'?'rec':'in');
+  const bioGo=async auto=>{const m=$('#lm');if(!m)return;m.textContent='';try{if(await bioAuth()){sessionStorage.setItem('unl','1');unlock()}else if(!auto)m.textContent='No se pudo verificar la biometría. Usa tu contraseña.'}catch(e){if(!auto)m.textContent='Biometría cancelada. Puedes usar tu contraseña.'}};
+  const bb=$('#bb');if(bb){bb.onclick=()=>bioGo(false);if(!bioAutoDone){bioAutoDone=true;setTimeout(()=>bioGo(true),350)}}
   $('#lf').onsubmit=async ev=>{ev.preventDefault();const f=Object.fromEntries(new FormData(ev.target)),m=$('#lm');
-    if(mode==='in'){if(await hs(f.p,SEC.salt,SEC.alg)===SEC.h){sessionStorage.setItem('unl','1');unlock()}else m.textContent='Contraseña incorrecta.'}
+    if(mode==='in'){if(await hs(f.p,SEC.salt,SEC.alg)===SEC.h){sessionStorage.setItem('unl','1');await offerBio();unlock()}else m.textContent='Contraseña incorrecta.'}
     else if(await hs(f.c,SEC.salt,SEC.alg)===SEC.r){await setSec(f.p,f.c);sessionStorage.setItem('unl','1');unlock()}else m.textContent='Código incorrecto.'};
 }
 function unlock(){$('#lock').hidden=true;document.body.classList.remove('locked');render();startAlerts();showNews()}

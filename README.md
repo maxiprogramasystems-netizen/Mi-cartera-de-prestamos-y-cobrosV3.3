@@ -17,6 +17,7 @@ Aplicación web para controlar una cartera de préstamos: clientes, intereses, c
 - Botón de sol/luna en la cabecera para cambiar entre tema claro y oscuro.
 - Recibos imprimibles, reportes, exportar e importar respaldo (.json).
 - Contraseña con código de recuperación de 4 a 6 dígitos.
+- Entrada con biometría (huella, rostro o bloqueo del dispositivo): se ofrece sola al entrar con contraseña (y se puede activar/desactivar en Ajustes > Biometría); una vez activa, se pide automáticamente al abrir la app y queda el botón en la pantalla de acceso. **No eliminar** el bloque `BIOMETRÍA` de `index.html` en futuras versiones.
 - Temas claro, oscuro o automático, con varios colores y fondos.
 
 ## Cómo usarla
@@ -50,6 +51,10 @@ screenshot-*.png        Capturas para el diálogo de instalación
 - 3.6: corrige que los préstamos nuevos quedaran asignados al primer cliente de la lista (el selector del formulario lo preseleccionaba). Se añade código por préstamo y migración de datos (`VER` 4); los datos existentes se conservan.
 
 - 3.7: aprobación del préstamo con cuotas y fechas de pago; pago en un toque; recibos y aprobación como imagen para compartir; actualizaciones con aviso de aceptación; la fecha de «hoy» ahora usa la hora local (antes usaba UTC); plural correcto de la frecuencia («mensuales»). No cambia el esquema de datos (`VER` 4): los datos existentes se conservan.
+
+- 3.9: la biometría se aplica automáticamente: oferta de activación al entrar (una sola vez si se rechaza) y solicitud automática al abrir la app.
+
+- 3.8: se restablece el botón de biometría (WebAuthn, verificación con firma). Se guarda aparte (`prestamos_bio`), por lo que no se pierde al actualizar ni al importar respaldos. No cambia el esquema de datos (`VER` 4).
 
 ## Notas
 

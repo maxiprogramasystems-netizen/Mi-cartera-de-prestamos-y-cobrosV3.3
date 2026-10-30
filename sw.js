@@ -1,6 +1,6 @@
 /* Sube el número de V cuando publiques una versión nueva.
    La app descarga la versión nueva sola cuando hay internet y avisa al cliente para que la acepte con un toque. */
-const V='cartera-v13';
+const V='cartera-v15';
 const REQ=["./","index.html"];
 const OPT=["manifest.webmanifest","favicon.ico","icon-32.png","icon-48.png","icon-192.png","icon-512.png","icon-maskable-192.png","icon-maskable-512.png","apple-touch-icon.png"];
 const get=u=>fetch(new Request(u,{cache:'reload'}));
