@@ -59,7 +59,7 @@ dialog::backdrop{background:rgba(0,0,0,.5)}
 #lock{position:fixed;inset:0;z-index:99;background:var(--bg);display:grid;place-items:center;padding:20px}#lock[hidden]{display:none}.lbox{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;max-width:360px;width:100%;text-align:center;display:grid;gap:12px;justify-items:center}.lbox form{grid-template-columns:1fr;width:100%;text-align:left}.lbox h2{margin:0}body.locked main{display:none}.wrap td.act,.wrap th.act{position:sticky;right:0;background-color:var(--card);box-shadow:-8px 0 8px -8px rgba(0,0,0,.28)}tr.okr td.act{background-image:linear-gradient(color-mix(in srgb,var(--ok) 16%,transparent),color-mix(in srgb,var(--ok) 16%,transparent))}tr.later td.act{background-image:linear-gradient(color-mix(in srgb,var(--bad) 14%,transparent),color-mix(in srgb,var(--bad) 14%,transparent))}.pq{padding:4px 12px;font-size:.82rem;border-radius:999px;margin-left:6px;white-space:nowrap}#off{position:fixed;inset:0;z-index:300;background:var(--bg);display:grid;place-items:center;padding:20px}#off[hidden]{display:none}body.off main,body.off #lock{display:none}#off p{margin:0}.lbox #bb{width:100%;padding:14px;font-size:1.05rem}.row span{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.empty{color:var(--mut);padding:8px 0}
 .note{font-size:.85rem;color:var(--mut)}
 @media print{nav,.btn,form{display:none}body{background:#fff}body.rcp main,body.rcp #dlg{display:none!important}#rc{position:static;border:0;color:#000;background:#fff;max-width:none;width:100%}#rc .noprint{display:none}}
-.rbox{border:2px dashed var(--line);padding:16px;border-radius:8px}.rbox table td{border:0;padding:4px 0}.firma{margin-top:44px;border-top:1px solid currentColor;width:240px;padding-top:4px;font-size:.85rem}
+.rbox{border:2px dashed var(--line);padding:16px;border-radius:8px}.rbox table td{border:0;padding:4px 0}.apimg{display:block;max-width:100%;max-height:68vh;margin:10px auto;border-radius:10px}.firma{margin-top:44px;border-top:1px solid currentColor;width:240px;padding-top:4px;font-size:.85rem}
 .tgl{margin-left:auto;flex:none;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);display:grid;place-items:center;cursor:pointer;padding:0}.tgl svg{width:22px;height:22px}
 .wa{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:#25D366;color:#fff;vertical-align:middle;text-decoration:none}.wa svg{width:20px;height:20px;fill:#fff}.wa.off{background:var(--line);pointer-events:none}
 .card.late{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 13%,var(--card))}.card.late h2{color:var(--bad)}
@@ -85,13 +85,14 @@ tr.okr{background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok);f
 <div id="off" hidden></div>
 <dialog id="dlg"></dialog>
 <dialog id="rc"></dialog>
+<dialog id="ap"></dialog>
 <script>
 const $=s=>document.querySelector(s);
 const fmt=n=>'$'+Math.round(n).toLocaleString('es-CO');
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const today=()=>new Date().toISOString().slice(0,10);
 const DAYS={d:1,s:7,q:15,m:30},FN={d:'Diaria',s:'Semanal',q:'Quincenal',m:'Mensual'};
-const APPV='4.0',VER=4,MIG={3:r=>{let n=0;r.loans.forEach(l=>{if(!l.code)l.code='P-'+String(++n).padStart(3,'0')})}};/* migraciones futuras: MIG[n]=s=>{...} convierte datos de la versión n a n+1 sin perder nada */
+const APPV='4.1',VER=4,MIG={3:r=>{let n=0;r.loans.forEach(l=>{if(!l.code)l.code='P-'+String(++n).padStart(3,'0')})}};/* migraciones futuras: MIG[n]=s=>{...} convierte datos de la versión n a n+1 sin perder nada */
 function migrate(r){r=r||{};r.clients=r.clients||[];r.loans=r.loans||[];r.pays=r.pays||[];r.cap=r.cap||[];r.cfg=Object.assign({theme:'auto',accent:'verde',bg:'liso',notif:false},r.cfg||{});let v=r.v||1;while(v<VER){(MIG[v]||(()=>{}))(r);v++}r.v=VER;return r}
 let S=migrate();
 const newCode=()=>'P-'+String(Math.max(0,...S.loans.map(l=>+String(l.code||'').replace(/\D/g,'')||0))+1).padStart(3,'0');
@@ -307,7 +308,7 @@ function prestamos(){
   const pv=()=>{const p=Object.fromEntries(new FormData(f)),r=calc(p);
     $('#pv').innerHTML=r.length?`Cuota: <b>${fmt(r[0].tot)}</b> · Interés total: <b>${fmt(r.reduce((a,x)=>a+x.int,0))}</b> · Total a pagar: <b>${fmt(r.reduce((a,x)=>a+x.tot,0))}</b> · Último pago: ${r[r.length-1].date}${S.cap.length?' · Disponible en caja: <b>'+fmt(capStats().caja)+'</b>':''}`:'Completa monto y cuotas para ver el cálculo.'};
   f.oninput=pv;pv();
-  f.onsubmit=e=>{e.preventDefault();const p=Object.fromEntries(new FormData(f));if(!S.clients.some(c=>c.id===p.client)){alert('Selecciona el cliente de este préstamo.');return}if(!confirm('Crear préstamo de '+fmt(p.monto)+' para '+cname(p.client)+'?'))return;if(S.cap.length){const cs=capStats();if(+p.monto>cs.caja&&!confirm('Este préstamo ('+fmt(p.monto)+') supera tu capital disponible ('+fmt(cs.caja)+'). ¿Crearlo de todas formas?'))return}S.loans.push({id:uid(),...p,code:newCode()});selC='';save();render()};
+  f.onsubmit=e=>{e.preventDefault();const p=Object.fromEntries(new FormData(f));if(!S.clients.some(c=>c.id===p.client)){alert('Selecciona el cliente de este préstamo.');return}if(!confirm('Crear préstamo de '+fmt(p.monto)+' para '+cname(p.client)+'?'))return;if(S.cap.length){const cs=capStats();if(+p.monto>cs.caja&&!confirm('Este préstamo ('+fmt(p.monto)+') supera tu capital disponible ('+fmt(cs.caja)+'). ¿Crearlo de todas formas?'))return}const nl={id:uid(),...p,code:newCode()};S.loans.push(nl);selC='';save();render();approvalDlg(nl.id)};
 }
 
 function drawL(){
@@ -332,10 +333,10 @@ function openLoan(id){
   <div class="grid" style="margin-bottom:12px"><div class="stat"><b>${fmt(s.total)}</b><span>Total a pagar</span></div><div class="stat"><b>${fmt(s.paid)}</b><span>Pagado</span></div><div class="stat"><b>${fmt(s.saldo)}</b><span>Saldo</span></div><div class="stat"><b>${fmt(s.mora)}</b><span>Mora estimada</span></div></div>
   <div class="wrap"><table><tr><th>#</th><th>Fecha</th><th class="n">Capital</th><th class="n">Interés</th><th class="n">Cuota</th><th class="n">Pagado</th><th>Estado</th><th class="act"></th></tr>${s.rows.map(r=>{const ok=r.paid>=r.tot-.5,ab=r.paid>0&&!ok;return`<tr class="${ok?'okr':r.late?'later':''}"><td>${r.k}</td><td>${r.date}</td><td class="n">${fmt(r.cap)}</td><td class="n">${fmt(r.int)}</td><td class="n">${fmt(r.tot)}</td><td class="n" style="${r.paid>0?'color:var(--ok);font-weight:700':''}">${fmt(r.paid)}</td><td><span class="tag ${ok?'pagado':ab?'activo':r.late?'mora':''}">${ok?'✓ Pagada':ab?'Abonó':r.late?'Atrasada':'Pendiente'}</span></td><td class="act">${ok?'':waA(l.client,r.late?'Hola '+cname(l.client)+', su cuota '+r.k+' de '+fmt(r.tot-r.paid)+' venció el '+r.date+'. Por favor comuníquese para ponerse al día.':'Hola '+cname(l.client)+', le recordamos que su cuota '+r.k+' de '+fmt(r.tot-r.paid)+' vence el '+r.date+'. ¡Gracias!',l)+' <button type="button" class="btn ghost pq" data-pq="'+r.k+'">Pagar</button>'}</td></tr>`}).join('')}</table></div>
   <h2 style="margin-top:14px">Registrar pago o abono</h2>
-  <form id="fp"><label>Valor ($)<input name="amt" type="number" min="1" step="any" required></label><label>Fecha<input name="date" type="date" value="${today()}" required></label><label class="full">Nota (opcional)<input name="nota"></label><div class="full"><button class="btn">Guardar pago</button> <button type="button" class="btn ghost" id="cl">Cerrar</button> <button type="button" class="btn ghost" id="dl">Eliminar préstamo</button></div></form>
+  <form id="fp"><label>Valor ($)<input name="amt" type="number" min="1" step="any" required></label><label>Fecha<input name="date" type="date" value="${today()}" required></label><label class="full">Nota (opcional)<input name="nota"></label><div class="full"><button class="btn">Guardar pago</button> <button type="button" class="btn ghost" id="cl">Cerrar</button> <button type="button" class="btn ghost" id="apb">Aprobación en imagen</button> <button type="button" class="btn ghost" id="dl">Eliminar préstamo</button></div></form>
   <h2 style="margin-top:14px">Pagos registrados</h2>${S.pays.filter(p=>p.loan===id).map(p=>`<div class="row"><div><span class="tag pagado">✓ Pagó</span> ${p.date} · <b style="color:var(--ok)">${fmt(p.amt)}</b>${p.nota?'<small>'+esc(p.nota)+'</small>':''}</div><span><a class="lk" data-rc="${p.id}">Recibo</a> · <a class="lk" data-pe="${p.id}">Editar</a> · <a class="lk" data-pd="${p.id}">Eliminar</a></span></div>`).join('')||'<p class="empty">Ninguno todavía.</p>'}`;
   d.showModal();FLASH=null;
-  d.querySelectorAll('[data-rc]').forEach(a=>a.onclick=()=>receipt(a.dataset.rc));
+  d.querySelectorAll('[data-rc]').forEach(a=>a.onclick=()=>receipt(a.dataset.rc));const apb=$('#apb');if(apb)apb.onclick=()=>approvalDlg(id);
   d.querySelectorAll('[data-pq]').forEach(b=>b.onclick=()=>payUpTo(id,+b.dataset.pq));
   d.querySelectorAll('[data-pe]').forEach(a=>a.onclick=()=>{const p=S.pays.find(x=>x.id===a.dataset.pe),v=prompt('Valor del pago ($):',p.amt);if(v===null)return;const n=+v;if(!(n>0)){alert('Valor inválido.');return}const dt=prompt('Fecha (AAAA-MM-DD):',p.date);if(dt&&/^\d{4}-\d{2}-\d{2}$/.test(dt))p.date=dt;p.amt=n;save();openLoan(id);render()});
   d.querySelectorAll('[data-pd]').forEach(a=>a.onclick=()=>{if(confirm('¿Eliminar este pago?')){S.pays=S.pays.filter(x=>x.id!==a.dataset.pd);save();openLoan(id);render()}});
@@ -346,6 +347,72 @@ function openLoan(id){
   $('#fp').onsubmit=e=>{e.preventDefault();const f=Object.fromEntries(new FormData(e.target));S.nextNo=Math.max(S.nextNo||0,S.pays.length)+1;S.pays.push({id:uid(),loan:id,amt:+f.amt,date:f.date,nota:f.nota||'',no:S.nextNo});save();openLoan(id);render()};
 }
 
+/* ===== 4.1 · Imagen tipo recibo para compartir (aprobación de crédito y recibo de pago). Solo añade: los mensajes de texto siguen existiendo ===== */
+const NEWS='Novedades: aviso de crédito aprobado con las fechas de pago y recibos en imagen para compartir.';
+const FRQ={d:'diarias',s:'semanales',q:'quincenales',m:'mensuales'};
+const dfmt=s=>String(s||'').split('-').reverse().join('/');
+const ACM={verde:'#14594a',azul:'#1f5fbf',violeta:'#6d3fc0',rosa:'#c2255c',naranja:'#c25b00'};
+const IFONT='"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+const waTo=(cid,t)=>{const c=S.clients.find(x=>x.id===cid)||{},tel=String(c.tel||'').replace(/\D/g,'');return'https://wa.me/'+(tel?(tel.length===10?'57'+tel:tel):'')+'?text='+encodeURIComponent(t)};
+function approvalData(l){const c=S.clients.find(x=>x.id===l.client)||{},rs=calc(l);return{c,rs,tot:rs.reduce((a,r)=>a+r.tot,0),cuota:rs[0]?rs[0].tot:0}}
+function approvalTxt(l){const a=approvalData(l),extra=l.msg&&String(l.msg).trim()?'\n'+String(l.msg).trim():'';
+  return(S.biz?S.biz+'\n':'')+'✅ ¡Crédito aprobado!\nHola '+(a.c.nombre||'')+', tu préstamo'+(l.code?' '+l.code:'')+' de '+fmt(l.monto)+' fue aprobado.\nSe difiere a '+a.rs.length+' cuotas '+FRQ[l.freq]+' de '+fmt(a.cuota)+' (total a pagar: '+fmt(a.tot)+').\nFechas de pago:\n'+a.rs.map(r=>r.k+'. '+dfmt(r.date)+' – '+fmt(r.tot)).join('\n')+'\nGracias por tu confianza.'+extra}
+function rrect(x,a,b,w,h,r){x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r);x.arcTo(a+w,b+h,a,b+h,r);x.arcTo(a,b+h,a,b,r);x.arcTo(a,b,a+w,b,r);x.closePath()}
+const loadImg=src=>new Promise(res=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>res(null);i.src=src});
+function fitTxt(x,t,w){t=String(t);if(x.measureText(t).width<=w)return t;while(t.length>1&&x.measureText(t+'…').width>w)t=t.slice(0,-1);return t+'…'}
+/* Dibuja una tarjeta tipo recibo. o:{title,sub,amountLbl,amount,note,rows:[[etiqueta,valor]],table:{title,head,rows},foot:[[etiqueta,valor]]}. Se pinta dos veces: primero para medir el alto y luego de verdad. */
+async function cardBlob(o){const W=1080,M=40,CW=W-2*M,acc=ACM[S.cfg.accent]||ACM.verde,logo=await loadImg(IC.l);
+  const paint=(x,H)=>{let y=M;x.textBaseline='alphabetic';x.textAlign='left';x.fillStyle='#e9eeeb';x.fillRect(0,0,W,H);
+    x.save();x.shadowColor='rgba(0,0,0,.18)';x.shadowBlur=24;x.shadowOffsetY=6;x.fillStyle='#fff';rrect(x,M,M,CW,H-2*M,34);x.fill();x.restore();
+    x.save();rrect(x,M,M,CW,H-2*M,34);x.clip();
+    x.fillStyle=acc;x.fillRect(M,M,CW,310);const g=x.createLinearGradient(M,M,W-M,M+310);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,.32)');x.fillStyle=g;x.fillRect(M,M,CW,310);x.restore();
+    if(logo){x.save();rrect(x,M+36,M+30,84,84,20);x.clip();x.fillStyle='#fff';x.fillRect(M+36,M+30,84,84);x.drawImage(logo,M+40,M+34,76,76);x.restore()}
+    x.fillStyle='#fff';x.font='700 34px '+IFONT;x.fillText(fitTxt(x,S.biz||'Préstamos y Cobros',CW-190),M+142,M+84);
+    x.font='800 58px '+IFONT;x.fillText(fitTxt(x,o.title,CW-72),M+36,M+190);
+    x.font='400 29px '+IFONT;x.globalAlpha=.92;x.fillText(fitTxt(x,o.sub||'',CW-72),M+36,M+240);x.globalAlpha=1;
+    y=M+310;
+    x.save();x.shadowColor='rgba(0,0,0,.25)';x.shadowBlur=18;x.shadowOffsetY=4;x.fillStyle='#fff';x.beginPath();x.arc(W/2,y,58,0,7);x.fill();x.restore();
+    x.fillStyle='#1d7a4f';x.beginPath();x.arc(W/2,y,46,0,7);x.fill();x.strokeStyle='#fff';x.lineWidth=9;x.lineCap='round';x.lineJoin='round';x.beginPath();x.moveTo(W/2-20,y+2);x.lineTo(W/2-5,y+17);x.lineTo(W/2+22,y-14);x.stroke();
+    y+=118;x.textAlign='center';x.fillStyle='#5c6f69';x.font='500 30px '+IFONT;x.fillText(o.amountLbl,W/2,y);
+    y+=88;x.fillStyle='#14312b';x.font='800 '+(String(o.amount).length>12?'72':'88')+'px '+IFONT;x.fillText(o.amount,W/2,y);
+    if(o.note){y+=52;x.fillStyle='#5c6f69';x.font='400 28px '+IFONT;x.fillText(fitTxt(x,o.note,CW-80),W/2,y)}
+    x.textAlign='left';y+=50;
+    const cut=()=>{x.save();x.strokeStyle='#c9d3ce';x.lineWidth=3;x.setLineDash([14,12]);x.beginPath();x.moveTo(M+34,y);x.lineTo(W-M-34,y);x.stroke();x.restore();x.fillStyle='#e9eeeb';x.beginPath();x.arc(M,y,24,0,7);x.fill();x.beginPath();x.arc(W-M,y,24,0,7);x.fill();y+=14};
+    cut();
+    (o.rows||[]).forEach((r,i)=>{y+=60;x.fillStyle='#5c6f69';x.font='400 29px '+IFONT;x.textAlign='left';x.fillText(r[0],M+40,y);const lw=x.measureText(r[0]).width;x.textAlign='right';x.fillStyle='#14312b';x.font='700 31px '+IFONT;x.fillText(fitTxt(x,r[1],CW-80-lw-24),W-M-40,y);x.textAlign='left';y+=22;if(i<o.rows.length-1){x.fillStyle='#edf1ee';x.fillRect(M+40,y,CW-80,2)}});
+    if(o.table){const t=o.table,n=t.rows.length,two=n>24,per=two?Math.ceil(n/2):n,tw=two?(CW-80-24)/2:CW-80,rh=54;let ye=0;y+=22;cut();y+=12;
+      x.fillStyle='#14312b';x.font='800 32px '+IFONT;x.fillText(t.title,M+40,y+34);y+=62;
+      for(let c=0;c<(two?2:1);c++){let yy=y;const x0=M+40+c*(tw+24);x.fillStyle=acc;x.globalAlpha=.12;rrect(x,x0,yy,tw,rh,12);x.fill();x.globalAlpha=1;x.fillStyle=acc;x.font='700 26px '+IFONT;
+        const cx=[x0+18,x0+90,x0+tw-18];x.fillText(t.head[0],cx[0],yy+36);x.fillText(t.head[1],cx[1],yy+36);x.textAlign='right';x.fillText(t.head[2],cx[2],yy+36);x.textAlign='left';yy+=rh;
+        t.rows.slice(c*per,c*per+per).forEach((r,i)=>{if(i%2){x.fillStyle='#f6f8f7';x.fillRect(x0,yy,tw,rh)}x.fillStyle='#14312b';x.font='600 27px '+IFONT;x.fillText(r[0],cx[0],yy+36);x.font='400 27px '+IFONT;x.fillText(r[1],cx[1],yy+36);x.font='700 27px '+IFONT;x.textAlign='right';x.fillText(r[2],cx[2],yy+36);x.textAlign='left';yy+=rh});
+        ye=Math.max(ye,yy)}
+      y=ye+14}
+    if(o.foot&&o.foot.length){y+=14;cut();o.foot.forEach(r=>{y+=62;x.fillStyle='#14312b';x.font='800 34px '+IFONT;x.textAlign='left';x.fillText(r[0],M+40,y);x.textAlign='right';x.fillStyle=acc;x.fillText(r[1],W-M-40,y);x.textAlign='left'});y+=18}
+    y+=44;x.textAlign='center';x.fillStyle='#8a9a94';x.font='400 24px '+IFONT;x.fillText('Guarda esta imagen como comprobante',W/2,y);y+=34;x.fillText(fitTxt(x,'Generado el '+dfmt(today())+(S.biz?' · '+S.biz:''),CW-80),W/2,y);x.textAlign='left';
+    return y+M+34};
+  const d=document.createElement('canvas');d.width=W;d.height=10;const H=Math.ceil(paint(d.getContext('2d'),10)),cv=document.createElement('canvas');cv.width=W;cv.height=H;paint(cv.getContext('2d'),H);
+  return new Promise((res,rej)=>cv.toBlob(b=>b?res(b):rej(new Error('blob')),'image/png'))}
+function approvalBlob(l){const a=approvalData(l);
+  return cardBlob({title:'¡Crédito aprobado!',sub:(a.c.nombre||'')+(l.code?' · '+l.code:''),amountLbl:'Valor del préstamo',amount:fmt(l.monto),note:'Diferido a '+a.rs.length+' cuotas '+FRQ[l.freq]+' de '+fmt(a.cuota),
+    rows:[['Cliente',a.c.nombre||''],['Préstamo',l.code||'—'],['Fecha del préstamo',dfmt(l.fecha||today())],['Tasa',l.tasa+'% mensual · '+(l.metodo==='simple'?'interés simple':'sobre saldo')],['Cuotas',a.rs.length+' '+FRQ[l.freq]+' de '+fmt(a.cuota)]],
+    table:{title:'Fechas de pago',head:['#','Fecha','Cuota'],rows:a.rs.map(r=>[String(r.k),dfmt(r.date),fmt(r.tot)])},foot:[['Total a pagar',fmt(a.tot)]]})}
+function receiptBlob(pid){const p=S.pays.find(x=>x.id===pid),l=S.loans.find(x=>x.id===p.loan),c=S.clients.find(x=>x.id===l.client)||{},s=sched(l);
+  const ant=S.pays.filter(x=>x.loan===l.id),upto=ant.slice(0,ant.indexOf(p)+1).reduce((a,x)=>a+x.amt,0),num=String(p.no||S.pays.indexOf(p)+1).padStart(5,'0'),q=cuotasInfo(l,upto);
+  const rows=[['Recibo N.º',num],['Fecha del pago',dfmt(p.date)],['Recibido de',c.nombre||'']];if(c.doc)rows.push(['Documento',c.doc]);
+  rows.push(['Préstamo',(l.code?l.code+' · ':'')+fmt(l.monto)],['Total pagado a la fecha',fmt(upto)],['Cuotas','Pagadas '+q.pg+' de '+q.n+' · Pendientes '+q.pen]);
+  return cardBlob({title:'Pago recibido',sub:'Recibo de pago N.º '+num,amountLbl:'Valor recibido',amount:fmt(p.amt),note:p.nota||'',rows,foot:[['Saldo pendiente',fmt(Math.max(0,s.total-upto))]]})}
+async function shareImg(blob,name,text){if(!blob){alert('No se pudo crear la imagen en este navegador.');return}
+  try{const f=new File([blob],name,{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],text:text||''});return}}catch(e){if(e&&e.name==='AbortError')return}
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),5000);
+  alert('Este navegador no permite compartir la imagen directamente. Se descargó en tu dispositivo: adjúntala en WhatsApp.')}
+async function approvalDlg(id){const l=S.loans.find(x=>x.id===id);if(!l)return;const d=$('#ap'),a=approvalData(l);
+  d.innerHTML='<h2>Preparando la imagen…</h2>';if(!d.open)d.showModal();
+  let blob=null,url='';try{blob=await approvalBlob(l);url=URL.createObjectURL(blob)}catch(e){}
+  const txt=approvalTxt(l),nm='credito-aprobado-'+(l.code||'P')+'.png';
+  d.innerHTML=`<h2>✅ Crédito aprobado${l.code?' · '+esc(l.code):''}</h2><p class="note">${esc(a.c.nombre||'')}: ${fmt(l.monto)} diferido a ${a.rs.length} cuotas ${FRQ[l.freq]} de ${fmt(a.cuota)}. Comparte la imagen con el cliente para avisarle que su crédito fue aprobado y cuáles son sus fechas de pago.</p>${url?`<img class="apimg" src="${url}" alt="Crédito aprobado">`:'<p class="empty">No se pudo crear la imagen; usa el mensaje de texto.</p>'}<p class="noprint"><button class="btn" id="apsh" type="button"${blob?'':' disabled'}>Compartir imagen</button> <a class="btn ghost" style="text-decoration:none;display:inline-block" target="_blank" rel="noopener" href="${waTo(l.client,txt)}">Enviar texto por WhatsApp</a> <button class="btn ghost" id="apx" type="button">Cerrar</button></p>`;
+  const end=()=>{if(d.open)d.close()};$('#apx').onclick=end;d.onclose=()=>{if(url){URL.revokeObjectURL(url);url=''}};
+  $('#apsh').onclick=()=>shareImg(blob,nm,txt)}
+function updNotify(){try{if(!('Notification'in window)||Notification.permission!=='granted')return;const k='prestamos_updn';if(localStorage.getItem(k)===today())return;localStorage.setItem(k,today());new Notification('Préstamos y Cobros',{body:'Hay mejoras nuevas. Abre la app y pulsa Aceptar para aplicarlas.',icon:IC.l})}catch(e){}}
 function receipt(pid){
   const p=S.pays.find(x=>x.id===pid),l=S.loans.find(x=>x.id===p.loan),c=S.clients.find(x=>x.id===l.client)||{},s=sched(l);
   const ant=S.pays.filter(x=>x.loan===l.id);const upto=ant.slice(0,ant.indexOf(p)+1).reduce((a,x)=>a+x.amt,0);
@@ -353,11 +420,12 @@ function receipt(pid){
   const tel=String(c.tel||'').replace(/\D/g,''),saldoP=Math.max(0,s.total-upto);
   const wt=(S.biz?S.biz+'\n':'')+'Recibo de pago N.º '+num+'\nFecha: '+p.date+'\nCliente: '+(c.nombre||'')+'\nValor recibido: '+fmt(p.amt)+'\nSaldo pendiente: '+fmt(saldoP)+'\n'+cuotasTxt(l,upto)+'\nGracias por su pago.';
   const wa='https://wa.me/'+(tel.length===10?'57'+tel:tel)+'?text='+encodeURIComponent(wt);
-  r.innerHTML=`<div class="rbox"><img src="${IC[curMode()==='dark'?'d':'l']}" width="52" height="52" alt="" style="float:right">${S.biz?`<h2 style="margin:0 0 4px">${esc(S.biz)}</h2>`:''}<h2>Recibo de pago N.º ${num}</h2><table><tr><td>Fecha del pago</td><td><b>${p.date}</b></td></tr><tr><td>Recibido de</td><td><b>${esc(c.nombre)}</b></td></tr><tr><td>Documento</td><td>${esc(c.doc)||'—'}</td></tr><tr><td>Préstamo</td><td>${fmt(l.monto)} al ${l.tasa}% mensual, ${l.n} cuotas ${FN[l.freq].toLowerCase()}s</td></tr><tr><td>Valor recibido</td><td><b style="font-size:1.3rem">${fmt(p.amt)}</b></td></tr><tr><td>Total pagado a la fecha</td><td>${fmt(upto)}</td></tr><tr><td>Saldo pendiente</td><td><b>${fmt(Math.max(0,s.total-upto))}</b></td></tr>${(q=>`<tr><td>Cuotas</td><td>Pagadas <b>${q.pg}</b> de ${q.n} · Pendientes por pagar <b>${q.pen}</b></td></tr>`)(cuotasInfo(l,upto))}</table><div class="firma">Firma del prestamista</div></div><p class="noprint"><button class="btn" id="rp">Imprimir</button> <a class="btn ghost" style="text-decoration:none;display:inline-block" target="_blank" rel="noopener" href="${wa}">Enviar por WhatsApp</a> <button class="btn ghost" id="rx">Cerrar</button></p>`;
+  r.innerHTML=`<div class="rbox"><img src="${IC[curMode()==='dark'?'d':'l']}" width="52" height="52" alt="" style="float:right">${S.biz?`<h2 style="margin:0 0 4px">${esc(S.biz)}</h2>`:''}<h2>Recibo de pago N.º ${num}</h2><table><tr><td>Fecha del pago</td><td><b>${p.date}</b></td></tr><tr><td>Recibido de</td><td><b>${esc(c.nombre)}</b></td></tr><tr><td>Documento</td><td>${esc(c.doc)||'—'}</td></tr><tr><td>Préstamo</td><td>${fmt(l.monto)} al ${l.tasa}% mensual, ${l.n} cuotas ${FN[l.freq].toLowerCase()}s</td></tr><tr><td>Valor recibido</td><td><b style="font-size:1.3rem">${fmt(p.amt)}</b></td></tr><tr><td>Total pagado a la fecha</td><td>${fmt(upto)}</td></tr><tr><td>Saldo pendiente</td><td><b>${fmt(Math.max(0,s.total-upto))}</b></td></tr>${(q=>`<tr><td>Cuotas</td><td>Pagadas <b>${q.pg}</b> de ${q.n} · Pendientes por pagar <b>${q.pen}</b></td></tr>`)(cuotasInfo(l,upto))}</table><div class="firma">Firma del prestamista</div></div><p class="noprint"><button class="btn" id="rimg" type="button">Compartir recibo en imagen</button> <button class="btn ghost" id="rp">Imprimir</button> <a class="btn ghost" style="text-decoration:none;display:inline-block" target="_blank" rel="noopener" href="${wa}">Enviar por WhatsApp</a> <button class="btn ghost" id="rx">Cerrar</button></p>`;
   document.body.classList.add('rcp');r.showModal();
   const end=()=>{document.body.classList.remove('rcp');r.close()};
   $('#rx').onclick=end;r.onclose=()=>document.body.classList.remove('rcp');
   $('#rp').onclick=()=>window.print();
+  const rbP=receiptBlob(pid).catch(()=>null);$('#rimg').onclick=async()=>shareImg(await rbP,'recibo-'+num+'.png',wt);
 }
 function reportes(){
   const by={},mes={};
@@ -449,17 +517,17 @@ async function offCheck(manual){
 function offInit(){try{const s=JSON.parse(localStorage.getItem(EK)||'null');if(s&&s.soporte)SUP=s.soporte;if(s&&s.activo===false)offShow(s.mensaje)}catch(e){}
   offCheck();document.addEventListener('visibilitychange',()=>{if(!document.hidden)offCheck()});window.addEventListener('online',()=>offCheck());setInterval(offCheck,3e5)}
 /* ===== Actualizaciones en línea: se descargan solas al haber internet; la persona las acepta para aplicarlas ===== */
-const SWV='cartera-v16';let UPD=null,UACC=false,UPEND=false,SUP='';
+const SWV='cartera-v17';let UPD=null,UACC=false,UPEND=false,SUP='';
 const supLink=m=>SUP?'https://wa.me/'+(SUP.length===10?'57'+SUP:SUP)+'?text='+encodeURIComponent(m):'';
 const bioNeed=()=>!!(S.cfg.bioKeep===true&&SEC&&bioSupported()&&BIOOK&&(!BIO||BIOSTALE)&&!BIODEF);
 function pendHtml(){const u=UPEND,b=bioNeed();if(!u&&!b)return'';
   const w1=supLink('Hola, soporte. Tengo una actualización pendiente en Préstamos y Cobros (versión '+APPV+') y necesito ayuda.'),w2=supLink('Hola, soporte. Mi huella / Face ID quedó pendiente de reactivar en Préstamos y Cobros y necesito ayuda.');
   const sb=w=>w?` <a class="btn ghost" style="text-decoration:none;display:inline-block" target="_blank" rel="noopener" href="${w}">Soporte</a>`:'';
   return `<div class="card alert" id="pend"><h2>🔔 Notificaciones pendientes por aplicar (${(u?1:0)+(b?1:0)})</h2>`+
-    (u?`<div class="row"><div><b>Actualización disponible</b><small>Por favor acepte la actualización o póngase en contacto con soporte.</small></div><span><button class="btn" id="updok" type="button">Aceptar</button>${sb(w1)}</span></div>`:'')+
+    (u?`<div class="row"><div><b>Actualización disponible</b><small>Por favor acepte la actualización o póngase en contacto con soporte.</small><small>${NEWS}</small></div><span><button class="btn" id="updok" type="button">Aceptar</button>${sb(w1)}</span></div>`:'')+
     (b?`<div class="row"><div><b>Huella / Face ID por reactivar</b><small>Por favor acepte para registrarla de nuevo o póngase en contacto con soporte.</small></div><span><button class="btn" id="bioak" type="button">Aceptar</button> <button class="btn ghost" id="biolt" type="button">Más tarde</button>${sb(w2)}</span></div>`:'')+'</div>'}
 function pendInject(){const o=$('#pend');if(o)o.remove();const n0=$('#updnote');if(n0)n0.remove();const v=$('#v');if(!v)return;
-  let h=pendHtml();if(UPDNOTE)h=`<div class="card ok" id="updnote"><b>✅ Aplicación actualizada a la versión ${APPV}.</b> Tus datos${BIO?' y tu huella':''} se conservaron. <a class="lk" id="updnx">Entendido</a></div>`+h;
+  let h=pendHtml();if(UPDNOTE)h=`<div class="card ok" id="updnote"><b>✅ Aplicación actualizada a la versión ${APPV}.</b> Tus datos${BIO?' y tu huella':''} se conservaron. ${NEWS} <a class="lk" id="updnx">Entendido</a></div>`+h;
   if(!h)return;v.insertAdjacentHTML('afterbegin',h);
   const a=$('#updok');if(a)a.onclick=updApply;const b=$('#bioak');if(b)b.onclick=bioFix;const l=$('#biolt');if(l)l.onclick=()=>{BIODEF=true;pendInject()};const x=$('#updnx');if(x)x.onclick=()=>{UPDNOTE=false;pendInject()}}
 async function bioFix(){try{await bioReg();alert('Huella / Face ID reactivada ✓');pendInject();if(tab==='ajustes')ajustes()}catch(e){alert(bioMsg(e))}}
@@ -468,7 +536,7 @@ function bioAutoFix(){try{if(!(S.cfg.bioKeep===true&&SEC&&!BIO&&bioSupported()&&
   bioReg().then(()=>{alert('Huella / Face ID reactivada ✓');pendInject()}).catch(()=>pendInject())}
 function updApply(){snapshot('Antes de actualizar');UACC=true;const b=$('#updok');if(b){b.disabled=true;b.textContent='Aplicando…'}try{UPD&&UPD.postMessage({t:'skip'})}catch(e){}setTimeout(()=>location.reload(),4000)}
 function updInit(){if(!('serviceWorker'in navigator)||!location.protocol.startsWith('http'))return;const sw=navigator.serviceWorker;
-  sw.addEventListener('message',e=>{const d=e.data||{};if(d.t!=='ver')return;if(d.v===SWV){try{UPD&&UPD.postMessage({t:'skip'})}catch(x){}}else{UPEND=true;pendInject()}});
+  sw.addEventListener('message',e=>{const d=e.data||{};if(d.t!=='ver')return;if(d.v===SWV){try{UPD&&UPD.postMessage({t:'skip'})}catch(x){}}else{UPEND=true;pendInject();updNotify()}});
   sw.addEventListener('controllerchange',()=>{if(UACC)location.reload()});
   const got=w=>{UPD=w;try{w.postMessage({t:'ver'})}catch(e){}};
   sw.register('sw.js').then(reg=>{if(reg.waiting&&sw.controller)got(reg.waiting);

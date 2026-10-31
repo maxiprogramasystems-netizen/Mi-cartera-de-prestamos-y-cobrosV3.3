@@ -21,6 +21,8 @@ Aplicación web para controlar una cartera de préstamos: clientes, intereses, c
 - Entrada con huella, rostro (Face ID) o el bloqueo del teléfono, además de la contraseña (que queda como respaldo). Requiere abrir la app desde https y tener la biometría configurada en el dispositivo; se activa en Ajustes > Huella / Face ID. La huella se guarda también dentro de los datos, y con «Mantener la huella siempre activa» (activada por defecto) la app la vuelve a registrar sola si se pierde, por ejemplo después de una actualización, de un respaldo importado o de usar otro teléfono. Si no puede hacerlo sola, lo avisa en la casilla de notificaciones pendientes. Hay un botón «Reasignar huella» para registrarla de nuevo cuando quieras.
 - Bloqueo automático al volver a la app (al instante, 1, 5 o 15 minutos, o nunca), configurable en Ajustes.
 - Temas claro, oscuro o automático, con varios colores y fondos.
+- **Crédito aprobado (imagen para compartir):** al crear un préstamo, la app muestra una tarjeta tipo recibo «¡Crédito aprobado!» con el valor, el número de cuotas en que se difiere, el valor de cada cuota y la fecha de cada pago. Se comparte como imagen (hoja de compartir del teléfono → WhatsApp) o, si el dispositivo no lo permite, se descarga el PNG. También se puede enviar el mismo aviso en texto. Cada préstamo tiene el botón «Aprobación en imagen» para volver a generarla.
+- **Recibo de pago en imagen:** en el recibo hay un botón «Compartir recibo en imagen» (tarjeta tipo Nequi con valor recibido, cliente, cuotas pagadas/pendientes y saldo). El recibo imprimible y el texto por WhatsApp siguen disponibles.
 
 ## Cómo usarla
 
@@ -79,11 +81,17 @@ Para deshabilitarla: abre `estado.json` en GitHub, pulsa el lápiz (Edit), cambi
 
 ## Historial
 
+- 4.1: aviso de crédito aprobado con cuotas y fechas de pago (imagen para compartir + texto opcional); recibo de pago como imagen para compartir; la casilla de actualización y el aviso posterior a actualizar incluyen las novedades; aviso del navegador cuando hay una versión nueva pendiente (si las notificaciones están activadas). Los datos y su formato no cambian (`VER` sigue en 4). Versión de publicación: `cartera-v17`.
+
 - 4.0: botón Pagar en cada cuota por pagar; la huella / Face ID se conserva y se reasigna sola tras actualizar (opción «Mantener la huella siempre activa» y botón «Reasignar huella»); la app abre siempre desde su copia guardada y aplica las actualizaciones cuando la persona acepta; copia interna de los datos antes de abrir cada versión nueva y mensaje de confirmación tras actualizar. Los datos y su formato no cambian (`VER` sigue en 4).
 - 3.9: los mensajes a los clientes incluyen cuotas pagadas y pendientes por pagar; actualizaciones en línea con casilla de notificaciones pendientes y botón de soporte (`soporte` en `estado.json`); copias internas automáticas, restauración, recuperación de datos dañados y almacenamiento persistente. `sw.js` ya no se activa solo: espera a que la persona acepte. Los datos y su formato no cambian (`VER` sigue en 4).
 - 3.8: interruptor remoto con `estado.json`. Nuevo archivo `estado.json`; `sw.js` no lo guarda en caché.
 - 3.7: apertura con huella / Face ID (WebAuthn, verificada en el dispositivo) y bloqueo automático al volver a la app. No cambia el formato de los datos (`VER` sigue en 4); los ajustes de biometría se guardan aparte (`prestamos_bio`, `prestamos_lm`) y no entran en los respaldos.
 - 3.6: corrige que los préstamos nuevos quedaran asignados al primer cliente de la lista (el selector del formulario lo preseleccionaba). Se añade código por préstamo y migración de datos (`VER` 4); los datos existentes se conservan.
+
+## Mejoras que nunca se quitan (comprobar antes de publicar)
+
+Código por préstamo y cliente elegido explícitamente · botón Pagar · mensajes de WhatsApp con «Cuotas pagadas / pendientes» · recibo imprimible y recibo en imagen · crédito aprobado en imagen con fechas de pago · actualizaciones con casilla «Notificaciones pendientes por aplicar» (Aceptar / Soporte) · huella / Face ID con «Mantener la huella siempre activa» y «Reasignar huella» · copias internas y restauración · interruptor remoto `estado.json` · tema claro/oscuro con botón sol/luna · aviso un día antes del cobro. Al preparar una versión nueva, parte siempre del `index.html` más reciente y confirma que todo lo anterior sigue funcionando.
 
 ## Notas
 
