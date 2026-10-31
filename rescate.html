@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rescate · Mi cartera de préstamos</title>
+<style>
+:root{--bg:#f4f6f8;--card:#fff;--tx:#14202b;--mut:#5b6b78;--ok:#16a34a;--warn:#d97706;--pri:#0f766e;--bd:#dbe3ea}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1720;--card:#18232e;--tx:#e8eef3;--mut:#94a5b3;--bd:#2a3846}}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--tx);padding:16px;max-width:640px;margin-inline:auto}
+h1{font-size:22px;margin:8px 0 4px}
+p.s{color:var(--mut);margin:0 0 16px;font-size:14px}
+.c{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:14px}
+.c h2{font-size:16px;margin:0 0 6px}
+.c p{margin:0 0 12px;font-size:14px;color:var(--mut)}
+button{width:100%;padding:14px;border:0;border-radius:10px;font-size:16px;font-weight:600;background:var(--pri);color:#fff}
+button.g{background:var(--ok)}button.w{background:var(--warn)}
+button:disabled{opacity:.5}
+input[type=file]{width:100%;margin-bottom:10px;font-size:14px}
+pre{white-space:pre-wrap;word-break:break-word;font-size:13px;background:var(--bg);border-radius:8px;padding:10px;margin:10px 0 0;max-height:260px;overflow:auto}
+</style>
+</head>
+<body>
+<h1>Rescate de la cartera</h1>
+<p class="s">Esta página no modifica la app. Trabaja con los datos guardados en este mismo navegador y dirección.</p>
+
+<div class="c">
+  <h2>1. Ver qué datos hay guardados</h2>
+  <p>Cuenta lo que existe en este navegador (clientes, préstamos, pagos).</p>
+  <button id="bScan">Escanear datos</button>
+  <pre id="out">Pulsa “Escanear datos”.</pre>
+</div>
+
+<div class="c">
+  <h2>2. Descargar respaldo completo</h2>
+  <p>Guarda un archivo .json con todo. Hazlo antes de cualquier otra cosa.</p>
+  <button class="g" id="bBackup">Descargar respaldo</button>
+</div>
+
+<div class="c">
+  <h2>3. Limpiar archivos viejos de la app</h2>
+  <p>Quita solo la memoria de archivos (caché y service worker) que causa la pantalla rota. No borra clientes ni préstamos.</p>
+  <button class="w" id="bCache">Limpiar caché sin borrar datos</button>
+</div>
+
+<div class="c">
+  <h2>4. Restaurar desde un respaldo</h2>
+  <p>Solo si los datos desaparecieron. Elige el archivo .json descargado antes.</p>
+  <input type="file" id="f" accept=".json,application/json">
+  <button id="bRest">Restaurar datos</button>
+</div>
+
+<script>
+const out=document.getElementById('out');
+const log=t=>{out.textContent=t};
+const b2d=b=>new Promise(r=>{const f=new FileReader();f.onload=()=>r(f.result);f.readAsDataURL(b)});
+const d2b=async u=>(await fetch(u)).blob();
+const req=r=>new Promise((res,rej)=>{r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
+
+async function enc(v){
+  if(v instanceof Blob)return{__blob:await b2d(v),type:v.type};
+  if(Array.isArray(v)){const a=[];for(const x of v)a.push(await enc(x));return a}
+  if(v&&typeof v==='object'&&!(v instanceof Date)){const o={};for(const k in v)o[k]=await enc(v[k]);return o}
+  return v;
+}
+async function dec(v){
+  if(v&&typeof v==='object'){
+    if(v.__blob)return await d2b(v.__blob);
+    if(Array.isArray(v)){const a=[];for(const x of v)a.push(await dec(x));return a}
+    const o={};for(const k in v)o[k]=await dec(v[k]);return o;
+  }
+  return v;
+}
+
+async function dump(){
+  const data={tipo:'respaldo-cartera',fecha:new Date().toISOString(),origen:location.origin,localStorage:{},indexedDB:{}};
+  for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);data.localStorage[k]=localStorage.getItem(k)}
+  if(indexedDB.databases){
+    const dbs=await indexedDB.databases();
+    for(const info of dbs){
+      try{
+        const db=await new Promise((res,rej)=>{const r=indexedDB.open(info.name);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
+        const d={version:db.version,stores:{}};
+        for(const name of Array.from(db.objectStoreNames)){
+          const tx=db.transaction(name,'readonly');const st=tx.objectStore(name);
+          const keys=await req(st.getAllKeys());const vals=await req(st.getAll());
+          const rows=[];for(let i=0;i<vals.length;i++)rows.push({k:await enc(keys[i]),v:await enc(vals[i])});
+          d.stores[name]={keyPath:st.keyPath,rows};
+        }
+        db.close();data.indexedDB[info.name]=d;
+      }catch(e){data.indexedDB[info.name]={error:String(e)}}
+    }
+  }
+  return data;
+}
+
+document.getElementById('bScan').onclick=async()=>{
+  log('Escaneando…');
+  try{
+    const d=await dump();let t='Dirección: '+d.origen+'\n\n';
+    const lk=Object.keys(d.localStorage);
+    t+='Almacenamiento local: '+lk.length+' claves\n';
+    lk.forEach(k=>{const v=d.localStorage[k];let n='';
+      try{const j=JSON.parse(v);if(Array.isArray(j))n=' → '+j.length+' registros';else if(j&&typeof j==='object')n=' → objeto ('+Object.keys(j).length+' campos)'}catch(e){}
+      t+='  • '+k+' ('+v.length+' caracteres)'+n+'\n'});
+    const dn=Object.keys(d.indexedDB);
+    t+='\nBases IndexedDB: '+dn.length+'\n';
+    dn.forEach(n=>{const x=d.indexedDB[n];t+='  • '+n+'\n';
+      if(x.stores)for(const s in x.stores)t+='      '+s+': '+x.stores[s].rows.length+' registros\n'});
+    if(!lk.length&&!dn.length)t+='\nNo se encontraron datos en esta dirección. Verifica que abriste la misma dirección de siempre.';
+    log(t);
+  }catch(e){log('Error: '+e)}
+};
+
+document.getElementById('bBackup').onclick=async()=>{
+  try{
+    const d=await dump();
+    const blob=new Blob([JSON.stringify(d)],{type:'application/json'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+    a.download='respaldo-cartera-'+new Date().toISOString().slice(0,10)+'.json';
+    document.body.appendChild(a);a.click();a.remove();
+    log('Respaldo descargado. Revisa tu carpeta de Descargas.');
+  }catch(e){log('Error: '+e)}
+};
+
+document.getElementById('bCache').onclick=async()=>{
+  try{
+    let n=0,c=0;
+    if('serviceWorker' in navigator){const rs=await navigator.serviceWorker.getRegistrations();for(const r of rs){await r.unregister();n++}}
+    if(window.caches){const ks=await caches.keys();for(const k of ks){await caches.delete(k);c++}}
+    log('Listo. Service workers quitados: '+n+'. Cachés borradas: '+c+'.\nTus datos no se tocaron. Ahora abre la app con ?v=nuevo al final de la dirección.');
+  }catch(e){log('Error: '+e)}
+};
+
+document.getElementById('bRest').onclick=async()=>{
+  const f=document.getElementById('f').files[0];
+  if(!f){log('Primero elige el archivo de respaldo.');return}
+  if(!confirm('Se escribirán los datos del respaldo en este navegador. ¿Continuar?'))return;
+  try{
+    const d=JSON.parse(await f.text());
+    if(d.tipo!=='respaldo-cartera'){log('Este archivo no es un respaldo de esta página.');return}
+    let t='';
+    for(const k in d.localStorage)localStorage.setItem(k,d.localStorage[k]);
+    t+='Almacenamiento local restaurado: '+Object.keys(d.localStorage).length+' claves\n';
+    for(const name in d.indexedDB){
+      const x=d.indexedDB[name];if(!x.stores)continue;
+      try{
+        const db=await new Promise((res,rej)=>{const r=indexedDB.open(name);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
+        for(const s in x.stores){
+          if(!db.objectStoreNames.contains(s)){t+='  - '+name+'/'+s+': no existe aquí, se omitió (abre la app una vez y repite)\n';continue}
+          const tx=db.transaction(s,'readwrite');const st=tx.objectStore(s);
+          for(const row of x.stores[s].rows){
+            const v=await dec(row.v);const k=await dec(row.k);
+            if(st.keyPath!==null)st.put(v);else st.put(v,k);
+          }
+          await new Promise((res,rej)=>{tx.oncomplete=res;tx.onerror=()=>rej(tx.error)});
+          t+='  - '+name+'/'+s+': '+x.stores[s].rows.length+' registros\n';
+        }
+        db.close();
+      }catch(e){t+='  - '+name+': error '+e+'\n'}
+    }
+    log(t+'\nListo. Abre la app con ?v=nuevo.');
+  }catch(e){log('Error: '+e)}
+};
+</script>
+</body>
+</html>
