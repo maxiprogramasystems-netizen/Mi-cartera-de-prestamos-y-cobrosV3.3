@@ -17,6 +17,7 @@ Aplicación web para controlar una cartera de préstamos: clientes, intereses, c
 - Botón de sol/luna en la cabecera para cambiar entre tema claro y oscuro.
 - Recibos imprimibles, reportes, exportar e importar respaldo (.json): al importar se elige «Fusionar» (agrega lo que falta) o «Reemplazar todo».
 - Cada cuota del cronograma tiene su botón «Pagar» (si hay cuotas anteriores pendientes, se pagan también).
+- Columna «Editar cuota» en el cronograma: cambia a mano el valor de una cuota (si el cliente paga de menos o en otras fechas). Se puede volver al valor original dejando el campo vacío.
 - Copias internas: una automática al día (las últimas 5) más una antes de importar, restaurar, borrar o actualizar; se restauran desde Ajustes o Reportes.
 - Huella / Face ID con «Mantener la huella siempre activa» y «Reasignar huella» (Ajustes). Requiere abrir la app desde https.
 - Aviso de actualización con la casilla «Notificaciones pendientes por aplicar» y botones Aceptar / Soporte.
@@ -59,7 +60,7 @@ screenshot-*.png        Capturas para el diálogo de instalación
 
 - 3.8: se reponen las mejoras que se perdieron con la actualización: botón «Pagar» por cuota (con columna Mora), copias internas y restauración, importar con fusión, huella / Face ID, interruptor remoto `estado.json` y casilla «Notificaciones pendientes por aplicar» con Aceptar / Soporte. No cambia el esquema de datos (`VER` 4).
 
-- 3.9: la aprobación del préstamo que se envía al cliente (imagen y texto de WhatsApp) ya no muestra el interés ni el «Total a pagar»; conserva valor aprobado, número de cuotas, valor de cada cuota y fechas de pago. Dentro de la app el detalle del préstamo sigue mostrando el total y el interés. No cambia el esquema de datos (`VER` 4).
+- 3.13: columna «Editar cuota» en el cronograma del préstamo (cada cuota pendiente o con abono se puede editar; la cuota editada se marca con ✎ y el cálculo del saldo, recibos y avisos usa el nuevo valor). El dato se guarda en el préstamo como `ov` (opcional); no cambia el esquema de datos (`VER` 4) y los préstamos existentes no se tocan. En el móvil el valor pagado de un abono se muestra bajo el estado.
 
 ## Interruptor remoto (estado.json)
 
