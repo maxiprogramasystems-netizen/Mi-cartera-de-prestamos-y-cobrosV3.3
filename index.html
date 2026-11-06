@@ -74,14 +74,15 @@ details.oth{margin:10px 0;border:1px solid var(--line);border-radius:10px;paddin
 .ub{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:12px;right:12px;z-index:60;max-width:520px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:16px;background:var(--card);border:2px solid var(--acc);box-shadow:0 10px 30px rgba(0,0,0,.3)}.ub div{flex:1;font-size:.92rem;line-height:1.3}.ub .x{background:none;border:0;color:var(--ink);font-size:1.3rem;cursor:pointer;padding:4px 8px}
 
 .pgb{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:5px 16px;font:inherit;font-size:.88rem;cursor:pointer}.pgb:hover{border-color:var(--acc)}
-.edb{border:1px dashed var(--acc);background:transparent;color:var(--acc);border-radius:999px;padding:4px 12px;font:inherit;font-size:.82rem;cursor:pointer;white-space:nowrap}.edb:hover{background:var(--card);border-style:solid}th.edh,td.edc{text-align:center}.edm{color:var(--acc);margin-left:2px}.pgm{display:none}.dim{opacity:.4}
 .tag.pend{display:inline-flex;align-items:center;gap:6px;background:color-mix(in srgb,var(--line) 70%,var(--card));color:var(--mut)}.tag.pend::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--mut)}
 td.act{text-align:right}td.act .wa{margin-left:6px}
 .ub{flex-wrap:wrap}.ub .ubt{flex:0 0 100%!important;display:flex;gap:8px;width:100%;justify-content:flex-end;flex-wrap:wrap}.ub label.ck{display:flex;gap:8px;align-items:flex-start;margin-top:6px;color:var(--ink);font-size:.88rem}.ub label.ck input{width:auto;margin-top:3px}
 .blq{position:fixed;inset:0;z-index:120;background:var(--bg);display:grid;place-items:center;padding:20px}
 label.ck2{display:flex;gap:8px;align-items:flex-start;color:var(--ink);font-size:.95rem;margin:8px 0}label.ck2 input{width:auto;margin-top:4px}
 .cps .row small{display:block}
-@media(max-width:560px){table.cuo th,table.cuo td{padding:8px 3px;font-size:.82rem}table.cuo .yr,table.cuo .wa{display:none}.edb{padding:3px 7px;font-size:.8rem}.edb .edt{display:none}th.edh{font-size:.72rem;line-height:1.1;width:44px;white-space:normal}table.cuo th,table.cuo td{padding:8px 1px;font-size:.78rem}table.cuo th{font-size:.74rem}table.cuo .pg{display:none}.pgm{display:block;font-size:.68rem;color:var(--ok);font-weight:700;margin-top:2px}table.cuo .tag{padding:2px 5px;font-size:.7rem;letter-spacing:0}table.cuo .tag::before{display:none}.pgb{padding:4px 9px;font-size:.8rem}table.cuo.nomo .mo{display:none}.pgb{padding:4px 11px}table.cuo .tag{padding:2px 7px;font-size:.74rem;gap:4px}}
+@media(max-width:560px){table.cuo th,table.cuo td{padding:8px 3px;font-size:.82rem}table.cuo .yr,table.cuo .wa{display:none}table.cuo.nomo .mo{display:none}.pgb{padding:4px 11px}table.cuo .tag{padding:2px 7px;font-size:.74rem;gap:4px}}
+.card.good{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 11%,var(--card))}.card.good h2{color:var(--ok)}.chs{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 6px}.chb{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 13px;font:inherit;font-size:.85rem;cursor:pointer}.chb.on{background:var(--acc);border-color:var(--acc);color:#fff}.tg{display:inline-block;margin-left:8px;padding:1px 9px;border-radius:999px;font-size:.72rem;font-weight:700;vertical-align:middle}.tg.ok{background:color-mix(in srgb,var(--ok) 18%,transparent);color:var(--ok)}.tg.wn{background:color-mix(in srgb,var(--acc2) 22%,transparent);color:var(--acc2)}.tg.bd{background:color-mix(in srgb,var(--bad) 16%,transparent);color:var(--bad)}.note select{font:inherit;padding:1px 4px;width:auto;display:inline-block}.tg{font-style:normal}
+.ofb{border:0;background:var(--acc);color:#fff;border-radius:999px;padding:6px 14px;font:inherit;font-size:.82rem;font-weight:700;cursor:pointer;white-space:nowrap}.ofb:hover{filter:brightness(1.1)}
 </style>
 <link rel="manifest" href="manifest.webmanifest?v=11">
 <link rel="icon" id="fav" type="image/png" sizes="48x48" href="icon-48.png?v=11">
@@ -106,7 +107,7 @@ const fmt=n=>'$'+Math.round(n).toLocaleString('es-CO');
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const DAYS={d:1,s:7,q:15,m:30},FN={d:'Diaria',s:'Semanal',q:'Quincenal',m:'Mensual'};
-const APPV='3.13',VER=4,MIG={3:r=>{let n=0;r.loans.forEach(l=>{if(!l.code)l.code='P-'+String(++n).padStart(3,'0')})}};/* migraciones futuras: MIG[n]=s=>{...} convierte datos de la versión n a n+1 sin perder nada */
+const APPV='3.15',VER=4,MIG={3:r=>{let n=0;r.loans.forEach(l=>{if(!l.code)l.code='P-'+String(++n).padStart(3,'0')})}};/* migraciones futuras: MIG[n]=s=>{...} convierte datos de la versión n a n+1 sin perder nada */
 function migrate(r){r=r||{};r.clients=r.clients||[];r.loans=r.loans||[];r.pays=r.pays||[];r.cap=r.cap||[];r.cfg=Object.assign({theme:'auto',accent:'verde',bg:'liso',notif:false},r.cfg||{});let v=r.v||1;while(v<VER){(MIG[v]||(()=>{}))(r);v++}r.v=VER;return r}
 let S=migrate();
 const newCode=()=>'P-'+String(Math.max(0,...S.loans.map(l=>+String(l.code||'').replace(/\D/g,'')||0))+1).padStart(3,'0');
@@ -137,8 +138,6 @@ function calc(p){
     const i=r*dd/30,c=i?P*i/(1-Math.pow(1+i,-n)):P/n;let b=P;
     for(let k=1;k<=n;k++){const it=b*i,cp=c-it;b-=cp;rows.push({k,date:addDate(p.fecha,k,p.freq),cap:cp,int:it,tot:c})}
   }
-  /* v3.11: cuotas editadas a mano (l.ov = {nº de cuota: valor}) */
-  if(p.ov)rows.forEach(r=>{const v=+p.ov[r.k];if(v>0){r.orig=r.tot;r.tot=v;r.int=Math.max(0,v-r.cap);r.cap=v-r.int;r.ed=1}});
   return rows;
 }
 function sched(l){
@@ -155,6 +154,83 @@ function sched(l){
   return{rows,paid,total,saldo:Math.max(0,total-paid),intTot,intPaid,mora,st,overdue:rows.filter(r=>r.late).reduce((a,r)=>a+r.tot-r.paid,0)};
 }
 const WAI='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>';
+/* v3.14 · Estado de clientes: al día, por finalizar y finalizados */
+let REPF='todos';
+const finN=()=>Math.max(1,Math.min(5,+S.cfg.finN||2));
+const agoD=n=>{const d=new Date();d.setDate(d.getDate()-n);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const ESTAG={dia:['Al día','ok'],por:['Por finalizar','wn'],fin:['Finalizado','ok'],mora:['En mora','bd']},ESORD={mora:0,por:1,dia:2,fin:3};
+function cstat(cid){
+  const ls=S.loans.filter(l=>l.client===cid).map(l=>{const s=sched(l);return{l,s,p:prog(l,s.paid)}});
+  if(!ls.length)return null;
+  const act=ls.filter(x=>x.s.st!=='pagado'),use=act.length?act:ls,sm=f=>use.reduce((a,x)=>a+f(x),0);
+  const last=S.pays.filter(p=>ls.some(x=>x.l.id===p.loan)).reduce((m,p)=>p.date>m?p.date:m,'');
+  const st=!act.length?'fin':act.some(x=>x.s.st==='mora')?'mora':act.every(x=>x.p.pen<=finN())?'por':'dia';
+  const nx=act.map(x=>x.p.next&&{r:x.p.next,v:x.p.nextRem}).filter(Boolean).sort((a,b)=>a.r.date.localeCompare(b.r.date))[0]||null;
+  return{cid,st,ls,act,last,nx,pag:sm(x=>x.p.pag),n:sm(x=>x.p.n),pen:sm(x=>x.p.pen),saldo:sm(x=>x.s.saldo),paid:sm(x=>x.s.paid),cods:use.map(x=>x.l.code).filter(Boolean).join(', ')}
+}
+const allSt=()=>S.clients.map(c=>cstat(c.id)).filter(Boolean).sort((a,b)=>ESORD[a.st]-ESORD[b.st]||cname(a.cid).localeCompare(cname(b.cid)));
+function ofText(e,amt){
+  const f=cname(e.cid).split(' ')[0],av=amt>0?'hasta '+fmt(amt):'',pre=S.biz?S.biz+'\n':'';let t;
+  if(e.st==='fin')t='Hola '+f+' 😊, ¡gracias por cumplir con su préstamo! Fue un gusto atenderle y valoramos mucho su puntualidad.\n\n'+(amt>0?'Queremos contarle que tiene un crédito disponible de '+av+' para cuando lo necesite.':'Queremos contarle que puede volver a solicitar un nuevo crédito cuando lo necesite.')+'\n\nSi le interesa, respóndanos este mensaje y con gusto le ayudamos. ¡Que tenga un excelente día! 🙌';
+  else if(e.st==='por')t='Hola '+f+' 😊, ¡felicitaciones! Ya le falta muy poco para terminar su préstamo ('+e.pen+' cuota'+(e.pen>1?'s':'')+') y queremos agradecerle su puntualidad.\n\n'+(amt>0?'Cuando lo termine, tendrá disponible un nuevo crédito de '+av+'.':'Cuando lo termine, podrá solicitar un nuevo crédito con nosotros.')+'\n\nSi desea, podemos dejárselo listo desde ya: respóndanos y con gusto le ayudamos. ¡Gracias por su confianza! 🙌';
+  else t='Hola '+f+' 😊, gracias por mantener sus pagos al día; es un gusto contar con usted.\n\n'+(amt>0?'Como cliente cumplido, tiene disponible un crédito adicional de '+av+'.':'Como cliente cumplido, puede consultarnos por un crédito adicional.')+'\n\nSi le interesa, respóndanos este mensaje y con gusto le ayudamos. ¡Feliz día! 🙌';
+  return pre+t}
+function ofrecerDialog(cid){
+  const e=cstat(cid);if(!e||e.st==='mora')return;const c=S.clients.find(x=>x.id===cid);if(!c)return;
+  const last=e.ls.slice().sort((a,b)=>String(a.l.fecha).localeCompare(String(b.l.fecha))).pop().l,first=cname(cid).split(' ')[0];
+  let amt=Math.round(+last.monto)||0,edited=false,url='',blob=null,logged=false,tm=0;
+  const r=$('#rc');document.body.classList.remove('rcp');
+  r.innerHTML=`<div class="noprint cbt"><a class="btn" id="ofw" target="_blank" rel="noopener">Enviar por WhatsApp</a><button class="btn ghost" id="ofs" disabled>Compartir imagen</button><button class="btn ghost" id="ofv" disabled>Guardar imagen</button><button class="btn ghost" id="cx">Cerrar</button></div>
+  <h2>🎁 Ofrecer un nuevo crédito</h2><p class="note">Para ${esc(c.nombre)}. Cambia el valor o el mensaje antes de enviarlo; puedes enviarlo las veces que quieras.</p>
+  <label>Valor disponible para prestar (opcional)<input id="ofa" inputmode="numeric" value="${amt||''}"></label>
+  <label>Mensaje<textarea id="ofm" rows="9"></textarea></label>
+  <p class="note" id="cm">Preparando la imagen…</p><img id="ci" class="cimg" alt="Crédito disponible" hidden>`;
+  const log=()=>{if(logged)return;logged=true;c.oferta=today();c.nOf=(+c.nOf||0)+1;save()};
+  const upd=()=>{$('#ofw').href=waText(cid,$('#ofm').value)};
+  const sp=()=>({kicker:'Crédito disponible',title:'¡Crédito disponible!',amtLabel:amt>0?'Valor disponible':'',amount:amt>0?fmt(amt):'Para usted',sub:'Hola '+first+', '+({fin:'gracias por cumplir con su préstamo.',por:'gracias por su puntualidad, ya casi termina su préstamo.',dia:'gracias por mantener sus pagos al día.'}[e.st])+' Puede solicitar un nuevo crédito cuando lo necesite.',rows:[['Cliente',c.nombre]],foot:'Escríbanos y con gusto le ayudamos. ¡Gracias por su confianza!',ref:(S.biz||'Préstamos y Cobros')+' · '+fdate(today())});
+  const regen=()=>{clearTimeout(tm);tm=setTimeout(async()=>{let b=null;try{b=await cardImage(sp())}catch(x){}if(!b)return;blob=b;if(url)URL.revokeObjectURL(url);url=URL.createObjectURL(b);const im=$('#ci');if(!im)return;im.src=url;im.hidden=false;const m=$('#cm');if(m)m.remove();$('#ofs').disabled=false;$('#ofv').disabled=false},200)};
+  const nm='credito-disponible-'+first.toLowerCase().replace(/[^\w]+/g,'')+'.png',dl=()=>{if(!url)return;const a=document.createElement('a');a.href=url;a.download=nm;document.body.appendChild(a);a.click();a.remove()};
+  $('#ofm').value=ofText(e,amt);upd();regen();
+  $('#ofa').oninput=ev=>{amt=+String(ev.target.value).replace(/\D/g,'')||0;if(!edited)$('#ofm').value=ofText(e,amt);upd();regen()};
+  $('#ofm').oninput=()=>{edited=true;upd()};
+  $('#ofw').onclick=log;
+  $('#ofv').onclick=()=>{log();dl()};
+  $('#ofs').onclick=async()=>{log();if(!blob)return;const f=new File([blob],nm,{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:'Crédito disponible'});return}catch(err){if(err&&err.name==='AbortError')return}}dl();alert('Este navegador no comparte imágenes directo. La imagen quedó guardada: adjúntala en WhatsApp.')};
+  r.onclose=()=>{document.body.classList.remove('rcp');clearTimeout(tm);if(url)URL.revokeObjectURL(url);if(logged)render()};
+  $('#cx').onclick=()=>r.close();
+  if(r.open)r.close();r.showModal()}
+function eRow(e){
+  const tg=ESTAG[e.st],ok=e.st!=='mora',opp=e.st!=='mora',ofc=S.clients.find(x=>x.id===e.cid)||{};
+  const info0=e.st==='fin'?(e.cods?e.cods+' · ':'')+e.ls.length+' préstamo'+(e.ls.length>1?'s':'')+' pagado'+(e.ls.length>1?'s':'')+(e.last?' · último pago '+fdate(e.last):''):(e.cods?e.cods+' · ':'')+e.pag+' de '+e.n+' cuotas pagadas · saldo '+fmt(e.saldo)+(e.nx?' · '+(e.nx.r.date<today()?'vencida desde ':'próximo ')+fdate(e.nx.r.date):'');
+  const info=info0+(!ok||!ofc.oferta?'':' · oferta enviada '+fdate(ofc.oferta)+(ofc.nOf>1?' ('+ofc.nOf+' veces)':''));
+  const lid=(e.act[0]||e.ls[e.ls.length-1]).l.id;
+  return`<div class="row"><div><b>${esc(cname(e.cid))}</b><i class="tg ${tg[1]}">${tg[0]}</i><small>${esc(info)}</small></div><span>${opp?'<button type="button" class="ofb" data-of="'+e.cid+'">🎁 Ofrecer crédito</button> ':''}${[ok?'<a class="lk" data-er="'+e.cid+'">Recibo</a>':'',opp?'<a class="lk" data-nc="'+e.cid+'">Nuevo crédito</a>':'','<a class="lk" data-open="'+lid+'">Ver</a>'].filter(Boolean).join(' · ')}</span></div>`}
+function estadoCard(){
+  const all=allSt(),inD=e=>e.st==='dia'||e.st==='por',cnt={todos:all.length,dia:all.filter(inD).length,por:all.filter(e=>e.st==='por').length,fin:all.filter(e=>e.st==='fin').length,mora:all.filter(e=>e.st==='mora').length};
+  const list=all.filter(e=>REPF==='todos'||(REPF==='dia'?inD(e):e.st===REPF));
+  const ch=[['todos','Todos'],['dia','Al día'],['por','Por finalizar'],['fin','Finalizados'],['mora','En mora']];
+  return`<div class="card"><h2>Estado de clientes</h2><div class="chs">${ch.map(c=>`<button type="button" class="chb ${REPF===c[0]?'on':''}" data-ef="${c[0]}">${c[1]} · ${cnt[c[0]]}</button>`).join('')}</div>
+  ${list.length?list.map(eRow).join(''):'<p class="empty">No hay clientes en este grupo.</p>'}
+  <p class="note">«Al día» = sin cuotas vencidas. «Por finalizar» = le faltan <select id="finN">${[1,2,3,4,5].map(n=>`<option value="${n}" ${finN()===n?'selected':''}>${n}</option>`).join('')}</select> cuota(s) o menos. «Recibo» envía el estado de cuenta (o paz y salvo) y «Ofrecer crédito» envía un mensaje cordial de nuevo crédito, por WhatsApp y las veces que quieras.</p></div>`}
+function estadoRecibo(cid){
+  const e=cstat(cid);if(!e||e.st==='mora')return;const c=S.clients.find(x=>x.id===cid)||{},fin=e.st==='fin';
+  const rows=[['Cliente',c.nombre],['Documento',c.doc],['Préstamo'+(e.cods.includes(',')?'s':''),e.cods],['Cuotas pagadas',e.pag+' de '+e.n],['Cuotas pendientes',String(e.pen)],['Total pagado',fmt(e.paid)]];
+  if(!fin&&e.nx)rows.push(['Próximo pago',fdate(e.nx.r.date)+' · '+fmt(Math.round(e.nx.v))]);
+  const sp={kicker:fin?'Paz y salvo':'Estado de cuenta',title:fin?'¡Paz y salvo!':'¡Está al día!',amtLabel:'Saldo pendiente',amount:fmt(e.saldo),sub:'Hola '+(c.nombre||'')+', '+(fin?'su deuda está saldada.':'sus pagos están al día.'),rows:rows.filter(x=>x[1]),prog:{pag:e.pag,n:e.n,pen:e.pen},foot:fin?'Deuda saldada. ¡Gracias por cumplir!':'Gracias por cumplir con sus pagos.',ref:(S.biz||'Préstamos y Cobros')+' · '+fdate(today())};
+  const wt=(S.biz?S.biz+'\n':'')+(fin?'Paz y salvo ✅':'Estado de cuenta ✅')+'\nFecha: '+today()+'\nCliente: '+(c.nombre||'')+(e.cods?'\nPréstamo: '+e.cods:'')+'\nCuotas pagadas: '+e.pag+' de '+e.n+'\nCuotas pendientes: '+e.pen+'\nSaldo pendiente: '+fmt(e.saldo)+(!fin&&e.nx?'\nPróximo pago: '+e.nx.r.date+' · '+fmt(Math.round(e.nx.v)):'')+'\n'+(fin?'Deuda saldada. ¡Gracias por cumplir!':'Está al día. ¡Gracias por su puntualidad!');
+  cardDialog({title:fin?'Paz y salvo':'Estado de cuenta',name:(fin?'paz-y-salvo-':'estado-cuenta-')+(e.cods||'cliente').replace(/[^\w-]+/g,'-'),wa:waText(cid,wt),make:()=>cardImage(sp)})
+}
+function oppHtml(){
+  const lim=agoD(30),opp=allSt().filter(e=>e.st==='por'||(e.st==='fin'&&e.last>=lim));
+  return opp.length?`<div class="card good"><h2>💡 Clientes para ofrecer un nuevo crédito (${opp.length})</h2><p class="note">Están por terminar su préstamo o lo finalizaron en los últimos 30 días. Toca «Ofrecer crédito» para enviarles un mensaje cordial.</p>${opp.map(eRow).join('')}</div>`:''}
+function bindEstado(){
+  document.querySelectorAll('[data-er]').forEach(a=>a.onclick=()=>estadoRecibo(a.dataset.er));
+  document.querySelectorAll('[data-of]').forEach(b=>b.onclick=()=>ofrecerDialog(b.dataset.of));
+  document.querySelectorAll('[data-nc]').forEach(a=>a.onclick=()=>{selC=a.dataset.nc;tab='prestamos';render();window.scrollTo(0,0)});
+  document.querySelectorAll('[data-ef]').forEach(b=>b.onclick=()=>{REPF=b.dataset.ef;reportes()});
+  const fn=$('#finN');if(fn)fn.onchange=()=>{S.cfg.finN=+fn.value;save();render()};
+  bindOpen()
+}
 function waLink(cid,t,l){const c=S.clients.find(x=>x.id===cid)||{},tel=String(c.tel||'').replace(/\D/g,''),extra=l&&l.msg&&String(l.msg).trim()?'\n'+String(l.msg).trim():'';return tel?'https://wa.me/'+(tel.length===10?'57'+tel:tel)+'?text='+encodeURIComponent((S.biz?S.biz+'\n':'')+t+extra):''}
 const waA=(cid,t,l)=>{const h=waLink(cid,t,l);return h?`<a class="wa" target="_blank" rel="noopener" href="${h}" title="Avisar por WhatsApp" aria-label="Avisar por WhatsApp">${WAI}</a>`:'<span class="wa off" title="Sin teléfono">'+WAI+'</span>'};
 let DIP=null;const isApp=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
@@ -198,14 +274,14 @@ function panel(){
   <div class="card stat"><b>${fmt(rec)}</b><span>Total recuperado</span></div>
   <div class="card stat"><b>${fmt(saldo)}</b><span>Saldo pendiente</span></div>
   <div class="card stat"><b>${fmt(gan)}</b><span>Intereses ganados</span></div>
-  <div class="card stat bad"><b>${m.length}</b><span>Préstamos en mora</span></div><div class="card stat"><b>${L.filter(x=>x.s.st==='pagado').length}</b><span>Préstamos finalizados</span></div>${S.cap.length?`<div class="card stat"><b>${fmt(capStats().caja)}</b><span>Disponible en caja</span></div>`:''}</div>
-  ${lateHtml}${tomHtml}${ntBtn}${installHtml(false)}
+  <div class="card stat bad"><b>${m.length}</b><span>Préstamos en mora</span></div><div class="card stat"><b>${L.filter(x=>x.s.st==='pagado').length}</b><span>Préstamos finalizados</span></div><div class="card stat"><b>${allSt().filter(e=>e.st==='dia'||e.st==='por').length}</b><span>Clientes al día</span></div>${S.cap.length?`<div class="card stat"><b>${fmt(capStats().caja)}</b><span>Disponible en caja</span></div>`:''}</div>
+  ${lateHtml}${tomHtml}${oppHtml()}${ntBtn}${installHtml(false)}
   ${oldBk?'<div class="card note">Hace más de 7 días que no haces un respaldo. Ve a Reportes y pulsa Exportar respaldo.</div>':''}
   <div class="card"><label>Nombre de tu negocio o tu nombre (aparece en los recibos)<input id="biz" value="${esc(S.biz||'')}" placeholder="Ej: Préstamos Don Carlos"></label></div>
   <div class="card"><h2>Cobros vencidos</h2>${m.length?m.map(x=>`<div class="row"><div>${esc(cname(x.l.client))}<small>Vencido: ${fmt(x.s.overdue)} · Mora estimada: ${fmt(x.s.mora)}</small></div><span>${waA(x.l.client,'Hola '+cname(x.l.client)+', le recordamos que tiene un pago vencido de '+fmt(x.s.overdue)+'. Por favor comuníquese para ponerse al día.',x.l)} <a class="lk" data-open="${x.l.id}">Ver préstamo</a></span></div>`).join(''):'<p class="empty">No tienes cuotas vencidas.</p>'}</div>
   <div class="card"><h2>Próximos cobros (7 días)</h2>${up.length?up.map(x=>{const v=x.r.tot-x.r.paid;return`<div class="row"><div>${esc(cname(x.l.client))}<small>${x.r.date===today()?'Hoy':x.r.date} · Cuota ${x.r.k}: ${fmt(v)}</small></div><span>${waA(x.l.client,'Hola '+cname(x.l.client)+', le recordamos que su cuota de '+fmt(v)+' vence el '+x.r.date+'. ¡Gracias!',x.l)} <a class="lk" data-open="${x.l.id}">Ver</a></span></div>`}).join(''):'<p class="empty">No hay cobros en los próximos 7 días.</p>'}</div>
   ${S.clients.length?'':'<div class="card"><p class="empty">Empieza creando tu primer cliente en la pestaña Clientes.</p></div>'}`;
-  bindOpen();
+  bindOpen();bindEstado();
   const nt=$('#nt');if(nt)nt.onclick=enableNotif;bindInstall();
 }
 
@@ -274,8 +350,8 @@ function openLoan(id){
   <p class="note">${l.metodo==='simple'?'Interés simple':'Interés sobre saldo'} · ${l.n} cuotas ${FP[l.freq]} · <span class="tag ${s.st}">${LBL[s.st]}</span> <button type="button" class="btn ghost" id="apv" style="padding:4px 10px;font-size:.85rem">Ver aprobación</button></p>
   ${s.st==='pagado'?'<div class="card ok"><b>✓ Préstamo finalizado.</b> El cliente está al día y no tiene deuda pendiente.</div>':''}${s.st==='mora'?`<div class="card late"><b>⚠ Pago vencido:</b> ${fmt(s.overdue)} ${waA(l.client,'Hola '+cname(l.client)+', le recordamos que tiene un pago vencido de '+fmt(s.overdue)+'. Por favor comuníquese para ponerse al día.',l)}</div>`:''}<label style="margin-bottom:10px">Observaciones del préstamo<textarea id="lob" rows="2">${esc(l.obs)}</textarea></label><label style="margin-bottom:10px">Mensaje opcional para el cliente (se agrega a los avisos de WhatsApp)<textarea id="lmsg" rows="2" placeholder="Ej: Puede pagar por Nequi o Bancolombia.">${esc(l.msg)}</textarea></label>
   <div class="grid" style="margin-bottom:12px"><div class="stat"><b>${fmt(s.total)}</b><span>Total a pagar</span></div><div class="stat"><b>${fmt(s.paid)}</b><span>Pagado</span></div><div class="stat"><b>${fmt(s.saldo)}</b><span>Saldo</span></div><div class="stat"><b>${fmt(s.mora)}</b><span>Mora estimada</span></div></div>
-  <div class="wrap"><table class="cuo${s.rows.some(r=>r.late&&(+l.mora||0)>0)?'':' nomo'}"><tr><th>#</th><th>Vence</th><th class="n">Cuota</th><th class="n pg">Pagado</th><th class="n mo">Mora</th><th>Estado</th><th class="edh">Editar cuota</th><th></th></tr>${s.rows.map(r=>{const ok=r.paid>=r.tot-.5,ab=r.paid>0&&!ok,dm=r.late?Math.max(0,(new Date(today())-new Date(r.date))/864e5):0,mo=r.late?(r.tot-r.paid)*(+l.mora||0)/100*dm/30:0;return`<tr class="${ok?'okr':r.late?'later':''}"><td>${r.k}</td><td>${fdate(r.date).replace(/ (\d{4})$/,'<span class="yr"> $1</span>')}</td><td class="n" title="${r.ed?'Valor original '+fmt(r.orig)+' · ':''}Capital ${fmt(r.cap)} · Interés ${fmt(r.int)}">${fmt(r.tot)}${r.ed?'<sup class="edm">✎</sup>':''}</td><td class="n pg" style="${r.paid>0?'color:var(--ok);font-weight:700':''}">${r.paid>0?fmt(r.paid):'—'}</td><td class="n mo" style="color:var(--bad)">${mo>0.5?fmt(mo):'—'}</td><td><span class="tag ${ok?'pagado':ab?'activo':r.late?'mora':'pend'}">${ok?'✓ Pagada':ab?'Abonó':r.late?'Atrasada':'Pendiente'}</span>${ab?'<small class="pgm">'+fmt(r.paid)+'</small>':''}</td><td class="edc">${ok?'<span class="dim">—</span>':'<button type="button" class="edb" data-ed="'+r.k+'">✎<span class="edt"> Editar</span></button>'}</td><td class="act">${ok?'':'<button type="button" class="pgb" data-pr="'+r.k+'">Pagar</button>'+waA(l.client,r.late?'Hola '+cname(l.client)+', su cuota '+r.k+' de '+fmt(r.tot-r.paid)+' venció el '+r.date+'. Por favor comuníquese para ponerse al día.':'Hola '+cname(l.client)+', le recordamos que su cuota '+r.k+' de '+fmt(r.tot-r.paid)+' vence el '+r.date+'. ¡Gracias!',l)}</td></tr>`}).join('')}</table></div>
-  <p class="note">Verde: pagada · Abonó: pago parcial · Rojo: atrasada. «Pagar» en una cuota registra su saldo (y el de las anteriores si siguen pendientes). «✎ Editar» cambia el valor de esa cuota (✎ junto al valor = cuota editada).</p>
+  <div class="wrap"><table class="cuo${s.rows.some(r=>r.late&&(+l.mora||0)>0)?'':' nomo'}"><tr><th>#</th><th>Vence</th><th class="n">Cuota</th><th class="n">Pagado</th><th class="n mo">Mora</th><th>Estado</th><th></th></tr>${s.rows.map(r=>{const ok=r.paid>=r.tot-.5,ab=r.paid>0&&!ok,dm=r.late?Math.max(0,(new Date(today())-new Date(r.date))/864e5):0,mo=r.late?(r.tot-r.paid)*(+l.mora||0)/100*dm/30:0;return`<tr class="${ok?'okr':r.late?'later':''}"><td>${r.k}</td><td>${fdate(r.date).replace(/ (\d{4})$/,'<span class="yr"> $1</span>')}</td><td class="n" title="Capital ${fmt(r.cap)} · Interés ${fmt(r.int)}">${fmt(r.tot)}</td><td class="n" style="${r.paid>0?'color:var(--ok);font-weight:700':''}">${r.paid>0?fmt(r.paid):'—'}</td><td class="n mo" style="color:var(--bad)">${mo>0.5?fmt(mo):'—'}</td><td><span class="tag ${ok?'pagado':ab?'activo':r.late?'mora':'pend'}">${ok?'✓ Pagada':ab?'Abonó':r.late?'Atrasada':'Pendiente'}</span></td><td class="act">${ok?'':'<button type="button" class="pgb" data-pr="'+r.k+'">Pagar</button>'+waA(l.client,r.late?'Hola '+cname(l.client)+', su cuota '+r.k+' de '+fmt(r.tot-r.paid)+' venció el '+r.date+'. Por favor comuníquese para ponerse al día.':'Hola '+cname(l.client)+', le recordamos que su cuota '+r.k+' de '+fmt(r.tot-r.paid)+' vence el '+r.date+'. ¡Gracias!',l)}</td></tr>`}).join('')}</table></div>
+  <p class="note">Verde: pagada · Abonó: pago parcial · Rojo: atrasada. «Pagar» en una cuota registra su saldo (y el de las anteriores si siguen pendientes).</p>
   <h2 style="margin-top:14px">Pagar</h2>
   ${payCard(l,s)}
   <details class="oth"><summary>Otro valor o abono (manual)</summary><form id="fp"><label>Valor ($)<input name="amt" type="number" min="1" step="any" required></label><label>Fecha<input name="date" type="date" value="${today()}" required></label><label class="full">Nota (opcional)<input name="nota"></label><div class="full"><button class="btn">Guardar pago</button></div></form></details>
@@ -291,11 +367,6 @@ function openLoan(id){
   $('#dl').onclick=()=>{if(confirm('¿Eliminar este préstamo y sus pagos?')){S.loans=S.loans.filter(x=>x.id!==id);S.pays=S.pays.filter(p=>p.loan!==id);save();d.close();render()}};
   const pay=a=>{if(Date.now()-LASTPAY<1500)return;LASTPAY=Date.now();const p=payNow(id,a);if(p){openLoan(id);render();receipt(p.id,true)}};
   const pn=$('#pn'),pa=$('#pa');if(pn)pn.onclick=()=>pay(+pn.dataset.a);if(pa)pa.onclick=()=>{if(confirm('¿Registrar el pago del saldo total de '+fmt(+pa.dataset.a)+'?'))pay(+pa.dataset.a)};
-  d.querySelectorAll('[data-ed]').forEach(bt=>bt.onclick=()=>{const k=+bt.dataset.ed,r=s.rows.find(x=>x.k===k);if(!r)return;const o=r.ed?r.orig:r.tot;
-    const v=prompt('Cuota '+k+' · valor original: '+fmt(o)+'\nEscribe el nuevo valor de la cuota ($).\nDéjalo vacío para volver al valor original.',String(Math.round(r.tot)));if(v===null)return;
-    const t=v.trim();l.ov=l.ov||{};
-    if(t===''){delete l.ov[k]}else{const n=+t.replace(/\D/g,'');if(!(n>0)){alert('Valor inválido.');return}if(Math.abs(n-o)<.5)delete l.ov[k];else l.ov[k]=n}
-    if(!Object.keys(l.ov).length)delete l.ov;save();openLoan(id);render()});
   d.querySelectorAll('[data-pr]').forEach(bt=>bt.onclick=()=>{const k=+bt.dataset.pr,need=s.rows.filter(r=>r.k<=k&&r.paid<r.tot-.5),amt=Math.round(need.reduce((a,r)=>a+r.tot-r.paid,0));if(!(amt>0))return;const m=need.length>1?'Para saldar la cuota '+k+' también se pagan las anteriores pendientes ('+need.map(r=>r.k).join(', ')+'). Total: '+fmt(amt)+'. ¿Registrar el pago?':'¿Registrar el pago de la cuota '+k+' por '+fmt(amt)+'?';if(confirm(m))pay(amt)});
   $('#apv').onclick=()=>approval(id);
   $('#fp').onsubmit=e=>{e.preventDefault();const f=Object.fromEntries(new FormData(e.target)),p=payNow(id,+f.amt,f.nota,f.date);if(p){openLoan(id);render();receipt(p.id,true)}};
@@ -400,7 +471,7 @@ function receipt(pid,fresh){
     bind:()=>{$('#cpr').onclick=()=>receiptPrint(pid);const u=$('#cud');if(u)u.onclick=()=>{if(!confirm('¿Deshacer este pago?'))return;S.pays=S.pays.filter(x=>x.id!==pid);save();LASTPAY=0;$('#rc').close();if($('#dlg').open)openLoan(l.id);render()}}});
 }
 /* Novedades (se muestran una vez por versión) */
-const NEWS=['Nueva columna «Editar cuota» en el cronograma del préstamo: cambia el valor de una cuota cuando el cliente paga de menos o en otras fechas. Tus datos siguen intactos.','Al crear un préstamo aparece la aprobación con el número de cuotas y todas las fechas de pago, lista para compartir como imagen.','Pago en un toque: la próxima cuota ya aparece lista, solo toca «Pagar».','El recibo de pago ahora es una imagen para compartir, con cuotas pagadas y pendientes.','La app descarga las mejoras cuando hay internet y te avisa para que las aceptes. Tus datos no se tocan.','Cada cuota tiene su botón «Pagar» y se muestra la mora por línea.','Respaldo: exportar e importar (fusionando o reemplazando) y copias internas con restauración.','Huella / Face ID para entrar, con la opción «Mantener la huella siempre activa» y «Reasignar huella».'];
+const NEWS=['Nuevo botón «🎁 Ofrecer crédito»: envía por WhatsApp un mensaje cordial (texto e imagen) a los clientes que finalizaron, están por finalizar o al día, con el valor disponible opcional.','En Reportes: «Estado de clientes» con filtros Al día, Por finalizar, Finalizados y En mora, y recibo por WhatsApp (estado de cuenta o paz y salvo) para enviar cuantas veces quieras.','En el Panel: aviso de clientes por terminar o recién finalizados para ofrecerles un nuevo crédito.','Al crear un préstamo aparece la aprobación con el número de cuotas y todas las fechas de pago, lista para compartir como imagen.','Pago en un toque: la próxima cuota ya aparece lista, solo toca «Pagar».','El recibo de pago ahora es una imagen para compartir, con cuotas pagadas y pendientes.','La app descarga las mejoras cuando hay internet y te avisa para que las aceptes. Tus datos no se tocan.','Cada cuota tiene su botón «Pagar» y se muestra la mora por línea.','Respaldo: exportar e importar (fusionando o reemplazando) y copias internas con restauración.','Huella / Face ID para entrar, con la opción «Mantener la huella siempre activa» y «Reasignar huella».'];
 function showNews(){const c=S.cfg;if(c.seenV===APPV)return;const first=!c.seenV&&!S.clients.length&&!S.loans.length;c.seenV=APPV;save();if(first)return;
   const r=$('#rc');document.body.classList.remove('rcp');r.onclose=null;r.innerHTML='<h2>✨ Novedades · versión '+APPV+'</h2><ul>'+NEWS.map(n=>'<li>'+esc(n)+'</li>').join('')+'</ul><p class="note">Tus clientes, préstamos, pagos y capital siguen intactos.</p><p><button class="btn" id="nx">Entendido</button></p>';if(!r.open)r.showModal();$('#nx').onclick=()=>r.close()}
 /* Actualizaciones: se descargan solas con internet y el cliente las acepta con un toque */
@@ -438,9 +509,10 @@ function reportes(){
   S.loans.forEach(l=>{const s=sched(l),c=by[l.client]=by[l.client]||{p:0,r:0,s:0};c.p+=+l.monto;c.r+=s.paid;c.s+=s.saldo;
     s.rows.forEach(r=>{const m=r.date.slice(0,7);mes[m]=(mes[m]||0)+(r.tot?r.paid*r.int/r.tot:0)})});
   const tsv='Cliente\tPrestado\tPagado\tSaldo\n'+Object.entries(by).map(([k,v])=>[cname(k),Math.round(v.p),Math.round(v.r),Math.round(v.s)].join('\t')).join('\n');
-  $('#v').innerHTML=`<div class="card"><h2>Cartera por cliente</h2>${Object.keys(by).length?`<div class="wrap"><table><tr><th>Cliente</th><th class="n">Prestado</th><th class="n">Pagado</th><th class="n">Saldo</th></tr>${Object.entries(by).map(([k,v])=>`<tr><td>${esc(cname(k))}</td><td class="n">${fmt(v.p)}</td><td class="n">${fmt(v.r)}</td><td class="n">${fmt(v.s)}</td></tr>`).join('')}</table></div>`:'<p class="empty">Sin datos todavía.</p>'}</div>
+  $('#v').innerHTML=`${estadoCard()}<div class="card"><h2>Cartera por cliente</h2>${Object.keys(by).length?`<div class="wrap"><table><tr><th>Cliente</th><th class="n">Prestado</th><th class="n">Pagado</th><th class="n">Saldo</th></tr>${Object.entries(by).map(([k,v])=>`<tr><td>${esc(cname(k))}</td><td class="n">${fmt(v.p)}</td><td class="n">${fmt(v.r)}</td><td class="n">${fmt(v.s)}</td></tr>`).join('')}</table></div>`:'<p class="empty">Sin datos todavía.</p>'}</div>
   <div class="card"><h2>Ganancias por mes (intereses cobrados)</h2>${Object.keys(mes).length?`<div class="wrap"><table><tr><th>Mes</th><th class="n">Intereses</th></tr>${Object.keys(mes).sort().map(m=>`<tr><td>${m}</td><td class="n">${fmt(mes[m])}</td></tr>`).join('')}</table></div>`:'<p class="empty">Sin datos todavía.</p>'}</div>
   <div class="card"><p class="note">Último respaldo: ${S.lastBackup||'nunca'}. Guarda el archivo en tu correo o Drive para no perder tu cartera.</p><button class="btn" data-act="bk">Exportar respaldo</button> <button class="btn ghost" data-act="im">Importar respaldo</button> <button class="btn ghost" id="cp">Copiar para Excel</button> <button class="btn ghost" id="pr">Imprimir o guardar PDF</button> <button class="btn ghost" id="rs">Borrar todos los datos</button></div>${copiasCard(false)}`;
+  bindEstado();
   $('#cp').onclick=async()=>{try{await navigator.clipboard.writeText(tsv);alert('Copiado. Pégalo en Excel.')}catch(e){alert('No se pudo copiar.')}};
   $('#pr').onclick=()=>window.print();
   $('#rs').onclick=()=>{if(confirm('Se borrarán todos los clientes, préstamos y pagos de este navegador.')){mkCopy('Antes de borrar todo');S=migrate({cfg:S.cfg});save();render()}};

@@ -17,7 +17,7 @@ Aplicación web para controlar una cartera de préstamos: clientes, intereses, c
 - Botón de sol/luna en la cabecera para cambiar entre tema claro y oscuro.
 - Recibos imprimibles, reportes, exportar e importar respaldo (.json): al importar se elige «Fusionar» (agrega lo que falta) o «Reemplazar todo».
 - Cada cuota del cronograma tiene su botón «Pagar» (si hay cuotas anteriores pendientes, se pagan también).
-- Columna «Editar cuota» en el cronograma: cambia a mano el valor de una cuota (si el cliente paga de menos o en otras fechas). Se puede volver al valor original dejando el campo vacío.
+- Reportes > «Estado de clientes»: filtros Al día, Por finalizar, Finalizados y En mora; «Recibo» envía por WhatsApp el estado de cuenta (o paz y salvo) como imagen o texto, las veces que quieras; «Nuevo crédito» abre el formulario con el cliente elegido. «🎁 Ofrecer crédito» abre un mensaje cordial editable (con valor disponible opcional) para enviar por WhatsApp como texto o imagen; la app anota la fecha y las veces que se envió. El Panel avisa de los clientes por terminar (faltan N cuotas, ajustable en Reportes) o finalizados en los últimos 30 días para ofrecerles un nuevo crédito.
 - Copias internas: una automática al día (las últimas 5) más una antes de importar, restaurar, borrar o actualizar; se restauran desde Ajustes o Reportes.
 - Huella / Face ID con «Mantener la huella siempre activa» y «Reasignar huella» (Ajustes). Requiere abrir la app desde https.
 - Aviso de actualización con la casilla «Notificaciones pendientes por aplicar» y botones Aceptar / Soporte.
@@ -60,7 +60,9 @@ screenshot-*.png        Capturas para el diálogo de instalación
 
 - 3.8: se reponen las mejoras que se perdieron con la actualización: botón «Pagar» por cuota (con columna Mora), copias internas y restauración, importar con fusión, huella / Face ID, interruptor remoto `estado.json` y casilla «Notificaciones pendientes por aplicar» con Aceptar / Soporte. No cambia el esquema de datos (`VER` 4).
 
-- 3.13: columna «Editar cuota» en el cronograma del préstamo (cada cuota pendiente o con abono se puede editar; la cuota editada se marca con ✎ y el cálculo del saldo, recibos y avisos usa el nuevo valor). El dato se guarda en el préstamo como `ov` (opcional); no cambia el esquema de datos (`VER` 4) y los préstamos existentes no se tocan. En el móvil el valor pagado de un abono se muestra bajo el estado.
+- 3.14: Reportes > «Estado de clientes» (Al día / Por finalizar / Finalizados / En mora), recibo de estado de cuenta y paz y salvo por WhatsApp, atajo «Nuevo crédito», aviso en el Panel de clientes para ofrecer nuevo crédito y tarjeta «Clientes al día». Los estados se calculan con los datos existentes; solo se guarda el ajuste `cfg.finN` (cuotas para «por finalizar»). No cambia el esquema de datos (`VER` 4).
+
+- 3.15: botón «🎁 Ofrecer crédito» en Panel y Reportes para clientes finalizados, por finalizar o al día: mensaje cordial editable, valor disponible opcional (sugiere el último préstamo), imagen «Crédito disponible» para compartir y registro de la última oferta enviada (`oferta`, `nOf` en el cliente, campos opcionales). No cambia el esquema de datos (`VER` 4): los datos existentes se conservan.
 
 ## Interruptor remoto (estado.json)
 
