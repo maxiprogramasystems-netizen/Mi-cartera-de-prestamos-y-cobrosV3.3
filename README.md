@@ -12,6 +12,7 @@ Aplicación web para controlar una cartera de préstamos: clientes, intereses, c
 - Aviso un día antes del cobro (notificación del navegador) y botón de WhatsApp para avisar al cliente, con mensaje opcional por préstamo.
 - Al crear un préstamo aparece su aprobación: valor aprobado, número de cuotas y todas las fechas de pago, como imagen para compartir (también desde «Ver aprobación» en el préstamo).
 - Pago en un toque: la próxima cuota aparece ya lista con su valor y el botón «Pagar»; también «Pagar todo el saldo». El pago manual o abono queda en «Otro valor o abono».
+- «Pagar solo intereses»: si el cliente no puede pagar la cuota completa, abona solo el interés de la cuota (valor editable). No baja capital ni saldo, cuenta como ganancia, aplaza un período esa cuota y las siguientes (no queda en mora) y genera su recibo. Se deshace eliminando ese pago.
 - Recibo de pago como imagen para compartir (cuotas pagadas y pendientes, saldo y próximo pago), con opción de deshacer el pago recién hecho y de imprimir el recibo clásico.
 - Colores de estado: cuota pagada en verde, cuota atrasada en rojo con alerta en el Panel.
 - Botón de sol/luna en la cabecera para cambiar entre tema claro y oscuro.
@@ -63,6 +64,10 @@ screenshot-*.png        Capturas para el diálogo de instalación
 - 3.14: Reportes > «Estado de clientes» (Al día / Por finalizar / Finalizados / En mora), recibo de estado de cuenta y paz y salvo por WhatsApp, atajo «Nuevo crédito», aviso en el Panel de clientes para ofrecer nuevo crédito y tarjeta «Clientes al día». Los estados se calculan con los datos existentes; solo se guarda el ajuste `cfg.finN` (cuotas para «por finalizar»). No cambia el esquema de datos (`VER` 4).
 
 - 3.15: botón «🎁 Ofrecer crédito» en Panel y Reportes para clientes finalizados, por finalizar o al día: mensaje cordial editable, valor disponible opcional (sugiere el último préstamo), imagen «Crédito disponible» para compartir y registro de la última oferta enviada (`oferta`, `nOf` en el cliente, campos opcionales). No cambia el esquema de datos (`VER` 4): los datos existentes se conservan.
+
+- 3.16: botón «Pagar solo intereses» (pago con `tipo:'int'`, campo opcional): aplaza la cuota pendiente y las siguientes un período por cada pago, sin tocar capital ni saldo; suma a ganancias y capital recibido; recibo «Abono a intereses · cuota aplazada al…»; aviso desde 3 aplazamientos; no cobra la mora ya generada. No cambia el esquema de datos (`VER` 4): los datos y copias existentes se conservan.
+
+- 3.17: la aprobación del préstamo (imagen y mensaje de WhatsApp) ya no muestra el interés ni el «Total a pagar»; el cliente solo ve valor aprobado, cuotas, valor de cada cuota y fechas de pago. **No volver a agregar esas filas en `approval()`.** El resumen interno del préstamo no cambia. No cambia el esquema de datos (`VER` 4).
 
 ## Interruptor remoto (estado.json)
 
