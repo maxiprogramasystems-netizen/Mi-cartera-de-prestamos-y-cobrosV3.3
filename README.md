@@ -18,6 +18,7 @@ Aplicación web para controlar una cartera de préstamos: clientes, intereses, c
 - Botón de sol/luna en la cabecera para cambiar entre tema claro y oscuro.
 - Recibos imprimibles, reportes, exportar e importar respaldo (.json): al importar se elige «Fusionar» (agrega lo que falta) o «Reemplazar todo».
 - Cada cuota del cronograma tiene su botón «Pagar» (si hay cuotas anteriores pendientes, se pagan también).
+- «✎ Editar» por cuota (columna «Editar cuota», entre «Estado» y «Pagar»): cambia a mano el valor de una cuota pendiente o con abono si el cliente paga de menos o en otras fechas. Vacío = vuelve al original. Las cuotas pagadas no se editan.
 - Reportes > «Estado de clientes»: filtros Al día, Por finalizar, Finalizados y En mora; «Recibo» envía por WhatsApp el estado de cuenta (o paz y salvo) como imagen o texto, las veces que quieras; «Nuevo crédito» abre el formulario con el cliente elegido. «🎁 Ofrecer crédito» abre un mensaje cordial editable (con valor disponible opcional) para enviar por WhatsApp como texto o imagen; la app anota la fecha y las veces que se envió. El Panel avisa de los clientes por terminar (faltan N cuotas, ajustable en Reportes) o finalizados en los últimos 30 días para ofrecerles un nuevo crédito.
 - Copias internas: una automática al día (las últimas 5) más una antes de importar, restaurar, borrar o actualizar; se restauran desde Ajustes o Reportes.
 - Huella / Face ID con «Mantener la huella siempre activa» y «Reasignar huella» (Ajustes). Requiere abrir la app desde https.
@@ -68,6 +69,8 @@ screenshot-*.png        Capturas para el diálogo de instalación
 - 3.16: botón «Pagar solo intereses» (pago con `tipo:'int'`, campo opcional): aplaza la cuota pendiente y las siguientes un período por cada pago, sin tocar capital ni saldo; suma a ganancias y capital recibido; recibo «Abono a intereses · cuota aplazada al…»; aviso desde 3 aplazamientos; no cobra la mora ya generada. No cambia el esquema de datos (`VER` 4): los datos y copias existentes se conservan.
 
 - 3.17: la aprobación del préstamo (imagen y mensaje de WhatsApp) ya no muestra el interés ni el «Total a pagar»; el cliente solo ve valor aprobado, cuotas, valor de cada cuota y fechas de pago. **No volver a agregar esas filas en `approval()`.** El resumen interno del préstamo no cambia. No cambia el esquema de datos (`VER` 4).
+
+- 3.20: «Editar cuota»: botón ✎ por cuota para cambiar su valor a mano (se marca con ✎ y muestra el original al pasar el cursor). El valor nuevo se usa en saldo, «Pagar», recibos y avisos de WhatsApp. Se guarda en el préstamo como dato opcional `ov` ({nº de cuota: valor}); capital e interés de esa cuota se ajustan en proporción. En celular se oculta la columna «Pagado» y el abono se muestra bajo «Abonó». No cambia el esquema de datos (`VER` 4): los préstamos existentes no cambian. Incluye todo lo de la 3.17.
 
 ## Interruptor remoto (estado.json)
 
