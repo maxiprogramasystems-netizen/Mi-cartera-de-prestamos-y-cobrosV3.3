@@ -7,6 +7,7 @@ Aplicación web para controlar una cartera de préstamos: clientes, intereses, c
 - Clientes con notas y observaciones, búsqueda y edición. Al guardar un cliente nuevo la app ofrece crear su préstamo, y cada cliente tiene el atajo «Crear préstamo».
 - Cada préstamo es independiente: se elige el cliente de forma explícita (sin cliente preseleccionado por defecto), lleva su propio código (P-001, P-002…), sus cuotas y sus pagos, y se confirma antes de crearlo.
 - Préstamos con interés simple o sobre saldo, mora, observaciones y filtros por estado.
+- La lista de Préstamos muestra por defecto solo los vigentes (activos y en mora). Los finalizados salen de esa lista pero siguen guardados: se ven en el filtro «Finalizados» (un renglón por cliente, con los códigos de sus préstamos) o en «Todos». Al buscar por nombre o código también aparecen.
 - Cuotas en verde cuando se pagan, estado "Abonó" en pagos parciales y "Finalizado" al saldar la deuda.
 - Capital: aportes, retiros, dinero disponible para prestar, capital en la calle y ganancias.
 - Aviso un día antes del cobro (notificación del navegador) y botón de WhatsApp para avisar al cliente, con mensaje opcional por préstamo.
@@ -71,6 +72,8 @@ screenshot-*.png        Capturas para el diálogo de instalación
 - 3.17: la aprobación del préstamo (imagen y mensaje de WhatsApp) ya no muestra el interés ni el «Total a pagar»; el cliente solo ve valor aprobado, cuotas, valor de cada cuota y fechas de pago. **No volver a agregar esas filas en `approval()`.** El resumen interno del préstamo no cambia. No cambia el esquema de datos (`VER` 4).
 
 - 3.20: «Editar cuota»: botón ✎ por cuota para cambiar su valor a mano (se marca con ✎ y muestra el original al pasar el cursor). El valor nuevo se usa en saldo, «Pagar», recibos y avisos de WhatsApp. Se guarda en el préstamo como dato opcional `ov` ({nº de cuota: valor}); capital e interés de esa cuota se ajustan en proporción. En celular se oculta la columna «Pagado» y el abono se muestra bajo «Abonó». No cambia el esquema de datos (`VER` 4): los préstamos existentes no cambian. Incluye todo lo de la 3.17.
+
+- 3.21: la lista de Préstamos oculta por defecto los finalizados (filtro «Vigentes»), para que un cliente con varias renovaciones no aparezca repetido. El filtro «Finalizados» agrupa por cliente y «Todos» muestra todo. Solo cambia lo que se ve: no se borra ni modifica ningún dato, la lista de clientes queda igual y `sched()`, pagos, capital, reportes y recibos no se tocan. No cambia el esquema de datos (`VER` 4). Incluye todo lo de la 3.20.
 
 ## Interruptor remoto (estado.json)
 
